@@ -31,6 +31,7 @@ mod sysinfo;
 mod ui;
 mod ui_prefs;
 mod variables;
+mod vial_control_center;
 mod vial_sync;
 mod vial_visualizer;
 mod vial_visualizer_window;
@@ -198,14 +199,15 @@ fn main() {
     }
 
     let app = Application::builder().application_id(APP_ID).build();
-    if args.iter().any(|a| a == "--vial-visualizer") {
+    if args.iter().any(|a| a == "--vial-control-center") {
+        app.connect_activate(vial_control_center::build);
+    } else if args.iter().any(|a| a == "--vial-visualizer") {
         app.connect_activate(vial_visualizer_window::build);
     } else {
         app.connect_activate(ui::build_ui);
     }
 
     // We own and parse the process command-line above. Passing the original
-    // argv into GApplication would make GTK reject Hyprbind-specific flags
-    // such as --vial-visualizer as unknown options.
+    // argv into GApplication would make GTK reject Hyprbind-specific flags.
     app.run_with_args(&["hyprbinds"]);
 }
