@@ -31,6 +31,7 @@ mod sysinfo;
 mod ui;
 mod ui_prefs;
 mod variables;
+mod vial_sync;
 mod window_rules;
 mod writer;
 
@@ -65,6 +66,10 @@ fn main() {
     }
     if args.iter().any(|a| a == "--sysinfo") {
         print!("{}", sysinfo::collect_report());
+        return;
+    }
+    if args.iter().any(|a| a == "--vial-status") {
+        print!("{}", vial_sync::report());
         return;
     }
     if args.iter().any(|a| a == "--dump" || a == "--json") {
