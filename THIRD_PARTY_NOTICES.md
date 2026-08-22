@@ -14,6 +14,18 @@ Vial is the canonical upstream compatibility target for Vial firmware configurat
 
 When `scripts/sync-vial-upstream.sh` is used, an unmodified checkout of the official Vial GUI is placed under `third_party/vial-gui/`. Its original copyright notices and `COPYING` file remain authoritative for that checkout.
 
+## viar / via-protocol
+
+- Project: `mikkurogue/viar`
+- Source: https://github.com/mikkurogue/viar
+- Component used: `crates/via-protocol`
+- License: MIT
+- Copyright: Copyright (c) 2026 Mikku
+- Pinned revision: `f7d90d9ddfba108e77577ac228f62f8c1118995e`
+- Preserved license text: `LICENSES/viar-MIT.txt`
+
+Hyprbinds uses the Rust `via-protocol` crate as its low-level VIA/Vial HID protocol backend. The feature branch intentionally pins an upstream Git revision newer than the crates.io `0.1.0` snapshot so native encoder and QMK-settings protocol support are available. Hyprbinds-specific integration, safety checks, GTK UI, Hyprland correlation, and macro-buffer transaction logic live in this repository.
+
 ## QMK Firmware
 
 Vial firmware is built on QMK and the dynamic-keymap/keycode concepts exposed here come from the QMK ecosystem.
@@ -21,6 +33,8 @@ Vial firmware is built on QMK and the dynamic-keymap/keycode concepts exposed he
 - Project: QMK Firmware
 - Source: https://github.com/qmk/qmk_firmware
 - Website: https://qmk.fm/
+
+The native macro-buffer writer follows QMK's documented dynamic macro validity convention: the final macro-buffer byte is marked non-zero before a write and is committed back to NUL only after the rest of the transfer succeeds. This prevents an interrupted update from being treated as a valid macro table.
 
 Refer to QMK's upstream repository for its current licensing and component-specific notices.
 
