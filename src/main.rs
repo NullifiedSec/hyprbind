@@ -31,6 +31,7 @@ mod sysinfo;
 mod ui;
 mod ui_prefs;
 mod variables;
+#[path = "vial_advanced_ui2.rs"]
 mod vial_advanced_ui;
 mod vial_control_center;
 mod vial_features;
