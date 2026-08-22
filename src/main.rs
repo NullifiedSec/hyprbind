@@ -32,6 +32,8 @@ mod ui;
 mod ui_prefs;
 mod variables;
 mod vial_sync;
+mod vial_visualizer;
+mod vial_visualizer_window;
 mod window_rules;
 mod writer;
 
@@ -196,6 +198,10 @@ fn main() {
     }
 
     let app = Application::builder().application_id(APP_ID).build();
-    app.connect_activate(ui::build_ui);
+    if args.iter().any(|a| a == "--vial-visualizer") {
+        app.connect_activate(vial_visualizer_window::build);
+    } else {
+        app.connect_activate(ui::build_ui);
+    }
     app.run();
 }
