@@ -23,7 +23,7 @@ pub fn build_bundle_page(
 ) -> BundlePage {
     let summary = Label::builder()
         .label(
-            "Export a single JSON file with Hyprland settings, Waybar, Rofi (theme + apps), app prefs, and VIA assets. \
+            "Export a single JSON file with Hyprland settings, Waybar, app prefs, and VIA assets. \
              Import translates that JSON back into each app’s native config.",
         )
         .halign(gtk4::Align::Start)
@@ -41,11 +41,6 @@ pub fn build_bundle_page(
     let waybar_cb = CheckButton::builder()
         .label("Waybar")
         .active(true)
-        .build();
-    let rofi_cb = CheckButton::builder()
-        .label("Rofi")
-        .active(true)
-        .tooltip_text("Theme/config.rasi + Rofi Apps scripts")
         .build();
     let app_cb = CheckButton::builder()
         .label("App prefs")
@@ -75,7 +70,6 @@ pub fn build_bundle_page(
     );
     sections.append(&hypr_cb);
     sections.append(&waybar_cb);
-    sections.append(&rofi_cb);
     sections.append(&app_cb);
     sections.append(&via_cb);
     sections.append(&system_cb);
@@ -136,7 +130,7 @@ pub fn build_bundle_page(
     let page = dialog::page_shell(
         "Import / Export",
         "Backup and restore Hyprbinds settings as one JSON file that this app can translate \
-         into Hyprland Lua, Waybar, Rofi, and related configs.",
+         into Hyprland Lua, Waybar, and related configs.",
         &toolbar,
         &scroll,
     );
@@ -146,14 +140,12 @@ pub fn build_bundle_page(
     let opts_from_ui = {
         let hypr_cb = hypr_cb.clone();
         let waybar_cb = waybar_cb.clone();
-        let rofi_cb = rofi_cb.clone();
         let app_cb = app_cb.clone();
         let via_cb = via_cb.clone();
         let system_cb = system_cb.clone();
         Rc::new(move || ImportOptions {
             hyprland: hypr_cb.is_active(),
             waybar: waybar_cb.is_active(),
-            rofi: rofi_cb.is_active(),
             app: app_cb.is_active(),
             via: via_cb.is_active(),
             system: system_cb.is_active(),

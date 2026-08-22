@@ -174,7 +174,7 @@ pub fn build_overview_page(
     );
     header.append(
         &Label::builder()
-            .label("Simple global controls for a consistent desktop. Fine-tune individual leaves under Animations.")
+            .label("Edit Hyprland binds, rules, and settings safely. Simple global controls keep motion consistent — fine-tune individual leaves under Animations.")
             .halign(Align::Start)
             .wrap(true)
             .xalign(0.0)

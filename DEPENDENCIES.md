@@ -18,7 +18,7 @@ sudo pacman -S rust gtk4 pkgconf base-devel
 cargo build --release
 ```
 
-## VIA hardware keymap
+## VIA hardware keymap (experimental)
 
 Talks to VIA-enabled QMK keyboards over USB HID (usage page `0xFF60`). On Linux you need read/write access to the keyboard's `hidraw` node — either run as a user in the right group or install a udev rule, then re-plug:
 
@@ -29,6 +29,7 @@ sudo udevadm control --reload-rules && sudo udevadm trigger
 ```
 
 Keyboard definition JSON files live in `~/.config/hyprbinds/via-definitions/` (sideload via **Load definition…**, same format as VIA's Design tab). Bundled examples ship in the repo `via-definitions/` folder.
+
 ## Core runtime (Hyprland config editor)
 
 | Package | Why |
@@ -41,6 +42,8 @@ Optional but useful while editing:
 | Package | Why |
 |---|---|
 | `wl-clipboard` | System clipboard helpers (GTK clipboard still works without it) |
+
+> Companion studios (Waybar, Wallpaper, Starship, VIA, Audio, Screenshare) live under the sidebar **Experimental** section — enable **Developer mode** on the Health page to show them.
 
 ## System Health checks (Screenshare / Audio / Session)
 
@@ -89,7 +92,7 @@ systemctl --user restart xdg-desktop-portal xdg-desktop-portal-hyprland
 
 Health reports NVIDIA presence as an informational hint; it does not install drivers.
 
-## Audio panel
+## Audio panel (experimental)
 
 | Package | Why |
 |---|---|
@@ -99,7 +102,7 @@ Health reports NVIDIA presence as an informational hint; it does not install dri
 | `alsa-utils` (`amixer`, `alsamixer`) | ALSA mixer + terminal TUI |
 | A terminal (`kitty`, `foot`, `alacritty`, …) or `$TERMINAL` | Launch alsamixer |
 
-## Wallpaper (awww)
+## Wallpaper / awww (experimental)
 
 | Package | Why |
 |---|---|
@@ -112,7 +115,7 @@ awww-daemon
 # or in Hyprbinds Startup: awww-daemon
 ```
 
-## Waybar Studio
+## Waybar Studio (experimental)
 
 | Package | Why |
 |---|---|
@@ -129,52 +132,7 @@ Apply snapshots both files before writing (same backup system as Hyprland config
 sudo pacman -S waybar
 ```
 
-## Rofi Studio
-
-| Package | Why |
-|---|---|
-| `rofi` | Application launcher / dmenu replacement |
-
-Config files edited by the Rofi Studio page:
-
-- `~/.config/rofi/config.rasi`
-- `~/.config/rofi/hyprbinds-theme.rasi` (managed theme referenced via `@theme`)
-
-Apply snapshots both files before writing (same backup system as Hyprland config). Use **Test Rofi** to launch a live demo with the current theme.
-
-```bash
-sudo pacman -S rofi
-```
-
-## Rofi Apps
-
-Managed launcher utilities (clipboard, power menu, Wi-Fi, custom scripts) live under **Desktop → Rofi Apps**.
-
-| Package | Why |
-|---|---|
-| `rofi` | Menu front-end for every app |
-| `cliphist` | Clipboard history store (clipboard app) |
-| `wl-clipboard` | `wl-copy` / `wl-paste` (clipboard app + watcher) |
-| `networkmanager` | `nmcli` for the Wi-Fi picker (optional) |
-
-Files written by **Apply**:
-
-- `~/.config/hyprbinds/rofi-apps.json` — enabled apps and overrides
-- `~/.config/rofi/scripts/*.sh` — executable scripts
-
-Clipboard also needs a Startup daemon that watches **text and images**:
-
-```bash
-sh -c 'wl-paste --type text --watch cliphist store & exec wl-paste --type image --watch cliphist store'
-```
-
-Use **Add daemon…** on the clipboard app (or add that under Startup). The clipboard script opens Rofi in icon mode so PNG/JPEG/etc. entries show thumbnails.
-
-```bash
-sudo pacman -S cliphist wl-clipboard
-```
-
-## Starship Studio
+## Starship Studio (experimental)
 
 | Package | Why |
 |---|---|
@@ -190,6 +148,7 @@ Config edited by the Starship Studio page:
 sudo pacman -S starship
 ```
 
+## Config backups
 
 Every write snapshots the previous file to:
 

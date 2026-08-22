@@ -48,14 +48,14 @@ pub fn build_health_page(
     let developer_toggle = CheckButton::builder()
         .label("Developer mode")
         .tooltip_text(
-            "Unlock experimental features such as the VIA keymap page. \
-             These are unfinished and may change or break.",
+            "Unlock the Experimental sidebar section (Waybar, Wallpaper, Starship, VIA, Audio, Screenshare). \
+             These companions are unfinished and may change or break.",
         )
         .active(developer_mode)
         .halign(gtk4::Align::Start)
         .build();
     let developer_hint = Label::builder()
-        .label("Experimental pages (VIA keymap) stay hidden until this is on.")
+        .label("The Experimental section stays hidden until Developer mode is on.")
         .halign(gtk4::Align::Start)
         .wrap(true)
         .xalign(0.0)

@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Hyprbinds
+GenericName=Hyprland Settings
+Comment=Edit Hyprland binds, rules, and settings safely
+Exec=hyprbinds
+Icon=preferences-desktop
+Terminal=false
+Categories=Settings;DesktopSettings;
+Keywords=hyprland;wayland;keybinds;config;
+StartupNotify=true

@@ -2,14 +2,12 @@
 
 use crate::bind::BindCollection;
 use crate::config;
-use crate::rofi;
-use crate::rofi_apps::{self, RofiAppsStore};
 use crate::ui_prefs::{self, UiPrefs};
-use crate::via;
-use crate::via_studio::{self, Animation};
-use crate::wallpaper::{self, WallpaperPrefs};
-use crate::waybar;
-use crate::waybar_model::WaybarModel;
+use crate::experimental::via;
+use crate::experimental::via::studio::{self, Animation};
+use crate::experimental::wallpaper::{self, WallpaperPrefs};
+use crate::experimental::waybar;
+use crate::experimental::waybar::model::WaybarModel;
 use crate::writer;
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
@@ -34,10 +32,6 @@ pub enum BundleError {
     Write(#[from] writer::WriteError),
     #[error("waybar error: {0}")]
     Waybar(#[from] waybar::WaybarError),
-    #[error("rofi error: {0}")]
-    Rofi(#[from] rofi::RofiError),
-    #[error("rofi apps error: {0}")]
-    RofiApps(#[from] rofi_apps::RofiAppsError),
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -50,8 +44,6 @@ pub struct HyprbindsExport {
     pub hyprland: Option<BindCollection>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub waybar: Option<WaybarExport>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub rofi: Option<RofiExport>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub app: Option<AppExport>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -66,16 +58,6 @@ pub struct WaybarExport {
     pub config: Value,
     #[serde(default)]
     pub style_css: String,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct RofiExport {
-    #[serde(default)]
-    pub config_rasi: String,
-    #[serde(default)]
-    pub theme_rasi: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub apps: Option<RofiAppsStore>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -110,7 +92,6 @@ pub struct SystemExport {
 pub struct ImportOptions {
     pub hyprland: bool,
     pub waybar: bool,
-    pub rofi: bool,
     pub app: bool,
     pub via: bool,
     pub system: bool,
@@ -121,7 +102,6 @@ impl Default for ImportOptions {
         Self {
             hyprland: true,
             waybar: true,
-            rofi: true,
             app: true,
             via: true,
             system: true,
@@ -206,26 +186,6 @@ pub fn export_all(collection: &BindCollection) -> Result<HyprbindsExport, Bundle
         }
     };
 
-    let apps_store = rofi_apps::load();
-    let rofi_export = match rofi::load() {
-        Ok(model) => {
-            let (config_rasi, theme_rasi) = rofi::export_snapshot(&model);
-            Some(RofiExport {
-                config_rasi,
-                theme_rasi,
-                apps: Some(apps_store),
-            })
-        }
-        Err(e) => {
-            eprintln!("hyprbinds: rofi theme export skipped: {e}");
-            Some(RofiExport {
-                config_rasi: String::new(),
-                theme_rasi: String::new(),
-                apps: Some(apps_store),
-            })
-        }
-    };
-
     let app = Some(AppExport {
         ui: ui_prefs::load(),
         wallpaper: wallpaper::load_prefs(),
@@ -246,7 +206,6 @@ pub fn export_all(collection: &BindCollection) -> Result<HyprbindsExport, Bundle
         exported_at: now_iso8601(),
         hyprland: Some(collection.clone()),
         waybar,
-        rofi: rofi_export,
         app,
         via,
         system,
@@ -283,9 +242,9 @@ fn export_via() -> Result<Option<ViaExport>, BundleError> {
     }
 
     let mut rgb_presets = Vec::new();
-    if let Ok(names) = via_studio::list_presets() {
+    if let Ok(names) = studio::list_presets() {
         for name in names {
-            if let Ok(anim) = via_studio::load_preset(&name) {
+            if let Ok(anim) = studio::load_preset(&name) {
                 rgb_presets.push(anim);
             }
         }
@@ -338,15 +297,6 @@ pub fn import_all(
             match import_waybar(wb) {
                 Ok(msg) => report.messages.push(msg),
                 Err(e) => report.errors.push(format!("waybar: {e}")),
-            }
-        }
-    }
-
-    if opts.rofi {
-        if let Some(rf) = &bundle.rofi {
-            match import_rofi(rf) {
-                Ok(msg) => report.messages.push(msg),
-                Err(e) => report.errors.push(format!("rofi: {e}")),
             }
         }
     }
@@ -409,21 +359,6 @@ fn import_waybar(wb: &WaybarExport) -> Result<String, BundleError> {
     Ok(msg)
 }
 
-fn import_rofi(rf: &RofiExport) -> Result<String, BundleError> {
-    let mut parts = Vec::new();
-    if !rf.config_rasi.trim().is_empty() || !rf.theme_rasi.trim().is_empty() {
-        parts.push(rofi::import_snapshot(&rf.config_rasi, &rf.theme_rasi)?);
-    }
-    if let Some(apps) = &rf.apps {
-        let msg = rofi_apps::apply(apps)?;
-        parts.push(msg);
-    }
-    if parts.is_empty() {
-        return Err(BundleError::Message("empty rofi section".into()));
-    }
-    Ok(parts.join(" · "))
-}
-
 fn import_via(via_ex: &ViaExport) -> Result<String, BundleError> {
     let mut n_defs = 0usize;
     let mut n_presets = 0usize;
@@ -446,7 +381,7 @@ fn import_via(via_ex: &ViaExport) -> Result<String, BundleError> {
     }
 
     for anim in &via_ex.rgb_presets {
-        via_studio::save_preset(anim).map_err(|e| BundleError::Message(e.to_string()))?;
+        studio::save_preset(anim).map_err(|e| BundleError::Message(e.to_string()))?;
         n_presets += 1;
     }
 
@@ -514,11 +449,6 @@ mod tests {
                 config: json!({"layer": "top"}),
                 style_css: "window#waybar { }".into(),
             }),
-            rofi: Some(RofiExport {
-                config_rasi: "configuration { }\n".into(),
-                theme_rasi: "* { background: #111; }\n".into(),
-                apps: None,
-            }),
             app: Some(AppExport {
                 ui: UiPrefs {
                     dark_mode: true,
@@ -534,7 +464,6 @@ mod tests {
         assert_eq!(parsed.format, FORMAT_ID);
         assert_eq!(parsed.version, 1);
         assert!(parsed.waybar.is_some());
-        assert!(parsed.rofi.is_some());
         assert!(parsed.app.is_some());
     }
 }

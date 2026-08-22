@@ -8,7 +8,7 @@ use std::path::PathBuf;
 pub struct UiPrefs {
     #[serde(default)]
     pub dark_mode: bool,
-    /// Unlocks experimental pages (VIA keymap, etc.). Off by default.
+    /// Unlocks the Experimental sidebar section (Waybar, Wallpaper, VIA, Starship, Audio, Screenshare).
     #[serde(default)]
     pub developer_mode: bool,
 }

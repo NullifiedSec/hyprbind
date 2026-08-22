@@ -51,8 +51,6 @@ pub fn run_all() -> Vec<CheckResult> {
     check_portals(&mut out);
     check_audio(&mut out);
     check_waybar(&mut out);
-    check_rofi(&mut out);
-    check_rofi_apps(&mut out);
     check_starship(&mut out);
     check_gpu_hints(&mut out);
     out
@@ -548,8 +546,8 @@ fn check_audio(out: &mut Vec<CheckResult>) {
 
 fn check_waybar(out: &mut Vec<CheckResult>) {
     let installed = command_exists("waybar");
-    let running = crate::waybar::is_running();
-    let stale = crate::waybar::has_stale_zombies();
+    let running = crate::experimental::waybar::is_running();
+    let stale = crate::experimental::waybar::has_stale_zombies();
 
     let config_dir = dirs::config_dir().map(|mut p| {
         p.push("waybar");
@@ -586,7 +584,7 @@ fn check_waybar(out: &mut Vec<CheckResult>) {
             category: "Waybar",
             title: "waybar process".into(),
             detail: if running {
-                format!("Waybar is running ({})", crate::waybar::status_label())
+                format!("Waybar is running ({})", crate::experimental::waybar::status_label())
             } else if stale {
                 "Only a defunct/zombie waybar process remains — Start will ignore it and launch a new one.".into()
             } else {
@@ -636,126 +634,11 @@ fn check_waybar(out: &mut Vec<CheckResult>) {
     });
 }
 
-fn check_rofi(out: &mut Vec<CheckResult>) {
-    let installed = command_exists("rofi");
-    let config_dir = dirs::config_dir().map(|mut p| {
-        p.push("rofi");
-        p
-    });
-    let has_config = config_dir.as_ref().is_some_and(|d| {
-        d.join("config.rasi").is_file() || d.join("config").is_file()
-    });
-
-    if !installed {
-        out.push(CheckResult {
-            category: "Rofi",
-            title: "rofi binary".into(),
-            detail: "rofi not found on PATH.".into(),
-            severity: Severity::Warn,
-            fix_hint: Some(
-                "Install rofi to use the Rofi Studio page (optional for Hyprland alone).".into(),
-            ),
-            fix_command: Some("sudo pacman -S rofi".into()),
-        });
-    } else {
-        out.push(CheckResult {
-            category: "Rofi",
-            title: "rofi binary".into(),
-            detail: "rofi is installed.".into(),
-            severity: Severity::Ok,
-            fix_hint: None,
-            fix_command: None,
-        });
-    }
-
-    out.push(CheckResult {
-        category: "Rofi",
-        title: "Rofi config".into(),
-        detail: match &config_dir {
-            Some(d) if has_config => format!("Found config under {}", d.display()),
-            Some(d) => format!("No config.rasi under {}", d.display()),
-            None => "Could not resolve ~/.config/rofi".into(),
-        },
-        severity: if has_config {
-            Severity::Ok
-        } else if installed {
-            Severity::Warn
-        } else {
-            Severity::Info
-        },
-        fix_hint: if has_config {
-            None
-        } else {
-            Some("Rofi Studio can create config.rasi + hyprbinds-theme.rasi on first Apply.".into())
-        },
-        fix_command: None,
-    });
-}
-
-fn check_rofi_apps(out: &mut Vec<CheckResult>) {
-    let store = crate::rofi_apps::load();
-    let clipboard_enabled = store
-        .apps
-        .iter()
-        .any(|a| a.enabled && a.kind == "clipboard");
-
-    if clipboard_enabled || store.apps.is_empty() {
-        // Surface clipboard deps even before the user adds the app — common request.
-        let cliphist = command_exists("cliphist");
-        let wl_copy = command_exists("wl-copy");
-        let wl_paste = command_exists("wl-paste");
-        let ok = cliphist && wl_copy && wl_paste;
-        out.push(CheckResult {
-            category: "Rofi Apps",
-            title: "Clipboard tools".into(),
-            detail: format!(
-                "cliphist={}, wl-copy={}, wl-paste={}",
-                if cliphist { "ok" } else { "missing" },
-                if wl_copy { "ok" } else { "missing" },
-                if wl_paste { "ok" } else { "missing" }
-            ),
-            severity: if ok {
-                Severity::Ok
-            } else if clipboard_enabled {
-                Severity::Warn
-            } else {
-                Severity::Info
-            },
-            fix_hint: if ok {
-                Some("Use Rofi Apps → Clipboard, Apply, then Add daemon… for the watcher.".into())
-            } else {
-                Some("Install cliphist + wl-clipboard for the clipboard Rofi app.".into())
-            },
-            fix_command: if ok {
-                None
-            } else {
-                Some("sudo pacman -S cliphist wl-clipboard".into())
-            },
-        });
-    }
-
-    if !store.apps.is_empty() {
-        let enabled = store.apps.iter().filter(|a| a.enabled).count();
-        out.push(CheckResult {
-            category: "Rofi Apps",
-            title: "Managed apps".into(),
-            detail: format!(
-                "{} app(s) in rofi-apps.json ({} enabled)",
-                store.apps.len(),
-                enabled
-            ),
-            severity: Severity::Ok,
-            fix_hint: None,
-            fix_command: None,
-        });
-    }
-}
-
 fn check_starship(out: &mut Vec<CheckResult>) {
     let installed = command_exists("starship");
-    let config = crate::starship::config_path();
+    let config = crate::experimental::starship::config_path();
     let has_config = config.as_ref().is_some_and(|p| p.is_file());
-    let shells = crate::starship::detect_shells();
+    let shells = crate::experimental::starship::detect_shells();
     let enabled = shells.iter().filter(|s| s.enabled).count();
     let installed_shells = shells.iter().filter(|s| s.installed).count();
 
@@ -769,13 +652,13 @@ fn check_starship(out: &mut Vec<CheckResult>) {
                 "Install starship to use the Starship Studio page (optional for Hyprland alone)."
                     .into(),
             ),
-            fix_command: Some(crate::starship::install_hint().into()),
+            fix_command: Some(crate::experimental::starship::install_hint().into()),
         });
     } else {
         out.push(CheckResult {
             category: "Starship",
             title: "starship binary".into(),
-            detail: format!("starship is installed — {}", crate::starship::status_label()),
+            detail: format!("starship is installed — {}", crate::experimental::starship::status_label()),
             severity: Severity::Ok,
             fix_hint: None,
             fix_command: None,

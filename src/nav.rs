@@ -48,14 +48,6 @@ pub const NAV: &[NavSection] = &[
                 dev_only: false,
             },
             NavItem {
-                id: "via",
-                icon: "⬡",
-                label: "VIA keymap",
-                subtitle: "Experimental · Hardware remaps over USB",
-                keywords: "via qmk vial hardware keymap keyboard definition experimental",
-                dev_only: true,
-            },
-            NavItem {
                 id: "variables",
                 icon: "⟨⟩",
                 label: "Variables",
@@ -113,7 +105,7 @@ pub const NAV: &[NavSection] = &[
                 icon: "▥",
                 label: "Layer rules",
                 subtitle: "Bars and overlays",
-                keywords: "layer waybar",
+                keywords: "layer bar overlay",
                 dev_only: false,
             },
         ],
@@ -180,51 +172,6 @@ pub const NAV: &[NavSection] = &[
         ],
     },
     NavSection {
-        title: "Desktop",
-        items: &[
-            NavItem {
-                id: "wallpaper",
-                icon: "🖼",
-                label: "Wallpaper",
-                subtitle: "awww backgrounds",
-                keywords: "wallpaper background image",
-                dev_only: false,
-            },
-            NavItem {
-                id: "waybar",
-                icon: "━",
-                label: "Waybar",
-                subtitle: "Bar layout and style",
-                keywords: "waybar status bar",
-                dev_only: false,
-            },
-            NavItem {
-                id: "rofi",
-                icon: "⌕",
-                label: "Rofi",
-                subtitle: "Launcher theme and modes",
-                keywords: "rofi launcher dmenu theme rasi",
-                dev_only: false,
-            },
-            NavItem {
-                id: "rofi-apps",
-                icon: "▦",
-                label: "Rofi Apps",
-                subtitle: "Clipboard, power, scripts",
-                keywords: "rofi apps clipboard power wifi script menu",
-                dev_only: false,
-            },
-            NavItem {
-                id: "starship",
-                icon: "❯",
-                label: "Starship",
-                subtitle: "Prompt and shell install",
-                keywords: "starship prompt shell zsh fish bash nushell",
-                dev_only: false,
-            },
-        ],
-    },
-    NavSection {
         title: "System",
         items: &[
             NavItem {
@@ -233,22 +180,6 @@ pub const NAV: &[NavSection] = &[
                 label: "Health",
                 subtitle: "Session diagnostics",
                 keywords: "health diagnose check",
-                dev_only: false,
-            },
-            NavItem {
-                id: "screenshare",
-                icon: "⏺",
-                label: "Screenshare",
-                subtitle: "Portal and PipeWire",
-                keywords: "screenshare portal pipewire",
-                dev_only: false,
-            },
-            NavItem {
-                id: "audio",
-                icon: "♪",
-                label: "Audio",
-                subtitle: "Volume and devices",
-                keywords: "audio sound volume pulse",
                 dev_only: false,
             },
             NavItem {
@@ -266,6 +197,59 @@ pub const NAV: &[NavSection] = &[
                 subtitle: "Backup and restore as JSON",
                 keywords: "import export backup restore json bundle settings",
                 dev_only: false,
+            },
+        ],
+    },
+    NavSection {
+        title: "Experimental",
+        items: &[
+            NavItem {
+                id: "wallpaper",
+                icon: "🖼",
+                label: "Wallpaper",
+                subtitle: "Requires Developer mode · awww backgrounds",
+                keywords: "wallpaper background image experimental",
+                dev_only: true,
+            },
+            NavItem {
+                id: "waybar",
+                icon: "━",
+                label: "Waybar",
+                subtitle: "Requires Developer mode · bar layout and style",
+                keywords: "waybar status bar experimental",
+                dev_only: true,
+            },
+            NavItem {
+                id: "starship",
+                icon: "❯",
+                label: "Starship",
+                subtitle: "Requires Developer mode · shell prompt",
+                keywords: "starship prompt shell zsh fish bash experimental",
+                dev_only: true,
+            },
+            NavItem {
+                id: "via",
+                icon: "⬡",
+                label: "VIA keymap",
+                subtitle: "Requires Developer mode · hardware remaps over USB",
+                keywords: "via qmk vial hardware keymap keyboard definition experimental",
+                dev_only: true,
+            },
+            NavItem {
+                id: "screenshare",
+                icon: "⏺",
+                label: "Screenshare",
+                subtitle: "Requires Developer mode · portal and PipeWire",
+                keywords: "screenshare portal pipewire experimental",
+                dev_only: true,
+            },
+            NavItem {
+                id: "audio",
+                icon: "♪",
+                label: "Audio",
+                subtitle: "Requires Developer mode · volume and devices",
+                keywords: "audio sound volume pulse experimental",
+                dev_only: true,
             },
         ],
     },
@@ -287,8 +271,11 @@ pub fn page_chrome_title(page_id: &str) -> &'static str {
     for section in NAV {
         for item in section.items {
             if item.id == page_id {
-                return if item.id == "via" {
-                    "VIA keymap (experimental)"
+                return if item.dev_only {
+                    match item.id {
+                        "via" => "VIA keymap (experimental)",
+                        _ => item.label,
+                    }
                 } else {
                     item.label
                 };

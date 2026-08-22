@@ -363,8 +363,8 @@ pub fn build_ui(app: &Application) {
 
     let health = crate::health_ui::build_health_page(Rc::clone(&status_cb), prefs.developer_mode);
     let logs = crate::logs_ui::build_logs_page(Rc::clone(&status_cb));
-    let screenshare = crate::screenshare_ui::build_screenshare_page(Rc::clone(&status_cb));
-    let audio_page = crate::audio_ui::build_audio_page(Rc::clone(&status_cb));
+    let screenshare = crate::experimental::screenshare::build_screenshare_page(Rc::clone(&status_cb));
+    let audio_page = crate::experimental::audio::build_audio_page(Rc::clone(&status_cb));
     let bundle_page = crate::bundle_ui::build_bundle_page(
         Rc::clone(&shared_collection),
         Rc::clone(&reload_proxy),
@@ -372,17 +372,10 @@ pub fn build_ui(app: &Application) {
         &window,
     );
     let wallpaper_page =
-        crate::wallpaper_ui::build_wallpaper_page(&window, Rc::clone(&status_cb));
-    let via_page = crate::via_ui::build_via_page(&window, Rc::clone(&status_cb));
-    let waybar_page = crate::waybar_ui::build_waybar_page(&window, Rc::clone(&status_cb));
-    let rofi_page = crate::rofi_ui::build_rofi_page(Rc::clone(&status_cb));
-    let rofi_apps_page = crate::rofi_apps_ui::build_rofi_apps_page(
-        &window,
-        Rc::clone(&shared_collection),
-        Rc::clone(&reload_proxy),
-        Rc::clone(&status_cb),
-    );
-    let starship_page = crate::starship_ui::build_starship_page(Rc::clone(&status_cb));
+        crate::experimental::wallpaper::build_wallpaper_page(&window, Rc::clone(&status_cb));
+    let via_page = crate::experimental::via::build_via_page(&window, Rc::clone(&status_cb));
+    let waybar_page = crate::experimental::waybar::build_waybar_page(&window, Rc::clone(&status_cb));
+    let starship_page = crate::experimental::starship::build_starship_page(Rc::clone(&status_cb));
     let lookfeel_page = crate::lookfeel_ui::build_lookfeel_page(
         &window,
         Rc::clone(&shared_collection),
@@ -469,8 +462,6 @@ pub fn build_ui(app: &Application) {
     stack.add_named(&settings_hub, Some("settings"));
     stack.add_named(&wallpaper_page.page, Some("wallpaper"));
     stack.add_named(&waybar_page.page, Some("waybar"));
-    stack.add_named(&rofi_page.page, Some("rofi"));
-    stack.add_named(&rofi_apps_page.page, Some("rofi-apps"));
     stack.add_named(&starship_page.page, Some("starship"));
     stack.add_named(&system_hub, Some("system"));
     stack.set_visible_child_name("overview");
@@ -485,9 +476,11 @@ pub fn build_ui(app: &Application) {
         let header_title = header_title.clone();
         let sidebar = Rc::clone(&sidebar);
         Rc::new(move |id: &str| {
-            let id = if id == "via" && !developer_mode.get() {
+            let id = if id == "home" {
                 "overview"
-            } else if id == "home" {
+            } else if crate::nav::find_item(id).is_some_and(|item| item.dev_only)
+                && !developer_mode.get()
+            {
                 "overview"
             } else {
                 id
@@ -849,13 +842,16 @@ pub fn build_ui(app: &Application) {
             actions.insert(4, crate::palette::action_health());
             palette.set_actions(actions);
 
-            if !enabled && current_page.borrow().as_str() == "via" {
+            if !enabled
+                && crate::nav::find_item(current_page.borrow().as_str())
+                    .is_some_and(|item| item.dev_only)
+            {
                 navigate_to("overview");
             }
             status_label.set_text(if enabled {
-                "Developer mode on — experimental pages unlocked."
+                "Developer mode on — Experimental section unlocked."
             } else {
-                "Developer mode off — experimental pages hidden."
+                "Developer mode off — Experimental section hidden."
             });
         }
     });
@@ -1998,23 +1994,6 @@ fn apply_app_css() {
             font-weight: 600;
         }
 
-        .hyprbinds-rofi-preview {
-            background-color: alpha(currentColor, 0.04);
-            border: 1px solid alpha(currentColor, 0.1);
-            border-radius: 12px;
-            padding: 16px;
-            min-height: 160px;
-        }
-        .hyprbinds-rofi-theme-row {
-            padding: 8px 4px;
-        }
-        .hyprbinds-rofi-swatch {
-            border-radius: 6px;
-            border: 1px solid alpha(currentColor, 0.25);
-            min-width: 18px;
-            min-height: 18px;
-        }
-
         .hyprbinds-starship-preview {
             background-color: alpha(currentColor, 0.04);
             border: 1px solid alpha(currentColor, 0.1);
@@ -2219,16 +2198,6 @@ fn resolve_nav_destination(id: &str) -> NavDestination {
         "waybar" => NavDestination {
             stack_id: "waybar",
             page_id: "waybar",
-            tab: None,
-        },
-        "rofi" => NavDestination {
-            stack_id: "rofi",
-            page_id: "rofi",
-            tab: None,
-        },
-        "rofi-apps" => NavDestination {
-            stack_id: "rofi-apps",
-            page_id: "rofi-apps",
             tab: None,
         },
         "starship" => NavDestination {
