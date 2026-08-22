@@ -1,13 +1,14 @@
 //! Unified Vial control center.
 //!
 //! This is the native Hyprbind surface for keyboard firmware state. It combines
-//! the Hyprland-aware visualizer with the existing native VIA/Vial editor and
-//! keeps an upstream Vial GUI launcher as a compatibility escape hatch while
-//! remaining protocol surfaces are ported to Rust.
+//! the Hyprland-aware physical visualizer, the existing VIA/Vial keymap/RGB
+//! editor, and the advanced Vial protocol editors. The pinned upstream GUI is
+//! retained as a reference/compatibility companion, not as a parity crutch.
 
 use crate::bind::BindCollection;
 use crate::config;
 use crate::experimental::via;
+use crate::vial_advanced_ui;
 use crate::vial_native;
 use crate::vial_visualizer;
 use gtk4::prelude::*;
@@ -73,11 +74,19 @@ pub fn build(app: &Application) {
         Some(&Label::new(Some("Hyprland Sync"))),
     );
 
-    // Reuse the mature native editor instead of duplicating firmware controls.
-    // It already contains Keymap, Lighting, Studio, Tap Dance, Combos and
-    // Overrides, with Vial definition auto-fetch and stock-VIA JSON fallback.
+    // Mature native VIA/Vial editor: Keymap, Lighting, Studio, Tap Dance,
+    // Combos and Key Overrides, including onboard Vial definition discovery
+    // and stock-VIA JSON fallback.
     let native = via::build_via_page(&window, Rc::clone(&status));
     notebook.append_page(&native.page, Some(&Label::new(Some("Firmware"))));
+
+    // Remaining Vial-native surfaces that do not belong in the generic VIA
+    // editor: macros, encoders, Alt Repeat, QMK Settings, security and matrix.
+    let advanced = vial_advanced_ui::build_page(Rc::clone(&status));
+    notebook.append_page(
+        &advanced.page,
+        Some(&Label::new(Some("Advanced Vial"))),
+    );
 
     notebook.append_page(
         &build_capabilities_page(Rc::clone(&status)),
@@ -86,7 +95,7 @@ pub fn build(app: &Application) {
 
     notebook.append_page(
         &build_upstream_page(Rc::clone(&status)),
-        Some(&Label::new(Some("Upstream Vial"))),
+        Some(&Label::new(Some("Upstream Reference"))),
     );
 
     let body = GtkBox::builder()
@@ -113,7 +122,7 @@ fn build_capabilities_page(status: Rc<dyn Fn(String)>) -> GtkBox {
         .build();
     let description = Label::builder()
         .label(
-            "Read-only probe of the native Rust protocol surface. It reports macro storage and Vial QMK settings exposed by each connected VIA/Vial HID interface. Encoder get/set support is provided by the backend and is used when a board definition exposes encoder positions.",
+            "Read-only probe of the native Rust protocol surface. It reports macro storage and Vial QMK settings exposed by each connected VIA/Vial HID interface. Encoder, dynamic-entry, security and matrix editors live in Advanced Vial and only activate when the firmware exposes them.",
         )
         .halign(Align::Start)
         .xalign(0.0)
@@ -181,7 +190,7 @@ fn build_capabilities_page(status: Rc<dyn Fn(String)>) -> GtkBox {
                                     format!(" ({:?})", snapshot.qmk_setting_ids)
                                 }
                             ));
-                            output.push_str("  encoders: native get/set backend available\n");
+                            output.push_str("  advanced Vial: encoder / Alt Repeat / security / matrix editors available when firmware advertises them\n");
                         }
                         Err(err) => output.push_str(&format!("  probe failed: {err}\n")),
                     }
@@ -220,16 +229,14 @@ fn build_capabilities_page(status: Rc<dyn Fn(String)>) -> GtkBox {
 
 fn build_upstream_page(status: Rc<dyn Fn(String)>) -> GtkBox {
     let title = Label::builder()
-        .label("Official Vial compatibility bridge")
+        .label("Official Vial reference checkout")
         .halign(Align::Start)
         .xalign(0.0)
         .css_classes(["title-3"])
         .build();
     let description = Label::builder()
         .label(
-            "Hyprbinds is porting Vial features natively in Rust. Until native parity is complete, \
-             the pinned official GPL-2.0 Vial GUI can be bootstrapped into third_party/vial-gui and \
-             launched here for every board-specific/upstream feature without leaving this checkout.",
+            "The planned Vial feature surface is implemented natively in Hyprbinds. The pinned official GPL-2.0 Vial GUI remains available as a protocol/UI reference and for firmware-specific behavior outside Hyprbinds' declared scope.",
         )
         .halign(Align::Start)
         .xalign(0.0)
@@ -245,20 +252,16 @@ fn build_upstream_page(status: Rc<dyn Fn(String)>) -> GtkBox {
 
     let launch = Button::builder()
         .label("Launch official Vial GUI")
-        .css_classes(["suggested-action"])
         .halign(Align::Start)
         .build();
     launch.connect_clicked(move |_| match launch_upstream_vial() {
-        Ok(()) => status("Launched official Vial GUI companion".into()),
+        Ok(()) => status("Launched pinned official Vial reference GUI".into()),
         Err(err) => status(format!("{err}. Run: bash scripts/sync-vial-upstream.sh")),
     });
 
     let hint = Label::builder()
         .label(
-            "Native today: exact geometry, layers, live keymap/remap, lighting, per-key RGB Studio, \
-             tap dance, combos, key overrides, macro-buffer transport, encoder transport, QMK settings, \
-             and Hyprland chord correlation. The upstream bridge covers Vial surfaces that are still \
-             being promoted into first-class native GTK editors.",
+            "Native Hyprbinds surface: Vial-first self-description, exact keyboard geometry, live layers/keymap/remap, host-key/Hyprland bind overlay and editing, lighting, per-key RGB Studio, Tap Dance, Combos, Key Overrides, advanced macros, Vial encoders, Alt Repeat, QMK Settings, lock/unlock security, safe matrix testing, and stock VIA definition fallback.",
         )
         .halign(Align::Start)
         .xalign(0.0)
