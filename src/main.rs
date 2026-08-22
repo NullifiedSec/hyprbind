@@ -32,6 +32,7 @@ mod ui;
 mod ui_prefs;
 mod variables;
 mod vial_control_center;
+mod vial_native;
 mod vial_sync;
 mod vial_visualizer;
 mod vial_visualizer_window;
