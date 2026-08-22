@@ -8,6 +8,7 @@
 use crate::bind::BindCollection;
 use crate::config;
 use crate::experimental::via;
+use crate::vial_native;
 use crate::vial_visualizer;
 use gtk4::prelude::*;
 use gtk4::{
@@ -79,6 +80,11 @@ pub fn build(app: &Application) {
     notebook.append_page(&native.page, Some(&Label::new(Some("Firmware"))));
 
     notebook.append_page(
+        &build_capabilities_page(Rc::clone(&status)),
+        Some(&Label::new(Some("Capabilities"))),
+    );
+
+    notebook.append_page(
         &build_upstream_page(Rc::clone(&status)),
         Some(&Label::new(Some("Upstream Vial"))),
     );
@@ -96,6 +102,120 @@ pub fn build(app: &Application) {
 
     window.set_child(Some(&body));
     window.present();
+}
+
+fn build_capabilities_page(status: Rc<dyn Fn(String)>) -> GtkBox {
+    let title = Label::builder()
+        .label("Native protocol capability probe")
+        .halign(Align::Start)
+        .xalign(0.0)
+        .css_classes(["title-3"])
+        .build();
+    let description = Label::builder()
+        .label(
+            "Read-only probe of the native Rust protocol surface. It reports macro storage and Vial QMK settings exposed by each connected VIA/Vial HID interface. Encoder get/set support is provided by the backend and is used when a board definition exposes encoder positions.",
+        )
+        .halign(Align::Start)
+        .xalign(0.0)
+        .wrap(true)
+        .build();
+    let report = Label::builder()
+        .label("No probe run yet.")
+        .halign(Align::Start)
+        .xalign(0.0)
+        .selectable(true)
+        .wrap(true)
+        .css_classes(["monospace"])
+        .build();
+    let refresh = Button::builder()
+        .label("Probe connected keyboards")
+        .css_classes(["suggested-action"])
+        .halign(Align::Start)
+        .build();
+
+    let run_probe: Rc<dyn Fn()> = {
+        let report = report.clone();
+        let status = Rc::clone(&status);
+        Rc::new(move || match via::discover_devices() {
+            Ok(devices) if devices.is_empty() => {
+                report.set_text("No VIA/Vial HID interfaces detected.");
+                status("Capability probe: no compatible keyboards detected".into());
+            }
+            Ok(devices) => {
+                let mut output = String::new();
+                let mut ok = 0usize;
+                for device in devices {
+                    let name = if device.product.trim().is_empty() {
+                        "keyboard"
+                    } else {
+                        device.product.trim()
+                    };
+                    output.push_str(&format!(
+                        "{name} ({:04x}:{:04x})\n",
+                        device.vendor_id, device.product_id
+                    ));
+                    match vial_native::inspect(device.vendor_id, device.product_id) {
+                        Ok(snapshot) => {
+                            ok += 1;
+                            output.push_str(&format!(
+                                "  macros: {} slots, {} bytes\n",
+                                snapshot
+                                    .macro_count
+                                    .map(|v| v.to_string())
+                                    .unwrap_or_else(|| "unsupported".into()),
+                                snapshot
+                                    .macro_buffer_size
+                                    .map(|v| v.to_string())
+                                    .unwrap_or_else(|| "unsupported".into()),
+                            ));
+                            output.push_str(&format!(
+                                "  qmk settings: {}{}\n",
+                                if snapshot.qmk_settings_supported {
+                                    "supported"
+                                } else {
+                                    "unsupported"
+                                },
+                                if snapshot.qmk_setting_ids.is_empty() {
+                                    String::new()
+                                } else {
+                                    format!(" ({:?})", snapshot.qmk_setting_ids)
+                                }
+                            ));
+                            output.push_str("  encoders: native get/set backend available\n");
+                        }
+                        Err(err) => output.push_str(&format!("  probe failed: {err}\n")),
+                    }
+                    output.push('\n');
+                }
+                report.set_text(output.trim_end());
+                status(format!("Capability probe completed for {ok} keyboard(s)"));
+            }
+            Err(err) => {
+                report.set_text(&format!("Discovery failed: {err}"));
+                status(format!("Capability probe failed: {err}"));
+            }
+        })
+    };
+
+    refresh.connect_clicked({
+        let run_probe = Rc::clone(&run_probe);
+        move |_| run_probe()
+    });
+
+    let page = GtkBox::builder()
+        .orientation(Orientation::Vertical)
+        .spacing(14)
+        .margin_top(18)
+        .margin_bottom(18)
+        .margin_start(18)
+        .margin_end(18)
+        .build();
+    page.append(&title);
+    page.append(&description);
+    page.append(&refresh);
+    page.append(&report);
+    run_probe();
+    page
 }
 
 fn build_upstream_page(status: Rc<dyn Fn(String)>) -> GtkBox {
@@ -128,20 +248,17 @@ fn build_upstream_page(status: Rc<dyn Fn(String)>) -> GtkBox {
         .css_classes(["suggested-action"])
         .halign(Align::Start)
         .build();
-    launch.connect_clicked(move |_| {
-        match launch_upstream_vial() {
-            Ok(()) => status("Launched official Vial GUI companion".into()),
-            Err(err) => status(format!(
-                "{err}. Run: bash scripts/sync-vial-upstream.sh"
-            )),
-        }
+    launch.connect_clicked(move |_| match launch_upstream_vial() {
+        Ok(()) => status("Launched official Vial GUI companion".into()),
+        Err(err) => status(format!("{err}. Run: bash scripts/sync-vial-upstream.sh")),
     });
 
     let hint = Label::builder()
         .label(
             "Native today: exact geometry, layers, live keymap/remap, lighting, per-key RGB Studio, \
-             tap dance, combos, key overrides, and Hyprland chord correlation. The upstream bridge \
-             covers protocol/UI features not yet ported natively, including macros and newer Vial additions.",
+             tap dance, combos, key overrides, macro-buffer transport, encoder transport, QMK settings, \
+             and Hyprland chord correlation. The upstream bridge covers Vial surfaces that are still \
+             being promoted into first-class native GTK editors.",
         )
         .halign(Align::Start)
         .xalign(0.0)
@@ -169,7 +286,10 @@ fn launch_upstream_vial() -> Result<(), String> {
     let root = upstream_root();
     let main = root.join("src/main/python/main.py");
     if !main.is_file() {
-        return Err(format!("Upstream Vial checkout not found at {}", root.display()));
+        return Err(format!(
+            "Upstream Vial checkout not found at {}",
+            root.display()
+        ));
     }
 
     let workdir = main.parent().unwrap_or(Path::new("."));
