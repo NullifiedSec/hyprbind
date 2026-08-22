@@ -203,5 +203,9 @@ fn main() {
     } else {
         app.connect_activate(ui::build_ui);
     }
-    app.run();
+
+    // We own and parse the process command-line above. Passing the original
+    // argv into GApplication would make GTK reject Hyprbind-specific flags
+    // such as --vial-visualizer as unknown options.
+    app.run_with_args(&["hyprbinds"]);
 }
