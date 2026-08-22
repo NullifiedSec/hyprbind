@@ -4,7 +4,7 @@
 
 Hyprbinds is a GTK4 configuration studio for Hyprland. It loads your Lua config, lets you change keybinds, rules, look & feel, monitors, and more, then writes managed sections back with automatic backups.
 
-The Vial integration is being promoted from a disconnected experimental companion into a first-class keyboard subsystem: Hyprbinds can read a Vial keyboard's onboard definition, render its exact physical layout, read its live hardware layers, and correlate physical firmware mappings with the Hyprland binds they ultimately trigger.
+The Vial integration is a first-class keyboard subsystem: Hyprbinds can ask a Vial keyboard to describe itself, render its exact physical layout, read live firmware layers, distinguish firmware-level behavior from host-visible keys, and correlate those physical mappings with the Hyprland binds they ultimately trigger.
 
 ## Features
 
@@ -18,43 +18,54 @@ The Vial integration is being promoted from a disconnected experimental companio
 
 ### Vial / VIA keyboard control
 
-Native Rust/GTK surfaces currently include:
+Native Rust/GTK surfaces include:
 
-- Vial USB discovery and onboard-definition fetch
-- Exact physical keyboard geometry
+- Vial USB discovery, protocol/UID detection, and onboard-definition fetch
+- Exact physical keyboard geometry from the board's own Vial definition
 - Dynamic keymap layer reads and live remapping
-- Hyprland-aware physical-key visualizer
-- SUPER / CTRL / ALT / SHIFT chord correlation
+- Transparent-key resolution through lower hardware layers
+- Hardware-action classification: host keys/modifiers are kept distinct from `MO`, `LT`, `MT`, Tap Dance, macros, custom/opaque firmware actions, and disabled keys
+- Hyprland-aware physical-key visualizer with SUPER / CTRL / ALT / SHIFT chord construction
+- Hyprland variable expansion and submap-aware bind matching
+- Bound-key highlighting and duplicate-chord/conflict highlighting
+- Add/edit Hyprland binds directly from a physical key through the normal atomic backup writer
 - Lighting controls
 - Per-key RGB / animation Studio
 - Tap Dance editor
 - Combo editor
 - Key Override editor
-- Stock VIA definition JSON fallback
+- Advanced macro read/edit/write/reset, including Vial v2+ Tap/Down/Up/Delay bytecode and extended 16-bit keycodes
+- Interruption-safe macro writes using QMK's invalid-buffer sentinel protocol
+- Vial-native encoder read/write across layers
+- Alt Repeat read/write with all Vial option flags
+- Vial QMK Settings discovery, read/write for known wire widths, and reset
+- Vial security status, required-unlock-key display, unlock progress, and explicit lock
+- Safe live matrix tester gated on Vial protocol support and unlocked state
+- Stock VIA definition JSON fallback for non-self-describing VIA boards
 - Vial diagnostics via `--vial-status`
 
-The unified development entry point is:
+The unified keyboard entry point is:
 
 ```bash
 cargo run -- --vial-control-center
 ```
 
-The original focused visualizer remains available while integration work continues:
+The focused Hyprland/keyboard visualizer is also available:
 
 ```bash
 cargo run -- --vial-visualizer
 ```
 
-### Upstream Vial compatibility bridge
+### Pinned upstream Vial reference
 
-Hyprbinds targets feature parity with the official Vial GUI while adding Hyprland-aware behavior upstream Vial does not provide. During the native Rust port, a pinned official Vial checkout can be bootstrapped as a compatibility escape hatch for protocol/UI features not yet ported natively, such as macros and newer Vial additions.
+The planned native Hyprbinds Vial feature surface no longer relies on the official GUI as a parity fallback. A pinned official Vial checkout is still supported as a reference/compatibility companion for firmware-specific behavior outside Hyprbinds' declared scope and for comparing protocol behavior during development.
 
 ```bash
 bash scripts/sync-vial-upstream.sh
 cargo run -- --vial-control-center
 ```
 
-The compatibility checkout is pinned to official `vial-kb/vial-gui` commit:
+The checkout is pinned to official `vial-kb/vial-gui` commit:
 
 ```text
 aef8222a2d0429a183b2ed692d5f9efcfd383f08
@@ -110,7 +121,7 @@ cp packaging/dev.hyprbinds.Hyprbinds.desktop ~/.local/share/applications/
 
 Hyprbinds stands on a very good pile of open-source giants. Vial is the canonical Vial-firmware compatibility target; Vial itself is built around the QMK ecosystem, and Hyprbinds also supports VIA dynamic-keymap compatibility. Hyprbinds is not an official Vial, VIA, QMK, or Hyprland project.
 
-Detailed attribution and upstream links live in `THIRD_PARTY_NOTICES.md`.
+Detailed attribution, pinned references, and upstream links live in `THIRD_PARTY_NOTICES.md`.
 
 ## License
 
