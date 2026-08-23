@@ -12,13 +12,12 @@ pub fn apply() {
         @define-color hb_accent #00d4ff;
         @define-color hb_accent_hover #35e0ff;
         @define-color hb_accent_soft alpha(#00d4ff, 0.12);
-        @define-color hb_accent_faint alpha(#00d4ff, 0.055);
         @define-color hb_surface alpha(currentColor, 0.032);
         @define-color hb_surface_hover alpha(currentColor, 0.055);
         @define-color hb_border alpha(currentColor, 0.085);
         @define-color hb_border_strong alpha(currentColor, 0.14);
 
-        /* ---------- Global rhythm ---------- */
+        /* Global rhythm */
         window {
             font-size: 1em;
         }
@@ -39,14 +38,14 @@ pub fn apply() {
             transition: background-color 100ms ease, box-shadow 100ms ease;
         }
 
-        button:hover:not(.suggested-action):not(.destructive-action) {
-            background-color: hb_surface_hover;
+        button:hover {
+            background-color: @hb_surface_hover;
         }
 
         entry {
             padding: 4px 10px;
             background-color: alpha(currentColor, 0.025);
-            border: 1px solid hb_border;
+            border: 1px solid @hb_border;
         }
 
         entry:focus {
@@ -57,7 +56,7 @@ pub fn apply() {
         dropdown > button,
         dropdown button.toggle,
         spinbutton {
-            border: 1px solid hb_border;
+            border: 1px solid @hb_border;
             background-color: alpha(currentColor, 0.025);
         }
 
@@ -70,7 +69,7 @@ pub fn apply() {
             opacity: 0.45;
         }
 
-        /* ---------- App shell ---------- */
+        /* App shell */
         .hyprbinds-shell {
             background-color: @window_bg_color;
         }
@@ -86,7 +85,7 @@ pub fn apply() {
         .hyprbinds-header {
             min-height: 54px;
             padding: 10px 26px;
-            border-bottom: 1px solid hb_border;
+            border-bottom: 1px solid @hb_border;
             background-color: alpha(@window_bg_color, 0.96);
         }
 
@@ -107,8 +106,8 @@ pub fn apply() {
             font-size: 0.8em;
             padding: 3px 8px;
             border-radius: 999px;
-            background-color: hb_surface;
-            border: 1px solid hb_border;
+            background-color: @hb_surface;
+            border: 1px solid @hb_border;
         }
 
         .hyprbinds-header-toggle {
@@ -120,12 +119,12 @@ pub fn apply() {
             padding-top: 6px;
         }
 
-        /* ---------- Sidebar ---------- */
+        /* Sidebar */
         .hyprbinds-sidebar {
             min-width: 252px;
             max-width: 286px;
             padding: 16px 12px 14px 14px;
-            border-right: 1px solid hb_border;
+            border-right: 1px solid @hb_border;
             background-image: linear-gradient(
                 to bottom,
                 alpha(@hb_accent, 0.045),
@@ -139,7 +138,7 @@ pub fn apply() {
             margin: 0 3px 8px 3px;
             border-radius: 10px;
             background-color: alpha(currentColor, 0.035);
-            border: 1px solid hb_border;
+            border: 1px solid @hb_border;
         }
 
         .hyprbinds-sidebar-filter:focus {
@@ -181,12 +180,12 @@ pub fn apply() {
         }
 
         list.hyprbinds-sidebar-list > row.hyprbinds-sidebar-row:hover {
-            background-color: hb_surface_hover;
+            background-color: @hb_surface_hover;
         }
 
         list.hyprbinds-sidebar-list > row.hyprbinds-sidebar-row:selected,
         list.hyprbinds-sidebar-list > row.hyprbinds-sidebar-row.nav-active {
-            background-color: hb_accent_soft;
+            background-color: @hb_accent_soft;
             box-shadow: inset 3px 0 0 0 @hb_accent;
         }
 
@@ -195,7 +194,7 @@ pub fn apply() {
             opacity: 1;
         }
 
-        /* ---------- Page hierarchy ---------- */
+        /* Page hierarchy */
         .hyprbinds-page {
             padding: 6px 0 2px 0;
         }
@@ -222,8 +221,8 @@ pub fn apply() {
             padding: 8px;
             margin: 2px 0 7px 0;
             border-radius: 12px;
-            border: 1px solid hb_border;
-            background-color: hb_surface;
+            border: 1px solid @hb_border;
+            background-color: @hb_surface;
         }
 
         .hyprbinds-toolbar entry {
@@ -237,8 +236,8 @@ pub fn apply() {
 
         notebook.hyprbinds-hub > header tabs,
         notebook.hyprbinds-bind-tabs > header tabs {
-            background-color: hb_surface;
-            border: 1px solid hb_border;
+            background-color: @hb_surface;
+            border: 1px solid @hb_border;
             border-radius: 10px;
             padding: 3px;
         }
@@ -257,16 +256,16 @@ pub fn apply() {
 
         notebook.hyprbinds-hub > header tab:checked,
         notebook.hyprbinds-bind-tabs > header tab:checked {
-            background-color: hb_accent_soft;
+            background-color: @hb_accent_soft;
             box-shadow: inset 0 -2px 0 0 @hb_accent;
         }
 
-        /* ---------- Lists and information surfaces ---------- */
+        /* Lists and information surfaces */
         list.boxed-list {
             margin-top: 5px;
             border-radius: 14px;
-            background-color: hb_surface;
-            border: 1px solid hb_border;
+            background-color: @hb_surface;
+            border: 1px solid @hb_border;
             box-shadow: 0 1px 2px alpha(#000000, 0.12);
         }
 
@@ -275,11 +274,11 @@ pub fn apply() {
         }
 
         list.boxed-list > row:hover {
-            background-color: hb_surface_hover;
+            background-color: @hb_surface_hover;
         }
 
         list.boxed-list > row:selected {
-            background-color: hb_accent_soft;
+            background-color: @hb_accent_soft;
             box-shadow: inset 3px 0 0 0 @hb_accent;
         }
 
@@ -323,14 +322,14 @@ pub fn apply() {
             margin-bottom: 5px;
         }
 
-        /* ---------- Settings cards ---------- */
+        /* Settings cards */
         .hyprbinds-settings-card,
         .hyprbinds-dialog-section,
         .hyprbinds-via-frame,
         .hyprbinds-starship-preview,
         .hyprbinds-waybar-preview {
-            background-color: hb_surface;
-            border: 1px solid hb_border;
+            background-color: @hb_surface;
+            border: 1px solid @hb_border;
             border-radius: 15px;
             box-shadow: 0 1px 2px alpha(#000000, 0.10);
         }
@@ -365,7 +364,7 @@ pub fn apply() {
             opacity: 0.52;
         }
 
-        /* ---------- Primary / destructive actions ---------- */
+        /* Primary / destructive actions */
         button.suggested-action {
             min-height: 32px;
             padding: 4px 14px;
@@ -394,7 +393,7 @@ pub fn apply() {
             background-color: alpha(@error_color, 0.13);
         }
 
-        /* ---------- Status / footer ---------- */
+        /* Status / footer */
         .hyprbinds-status-sep {
             margin-top: 7px;
             opacity: 0.32;
@@ -410,10 +409,10 @@ pub fn apply() {
         .hyprbinds-sticky-footer {
             padding: 8px 2px 0 2px;
             background-color: alpha(@window_bg_color, 0.94);
-            border-top: 1px solid hb_border;
+            border-top: 1px solid @hb_border;
         }
 
-        /* ---------- Command palette ---------- */
+        /* Command palette */
         .hyprbinds-palette-root {
             background-color: @window_bg_color;
         }
@@ -425,7 +424,7 @@ pub fn apply() {
             font-size: 1.02em;
         }
 
-        /* ---------- Diagnostics ---------- */
+        /* Diagnostics */
         .hyprbinds-health-badge,
         .hyprbinds-conflict-badge {
             border-radius: 999px;
@@ -434,8 +433,8 @@ pub fn apply() {
 
         .curve-graph {
             border-radius: 14px;
-            border-color: hb_border_strong;
-            background-color: hb_surface;
+            border-color: @hb_border_strong;
+            background-color: @hb_surface;
         }
     "#;
 
