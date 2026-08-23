@@ -37,8 +37,42 @@ mod writer;
 
 use gtk4::prelude::*;
 use gtk4::Application;
+use std::rc::Rc;
 
 const APP_ID: &str = "dev.hyprbinds.Hyprbinds";
+
+fn find_nav_row(root: &gtk4::Widget, page: &str) -> Option<gtk4::ListBoxRow> {
+    if root.widget_name().as_str() == page {
+        if let Ok(row) = root.clone().downcast::<gtk4::ListBoxRow>() {
+            return Some(row);
+        }
+    }
+
+    let mut child = root.first_child();
+    while let Some(widget) = child {
+        if let Some(row) = find_nav_row(&widget, page) {
+            return Some(row);
+        }
+        child = widget.next_sibling();
+    }
+    None
+}
+
+fn open_setting_page(window: &gtk4::Window, id: String) {
+    let Some(rest) = id.strip_prefix("setting:") else {
+        return;
+    };
+    let Some((_, page)) = rest.rsplit_once(':') else {
+        return;
+    };
+    let root: gtk4::Widget = window.clone().upcast();
+    let Some(row) = find_nav_row(&root, page) else {
+        return;
+    };
+    if let Some(list) = row.parent().and_then(|w| w.downcast::<gtk4::ListBox>().ok()) {
+        list.select_row(Some(&row));
+    }
+}
 
 fn main() {
     let args: Vec<String> = std::env::args().skip(1).collect();
@@ -195,6 +229,14 @@ fn main() {
     app.connect_activate(|app| {
         ui::build_ui(app);
         design::apply();
+
+        if let Some(window) = app.active_window() {
+            let search_window = window.clone();
+            let _setting_search = palette::attach_setting_search(
+                &window,
+                Rc::new(move |id| open_setting_page(&search_window, id)),
+            );
+        }
     });
     app.run();
 }
