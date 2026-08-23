@@ -120,6 +120,12 @@ fn page_guidance(title: &str) -> Option<&'static str> {
         "Window rules" => Some(
             "Search existing rules, then select one to edit or delete it. Add creates a rule for a new window match.",
         ),
+        "Workspace rules" => Some(
+            "Start with the workspace and, optionally, a monitor. Gaps, layout, persistence, borders and shadows can be layered on only when you need them.",
+        ),
+        "Layer rules" => Some(
+            "Pick a running layer namespace when possible, then enable only the effects you want. Regex, ordering and custom animation remain available for advanced cases.",
+        ),
         "Environment" => Some(
             "Environment entries are key/value pairs exported to your Hyprland session. Select an entry to change it.",
         ),
@@ -129,8 +135,122 @@ fn page_guidance(title: &str) -> Option<&'static str> {
         "Startup" => Some(
             "Startup entries run when Hyprland starts. Keep one command per entry so they stay easy to manage.",
         ),
+        "Monitors" => Some(
+            "For most displays, pick the output and use preferred mode, automatic position and scale 1. Only set transform, mirror or a custom mode when the simple setup is not enough.",
+        ),
+        "Devices" => Some(
+            "Pick the device first. Usually sensitivity plus natural scrolling/tap-to-click is enough; keyboard layout and low-level overrides can stay untouched unless that device needs them.",
+        ),
+        "Animations" => Some(
+            "Choose what should animate, pick a curve, then tune speed. Style strings are optional and only needed for effects such as pop-in or slide variants.",
+        ),
+        "Curves" => Some(
+            "Start from a preset and preview the graph. Drag Bézier handles for feel, or choose Spring when you specifically want physical bounce; exact values remain editable.",
+        ),
+        "Gestures" => Some(
+            "Think in three steps: finger count, direction, action. Modifiers and scale are optional refinements, not required for a basic swipe gesture.",
+        ),
         _ => None,
     }
+}
+
+fn complex_page_help(title: &str) -> Option<(&'static str, &'static [&'static str])> {
+    match title {
+        "Monitors" => Some((
+            "Common setup",
+            &[
+                "Output → pick the connector reported by Hyprland (for example DP-1).",
+                "Mode → preferred is the safest default; use 1920x1080@144 only when you need an exact mode.",
+                "Position → auto lets Hyprland place it; use 0x0-style coordinates for manual layouts.",
+                "Scale → 1 is normal size. Values above 1 enlarge the desktop on high-DPI displays.",
+                "Transform 0 is normal orientation. Leave mirror and disabled alone unless you explicitly need them.",
+            ],
+        )),
+        "Devices" => Some((
+            "Common setup",
+            &[
+                "Pick the physical device instead of typing its internal name.",
+                "Sensitivity is the main pointer-speed control; small changes are easier to tune than large jumps.",
+                "Natural scroll, tap-to-click and disable-while-typing are ordinary on/off choices.",
+                "Keyboard layout/options only affect this device, so leave them empty to inherit the global configuration.",
+            ],
+        )),
+        "Animations" => Some((
+            "Build an animation",
+            &[
+                "Leaf = what moves (windows, fade, workspaces, etc.). Use the provided leaf picker when possible.",
+                "Curve = how motion accelerates. Existing curves are selectable; you do not need to type curve names.",
+                "Speed controls Bézier animations. Spring curves intentionally ignore the speed field.",
+                "Style is optional. Suggested style buttons appear for leaves that support variants.",
+            ],
+        )),
+        "Curves" => Some((
+            "Choose by feel",
+            &[
+                "Bézier is the normal choice for smooth UI motion; start from a preset and drag the handles.",
+                "Spring is for bounce/physical motion and exposes mass, stiffness and dampening.",
+                "The graph is the source of truth: tune visually first, then use exact numeric fields only when you need precision.",
+            ],
+        )),
+        "Gestures" => Some((
+            "Build a gesture",
+            &[
+                "Fingers → how many fingers must be on the trackpad.",
+                "Direction → horizontal/vertical or the supported directional form for the action.",
+                "Action → what the gesture actually does, such as changing workspace.",
+                "Mods and Scale are optional advanced refinements; a useful gesture does not require either.",
+            ],
+        )),
+        "Workspace rules" => Some((
+            "Start simple",
+            &[
+                "Workspace identifies the target (number, name or selector).",
+                "Monitor pins that workspace to an output; use the monitor picker rather than memorizing connector names.",
+                "Gaps and layout are overrides. Leave them empty to inherit your normal desktop settings.",
+                "Default, Persistent, No border and No shadow are independent switches—only enable the behavior you actually want.",
+            ],
+        )),
+        "Layer rules" => Some((
+            "Start simple",
+            &[
+                "Namespace identifies a bar, launcher or overlay. Pick from running layers whenever possible.",
+                "Blur, No animation and Dim around are direct effects and can be combined.",
+                "Order and custom Animation are advanced overrides; leave them empty unless layering or motion needs explicit control.",
+                "Raw regex matching is still supported for rules that must cover several namespaces.",
+            ],
+        )),
+        _ => None,
+    }
+}
+
+fn build_complex_help(title: &str) -> Option<GtkBox> {
+    let (heading, items) = complex_page_help(title)?;
+    let card = GtkBox::builder()
+        .orientation(Orientation::Vertical)
+        .spacing(SPACE_SM)
+        .margin_top(SPACE_XS)
+        .css_classes(["hyprbinds-settings-card", "hyprbinds-guided-help"])
+        .build();
+    card.append(
+        &Label::builder()
+            .label(heading)
+            .halign(Align::Start)
+            .xalign(0.0)
+            .css_classes(["hyprbinds-settings-card-title"])
+            .build(),
+    );
+    for item in items {
+        card.append(
+            &Label::builder()
+                .label(format!("• {item}"))
+                .halign(Align::Start)
+                .xalign(0.0)
+                .wrap(true)
+                .css_classes(["hyprbinds-settings-sub"])
+                .build(),
+        );
+    }
+    Some(card)
 }
 
 /// Standard workspace page: title, concise explanation, actions, then content.
@@ -199,6 +319,10 @@ pub fn page_shell(
             .css_classes(["dim-label", "caption", "hyprbinds-page-guidance"])
             .build();
         page.append(&guide);
+    }
+
+    if let Some(help) = build_complex_help(title) {
+        page.append(&help);
     }
 
     page.append(&canvas);
