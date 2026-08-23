@@ -104,7 +104,31 @@ pub fn mount_sticky_page(body: &impl IsA<gtk4::Widget>, footer_actions: &GtkBox)
     page
 }
 
-/// Modern workspace page: compact title rail, command surface, then content canvas.
+fn page_guidance(title: &str) -> Option<&'static str> {
+    match title {
+        "Binds" => Some(
+            "Search narrows the list instantly. Select a bind to edit or delete it; double-click opens the editor.",
+        ),
+        "Variables" => Some(
+            "Search by variable name or value. Select a variable to edit or delete it; Add creates a new one.",
+        ),
+        "Window rules" => Some(
+            "Search existing rules, then select one to edit or delete it. Add creates a rule for a new window match.",
+        ),
+        "Environment" => Some(
+            "Environment entries are key/value pairs exported to your Hyprland session. Select an entry to change it.",
+        ),
+        "Submaps" => Some(
+            "Submaps are temporary keybind modes. Select one to inspect or edit its bindings.",
+        ),
+        "Startup" => Some(
+            "Startup entries run when Hyprland starts. Keep one command per entry so they stay easy to manage.",
+        ),
+        _ => None,
+    }
+}
+
+/// Standard workspace page: title, concise explanation, actions, then content.
 pub fn page_shell(
     title: &str,
     hint: &str,
@@ -113,11 +137,6 @@ pub fn page_shell(
 ) -> GtkBox {
     toolbar.add_css_class("hyprbinds-toolbar");
 
-    let eyebrow = Label::builder()
-        .label("HYPRLAND")
-        .halign(Align::Start)
-        .css_classes(["hyprbinds-page-eyebrow"])
-        .build();
     let title_label = Label::builder()
         .label(title)
         .halign(Align::Start)
@@ -134,10 +153,9 @@ pub fn page_shell(
 
     let header_text = GtkBox::builder()
         .orientation(Orientation::Vertical)
-        .spacing(3)
+        .spacing(4)
         .hexpand(true)
         .build();
-    header_text.append(&eyebrow);
     header_text.append(&title_label);
     header_text.append(&hint_label);
 
@@ -159,13 +177,25 @@ pub fn page_shell(
 
     let page = GtkBox::builder()
         .orientation(Orientation::Vertical)
-        .spacing(12)
+        .spacing(10)
         .hexpand(true)
         .vexpand(true)
         .css_classes(["hyprbinds-page"])
         .build();
     page.append(&header);
     page.append(toolbar);
+
+    if let Some(guidance) = page_guidance(title) {
+        let guide = Label::builder()
+            .label(guidance)
+            .halign(Align::Start)
+            .xalign(0.0)
+            .wrap(true)
+            .css_classes(["dim-label", "caption"])
+            .build();
+        page.append(&guide);
+    }
+
     page.append(&canvas);
     page
 }
