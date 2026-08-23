@@ -121,10 +121,10 @@ fn page_guidance(title: &str) -> Option<&'static str> {
             "Search existing rules, then select one to edit or delete it. Add creates a rule for a new window match.",
         ),
         "Workspace rules" => Some(
-            "Start with the workspace and, optionally, a monitor. Gaps, layout, persistence, borders and shadows can be layered on only when you need them.",
+            "Target a workspace first. Add monitor, gaps or layout overrides only when that workspace needs different behavior.",
         ),
         "Layer rules" => Some(
-            "Pick a running layer namespace when possible, then enable only the effects you want. Regex, ordering and custom animation remain available for advanced cases.",
+            "Pick a running layer first, choose the visible effect you want, and only use raw matching or ordering for edge cases.",
         ),
         "Environment" => Some(
             "Environment entries are key/value pairs exported to your Hyprland session. Select an entry to change it.",
@@ -136,121 +136,128 @@ fn page_guidance(title: &str) -> Option<&'static str> {
             "Startup entries run when Hyprland starts. Keep one command per entry so they stay easy to manage.",
         ),
         "Monitors" => Some(
-            "For most displays, pick the output and use preferred mode, automatic position and scale 1. Only set transform, mirror or a custom mode when the simple setup is not enough.",
+            "Start from the display you want to configure. Preferred mode, automatic placement and scale 1 cover most setups.",
         ),
         "Devices" => Some(
-            "Pick the device first. Usually sensitivity plus natural scrolling/tap-to-click is enough; keyboard layout and low-level overrides can stay untouched unless that device needs them.",
+            "Pick the physical device first, tune the behavior you care about, and leave inherited settings untouched.",
         ),
         "Animations" => Some(
-            "Choose what should animate, pick a curve, then tune speed. Style strings are optional and only needed for effects such as pop-in or slide variants.",
+            "Choose what moves, choose how it feels, then adjust speed. Style is optional rather than part of the basic path.",
         ),
         "Curves" => Some(
-            "Start from a preset and preview the graph. Drag Bézier handles for feel, or choose Spring when you specifically want physical bounce; exact values remain editable.",
+            "Choose a feel first and tune visually. Exact Bézier or spring values stay available when precision matters.",
         ),
         "Gestures" => Some(
-            "Think in three steps: finger count, direction, action. Modifiers and scale are optional refinements, not required for a basic swipe gesture.",
+            "Build gestures as an intent: fingers → direction → action. Modifiers and scale are optional refinements.",
         ),
         _ => None,
     }
 }
 
-fn complex_page_help(title: &str) -> Option<(&'static str, &'static [&'static str])> {
+fn intent_flow(title: &str) -> Option<(&'static str, &'static str, &'static str, &'static str)> {
     match title {
         "Monitors" => Some((
-            "Common setup",
-            &[
-                "Output → pick the connector reported by Hyprland (for example DP-1).",
-                "Mode → preferred is the safest default; use 1920x1080@144 only when you need an exact mode.",
-                "Position → auto lets Hyprland place it; use 0x0-style coordinates for manual layouts.",
-                "Scale → 1 is normal size. Values above 1 enlarge the desktop on high-DPI displays.",
-                "Transform 0 is normal orientation. Leave mirror and disabled alone unless you explicitly need them.",
-            ],
+            "Pick display",
+            "Choose layout",
+            "Fine-tune only if needed",
+            "Exact modes, coordinates, transform, mirror and disable remain available.",
         )),
         "Devices" => Some((
-            "Common setup",
-            &[
-                "Pick the physical device instead of typing its internal name.",
-                "Sensitivity is the main pointer-speed control; small changes are easier to tune than large jumps.",
-                "Natural scroll, tap-to-click and disable-while-typing are ordinary on/off choices.",
-                "Keyboard layout/options only affect this device, so leave them empty to inherit the global configuration.",
-            ],
+            "Pick device",
+            "Tune feel",
+            "Add device-only overrides",
+            "Raw device name, keyboard options and low-level values remain available.",
         )),
         "Animations" => Some((
-            "Build an animation",
-            &[
-                "Leaf = what moves (windows, fade, workspaces, etc.). Use the provided leaf picker when possible.",
-                "Curve = how motion accelerates. Existing curves are selectable; you do not need to type curve names.",
-                "Speed controls Bézier animations. Spring curves intentionally ignore the speed field.",
-                "Style is optional. Suggested style buttons appear for leaves that support variants.",
-            ],
+            "Choose what moves",
+            "Choose motion feel",
+            "Tune speed or style",
+            "Leaf names, exact curve references and style strings remain editable.",
         )),
         "Curves" => Some((
-            "Choose by feel",
-            &[
-                "Bézier is the normal choice for smooth UI motion; start from a preset and drag the handles.",
-                "Spring is for bounce/physical motion and exposes mass, stiffness and dampening.",
-                "The graph is the source of truth: tune visually first, then use exact numeric fields only when you need precision.",
-            ],
+            "Start from a preset",
+            "Preview the motion",
+            "Adjust visually",
+            "Exact Bézier points and spring physics remain editable.",
         )),
         "Gestures" => Some((
-            "Build a gesture",
-            &[
-                "Fingers → how many fingers must be on the trackpad.",
-                "Direction → horizontal/vertical or the supported directional form for the action.",
-                "Action → what the gesture actually does, such as changing workspace.",
-                "Mods and Scale are optional advanced refinements; a useful gesture does not require either.",
-            ],
+            "Choose fingers",
+            "Choose direction",
+            "Choose action",
+            "Modifiers, scale and raw action values remain available.",
         )),
         "Workspace rules" => Some((
-            "Start simple",
-            &[
-                "Workspace identifies the target (number, name or selector).",
-                "Monitor pins that workspace to an output; use the monitor picker rather than memorizing connector names.",
-                "Gaps and layout are overrides. Leave them empty to inherit your normal desktop settings.",
-                "Default, Persistent, No border and No shadow are independent switches—only enable the behavior you actually want.",
-            ],
+            "Choose workspace",
+            "Optionally pin monitor",
+            "Add only needed overrides",
+            "Selectors, gaps, layout and rule flags remain fully available.",
         )),
         "Layer rules" => Some((
-            "Start simple",
-            &[
-                "Namespace identifies a bar, launcher or overlay. Pick from running layers whenever possible.",
-                "Blur, No animation and Dim around are direct effects and can be combined.",
-                "Order and custom Animation are advanced overrides; leave them empty unless layering or motion needs explicit control.",
-                "Raw regex matching is still supported for rules that must cover several namespaces.",
-            ],
+            "Pick layer",
+            "Choose effect",
+            "Add advanced ordering if needed",
+            "Regex namespace matching and custom animation remain available.",
         )),
         _ => None,
     }
 }
 
-fn build_complex_help(title: &str) -> Option<GtkBox> {
-    let (heading, items) = complex_page_help(title)?;
-    let card = GtkBox::builder()
+fn intent_step(number: u8, text: &str) -> GtkBox {
+    let number = Label::builder()
+        .label(number.to_string())
+        .halign(Align::Center)
+        .valign(Align::Center)
+        .css_classes(["hyprbinds-intent-number"])
+        .build();
+    let label = Label::builder()
+        .label(text)
+        .halign(Align::Start)
+        .valign(Align::Center)
+        .xalign(0.0)
+        .wrap(true)
+        .hexpand(true)
+        .css_classes(["hyprbinds-intent-label"])
+        .build();
+    let step = GtkBox::builder()
+        .orientation(Orientation::Horizontal)
+        .spacing(SPACE_SM)
+        .hexpand(true)
+        .css_classes(["hyprbinds-intent-step"])
+        .build();
+    step.append(&number);
+    step.append(&label);
+    step
+}
+
+fn build_intent_flow(title: &str) -> Option<GtkBox> {
+    let (one, two, three, advanced) = intent_flow(title)?;
+
+    let steps = GtkBox::builder()
+        .orientation(Orientation::Horizontal)
+        .spacing(SPACE_SM)
+        .homogeneous(true)
+        .hexpand(true)
+        .build();
+    steps.append(&intent_step(1, one));
+    steps.append(&intent_step(2, two));
+    steps.append(&intent_step(3, three));
+
+    let advanced = Label::builder()
+        .label(advanced)
+        .halign(Align::Start)
+        .xalign(0.0)
+        .wrap(true)
+        .css_classes(["dim-label", "caption", "hyprbinds-intent-advanced"])
+        .build();
+
+    let flow = GtkBox::builder()
         .orientation(Orientation::Vertical)
         .spacing(SPACE_SM)
-        .margin_top(SPACE_XS)
-        .css_classes(["hyprbinds-settings-card", "hyprbinds-guided-help"])
+        .css_classes(["hyprbinds-intent-flow"])
         .build();
-    card.append(
-        &Label::builder()
-            .label(heading)
-            .halign(Align::Start)
-            .xalign(0.0)
-            .css_classes(["hyprbinds-settings-card-title"])
-            .build(),
-    );
-    for item in items {
-        card.append(
-            &Label::builder()
-                .label(format!("• {item}"))
-                .halign(Align::Start)
-                .xalign(0.0)
-                .wrap(true)
-                .css_classes(["hyprbinds-settings-sub"])
-                .build(),
-        );
-    }
-    Some(card)
+    flow.append(&steps);
+    flow.append(&advanced);
+    Some(flow)
 }
 
 /// Standard workspace page: title, concise explanation, actions, then content.
@@ -321,8 +328,8 @@ pub fn page_shell(
         page.append(&guide);
     }
 
-    if let Some(help) = build_complex_help(title) {
-        page.append(&help);
+    if let Some(flow) = build_intent_flow(title) {
+        page.append(&flow);
     }
 
     page.append(&canvas);
