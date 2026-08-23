@@ -17,6 +17,7 @@ mod experimental;
 mod extra_ui;
 mod health;
 mod health_ui;
+mod intent_design;
 mod keys;
 mod logs;
 mod logs_ui;
@@ -229,6 +230,7 @@ fn main() {
     app.connect_activate(|app| {
         ui::build_ui(app);
         design::apply();
+        intent_design::apply();
 
         if let Some(window) = app.active_window() {
             let search_window = window.clone();
