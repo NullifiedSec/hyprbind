@@ -8,6 +8,11 @@ use gtk4::{
     ScrolledWindow, Separator, Window,
 };
 
+const SPACE_XS: i32 = 4;
+const SPACE_SM: i32 = 8;
+const SPACE_MD: i32 = 12;
+const SPACE_LG: i32 = 16;
+
 pub fn close_on_escape(window: &Window) {
     let controller = EventControllerKey::new();
     controller.connect_key_pressed({
@@ -25,7 +30,7 @@ pub fn close_on_escape(window: &Window) {
 }
 
 pub fn action_buttons(cancel: &Button, primary: &Button) -> GtkBox {
-    let row = GtkBox::new(Orientation::Horizontal, 10);
+    let row = GtkBox::new(Orientation::Horizontal, SPACE_SM);
     row.set_halign(Align::End);
     row.set_hexpand(true);
     cancel.set_hexpand(false);
@@ -51,11 +56,11 @@ pub fn mount_sticky_dialog(
 
     let footer = GtkBox::builder()
         .orientation(Orientation::Vertical)
-        .spacing(8)
-        .margin_top(10)
-        .margin_bottom(14)
-        .margin_start(18)
-        .margin_end(18)
+        .spacing(SPACE_SM)
+        .margin_top(SPACE_MD)
+        .margin_bottom(SPACE_LG)
+        .margin_start(SPACE_LG)
+        .margin_end(SPACE_LG)
         .css_classes(["hyprbinds-sticky-footer"])
         .build();
     if let Some(status) = status {
@@ -87,9 +92,9 @@ pub fn mount_sticky_page(body: &impl IsA<gtk4::Widget>, footer_actions: &GtkBox)
 
     let footer = GtkBox::builder()
         .orientation(Orientation::Vertical)
-        .spacing(8)
-        .margin_top(10)
-        .margin_bottom(4)
+        .spacing(SPACE_SM)
+        .margin_top(SPACE_MD)
+        .margin_bottom(SPACE_XS)
         .css_classes(["hyprbinds-sticky-footer"])
         .build();
     footer.append(footer_actions);
@@ -153,7 +158,7 @@ pub fn page_shell(
 
     let header_text = GtkBox::builder()
         .orientation(Orientation::Vertical)
-        .spacing(4)
+        .spacing(SPACE_XS)
         .hexpand(true)
         .build();
     header_text.append(&title_label);
@@ -161,7 +166,7 @@ pub fn page_shell(
 
     let header = GtkBox::builder()
         .orientation(Orientation::Horizontal)
-        .spacing(18)
+        .spacing(SPACE_LG)
         .css_classes(["hyprbinds-page-header"])
         .build();
     header.append(&header_text);
@@ -177,7 +182,7 @@ pub fn page_shell(
 
     let page = GtkBox::builder()
         .orientation(Orientation::Vertical)
-        .spacing(10)
+        .spacing(SPACE_SM)
         .hexpand(true)
         .vexpand(true)
         .css_classes(["hyprbinds-page"])
@@ -191,7 +196,7 @@ pub fn page_shell(
             .halign(Align::Start)
             .xalign(0.0)
             .wrap(true)
-            .css_classes(["dim-label", "caption"])
+            .css_classes(["dim-label", "caption", "hyprbinds-page-guidance"])
             .build();
         page.append(&guide);
     }
@@ -203,11 +208,11 @@ pub fn page_shell(
 pub fn list_row_column() -> GtkBox {
     GtkBox::builder()
         .orientation(Orientation::Vertical)
-        .spacing(4)
-        .margin_top(11)
-        .margin_bottom(11)
-        .margin_start(15)
-        .margin_end(15)
+        .spacing(SPACE_XS)
+        .margin_top(10)
+        .margin_bottom(10)
+        .margin_start(14)
+        .margin_end(14)
         .css_classes(["hyprbinds-row"])
         .build()
 }
@@ -216,8 +221,8 @@ pub fn list_row_column_compact() -> GtkBox {
     GtkBox::builder()
         .orientation(Orientation::Vertical)
         .spacing(2)
-        .margin_top(11)
-        .margin_bottom(11)
+        .margin_top(SPACE_SM)
+        .margin_bottom(SPACE_SM)
         .margin_start(14)
         .margin_end(14)
         .css_classes(["hyprbinds-row"])
