@@ -31,58 +31,58 @@ pub const NAV: &[NavSection] = &[
             id: "overview",
             icon: "◎",
             label: "Overview",
-            subtitle: "Global consistency controls",
-            keywords: "overview global animation speed slider consistency simple",
+            subtitle: "See what is configured",
+            keywords: "overview global summary animation speed consistency simple",
             dev_only: false,
         }],
     },
     NavSection {
         title: "Keyboard & config",
         items: &[
-            NavItem { id: "binds", icon: "⌨", label: "Binds", subtitle: "Keybinds and chords", keywords: "keyboard hotkey shortcut", dev_only: false },
-            NavItem { id: "variables", icon: "⟨⟩", label: "Variables", subtitle: "String variables", keywords: "var template", dev_only: false },
-            NavItem { id: "environment", icon: "⧉", label: "Environment", subtitle: "hl.env entries", keywords: "env environment", dev_only: false },
-            NavItem { id: "submaps", icon: "▦", label: "Submaps", subtitle: "Bind modes", keywords: "mode submap", dev_only: false },
-            NavItem { id: "startup", icon: "⏻", label: "Startup", subtitle: "Autostart commands", keywords: "exec autostart boot", dev_only: false },
+            NavItem { id: "binds", icon: "⌨", label: "Binds", subtitle: "Create and edit shortcuts", keywords: "keyboard hotkey shortcut keybind chord", dev_only: false },
+            NavItem { id: "variables", icon: "⟨⟩", label: "Variables", subtitle: "Reusable config values", keywords: "var variable template value", dev_only: false },
+            NavItem { id: "environment", icon: "⧉", label: "Environment", subtitle: "Session environment values", keywords: "env environment variable session", dev_only: false },
+            NavItem { id: "submaps", icon: "▦", label: "Submaps", subtitle: "Temporary shortcut modes", keywords: "mode submap keybind layer", dev_only: false },
+            NavItem { id: "startup", icon: "⏻", label: "Startup", subtitle: "Run apps when you log in", keywords: "exec autostart boot login launch", dev_only: false },
         ],
     },
     NavSection {
         title: "Rules",
         items: &[
-            NavItem { id: "rules-window", icon: "▣", label: "Window rules", subtitle: "Match class and title", keywords: "window rule", dev_only: false },
-            NavItem { id: "rules-workspace", icon: "▤", label: "Workspace rules", subtitle: "Gaps, layout, monitors", keywords: "workspace", dev_only: false },
-            NavItem { id: "rules-layer", icon: "▥", label: "Layer rules", subtitle: "Bars and overlays", keywords: "layer bar overlay", dev_only: false },
+            NavItem { id: "rules-window", icon: "▣", label: "Window rules", subtitle: "Control where apps open", keywords: "window rule class title placement size float", dev_only: false },
+            NavItem { id: "rules-workspace", icon: "▤", label: "Workspace rules", subtitle: "Set workspace behavior", keywords: "workspace gaps layout monitor persistent", dev_only: false },
+            NavItem { id: "rules-layer", icon: "▥", label: "Layer rules", subtitle: "Control bars and overlays", keywords: "layer bar overlay namespace blur", dev_only: false },
         ],
     },
     NavSection {
         title: "Appearance & input",
         items: &[
-            NavItem { id: "lookfeel", icon: "◈", label: "Look & Feel", subtitle: "Gaps, blur, rounding", keywords: "appearance theme visual", dev_only: false },
-            NavItem { id: "settings-config", icon: "⚙", label: "Config", subtitle: "General Hyprland settings", keywords: "general config", dev_only: false },
-            NavItem { id: "settings-monitors", icon: "🖵", label: "Monitors", subtitle: "Layout and scale", keywords: "display output", dev_only: false },
-            NavItem { id: "settings-devices", icon: "🖱", label: "Devices", subtitle: "Keyboards and mice", keywords: "input device", dev_only: false },
-            NavItem { id: "settings-animations", icon: "✦", label: "Animations", subtitle: "Motion leaves", keywords: "animation motion", dev_only: false },
-            NavItem { id: "settings-curves", icon: "∿", label: "Curves", subtitle: "Bézier and spring", keywords: "bezier spring easing", dev_only: false },
-            NavItem { id: "settings-gestures", icon: "✋", label: "Gestures", subtitle: "Trackpad actions", keywords: "gesture touchpad", dev_only: false },
+            NavItem { id: "lookfeel", icon: "◈", label: "Look & Feel", subtitle: "Gaps, borders, blur, rounding", keywords: "appearance theme visual gaps blur border rounding", dev_only: false },
+            NavItem { id: "settings-config", icon: "⚙", label: "Config", subtitle: "General Hyprland behavior", keywords: "general config behavior layout", dev_only: false },
+            NavItem { id: "settings-monitors", icon: "🖵", label: "Monitors", subtitle: "Display layout and scaling", keywords: "display output monitor resolution scale position", dev_only: false },
+            NavItem { id: "settings-devices", icon: "🖱", label: "Devices", subtitle: "Keyboard, mouse and touchpad", keywords: "input device keyboard mouse touchpad sensitivity", dev_only: false },
+            NavItem { id: "settings-animations", icon: "✦", label: "Animations", subtitle: "Motion behavior and timing", keywords: "animation motion timing speed", dev_only: false },
+            NavItem { id: "settings-curves", icon: "∿", label: "Curves", subtitle: "Animation easing curves", keywords: "bezier spring easing curve", dev_only: false },
+            NavItem { id: "settings-gestures", icon: "✋", label: "Gestures", subtitle: "Trackpad gesture actions", keywords: "gesture touchpad swipe action", dev_only: false },
         ],
     },
     NavSection {
         title: "System",
         items: &[
-            NavItem { id: "health", icon: "❤", label: "Health", subtitle: "Session diagnostics", keywords: "health diagnose check", dev_only: false },
-            NavItem { id: "logs", icon: "☰", label: "Logs", subtitle: "journalctl session", keywords: "logs journal journalctl", dev_only: false },
-            NavItem { id: "import-export", icon: "⇄", label: "Import / Export", subtitle: "Backup and restore as JSON", keywords: "import export backup restore json bundle settings", dev_only: false },
+            NavItem { id: "health", icon: "❤", label: "Health", subtitle: "Check session problems", keywords: "health diagnose check issue portal pipewire", dev_only: false },
+            NavItem { id: "logs", icon: "☰", label: "Logs", subtitle: "Inspect recent session logs", keywords: "logs journal journalctl error debug", dev_only: false },
+            NavItem { id: "import-export", icon: "⇄", label: "Import / Export", subtitle: "Back up or move settings", keywords: "import export backup restore json bundle settings", dev_only: false },
         ],
     },
     NavSection {
         title: "Experimental",
         items: &[
-            NavItem { id: "wallpaper", icon: "🖼", label: "Wallpaper", subtitle: "Requires Developer mode · awww backgrounds", keywords: "wallpaper background image experimental", dev_only: true },
-            NavItem { id: "waybar", icon: "━", label: "Waybar", subtitle: "Requires Developer mode · bar layout and style", keywords: "waybar status bar experimental", dev_only: true },
-            NavItem { id: "starship", icon: "❯", label: "Starship", subtitle: "Requires Developer mode · shell prompt", keywords: "starship prompt shell zsh fish bash experimental", dev_only: true },
-            NavItem { id: "via", icon: "⬡", label: "VIA keymap", subtitle: "Requires Developer mode · hardware remaps over USB", keywords: "via qmk vial hardware keymap keyboard definition experimental", dev_only: true },
-            NavItem { id: "screenshare", icon: "⏺", label: "Screenshare", subtitle: "Requires Developer mode · portal and PipeWire", keywords: "screenshare portal pipewire experimental", dev_only: true },
-            NavItem { id: "audio", icon: "♪", label: "Audio", subtitle: "Requires Developer mode · volume and devices", keywords: "audio sound volume pulse experimental", dev_only: true },
+            NavItem { id: "wallpaper", icon: "🖼", label: "Wallpaper", subtitle: "Manage backgrounds with awww", keywords: "wallpaper background image experimental awww", dev_only: true },
+            NavItem { id: "waybar", icon: "━", label: "Waybar", subtitle: "Edit bar layout and style", keywords: "waybar status bar experimental", dev_only: true },
+            NavItem { id: "starship", icon: "❯", label: "Starship", subtitle: "Edit your shell prompt", keywords: "starship prompt shell zsh fish bash experimental", dev_only: true },
+            NavItem { id: "via", icon: "⬡", label: "VIA keymap", subtitle: "Configure supported keyboards", keywords: "via qmk vial hardware keymap keyboard definition experimental", dev_only: true },
+            NavItem { id: "screenshare", icon: "⏺", label: "Screenshare", subtitle: "Check sharing and portals", keywords: "screenshare portal pipewire experimental", dev_only: true },
+            NavItem { id: "audio", icon: "♪", label: "Audio", subtitle: "Inspect volume and devices", keywords: "audio sound volume pulse experimental device", dev_only: true },
         ],
     },
 ];
@@ -176,7 +176,7 @@ pub fn build_sidebar(on_navigate: Rc<dyn Fn(&str)>, developer_mode: bool) -> Sid
         .css_classes(["hyprbinds-brand-title"])
         .build();
     let brand_sub = Label::builder()
-        .label("Hyprland control center")
+        .label("Hyprland settings")
         .halign(Align::Start)
         .css_classes(["hyprbinds-brand-sub"])
         .build();
@@ -195,7 +195,8 @@ pub fn build_sidebar(on_navigate: Rc<dyn Fn(&str)>, developer_mode: bool) -> Sid
     brand.append(&brand_text);
 
     let filter = Entry::builder()
-        .placeholder_text("Search settings")
+        .placeholder_text("Search settings…")
+        .tooltip_text("Type to filter pages by name or task")
         .hexpand(true)
         .css_classes(["hyprbinds-sidebar-filter"])
         .build();
@@ -266,6 +267,7 @@ pub fn build_sidebar(on_navigate: Rc<dyn Fn(&str)>, developer_mode: bool) -> Sid
                 .activatable(true)
                 .selectable(true)
                 .name(item.id)
+                .tooltip_text(item.subtitle)
                 .css_classes(["hyprbinds-sidebar-row"])
                 .build();
             if item.dev_only {
@@ -333,6 +335,13 @@ pub fn build_sidebar(on_navigate: Rc<dyn Fn(&str)>, developer_mode: bool) -> Sid
         .css_classes(["hyprbinds-sidebar-scroll"])
         .build();
 
+    let shortcut_hint = Label::builder()
+        .label("/  Search     Ctrl+P  Commands")
+        .halign(Align::Start)
+        .xalign(0.0)
+        .css_classes(["dim-label", "caption", "monospace"])
+        .build();
+
     let widget = GtkBox::builder()
         .orientation(Orientation::Vertical)
         .spacing(10)
@@ -341,6 +350,7 @@ pub fn build_sidebar(on_navigate: Rc<dyn Fn(&str)>, developer_mode: bool) -> Sid
     widget.append(&brand);
     widget.append(&filter);
     widget.append(&scroll);
+    widget.append(&shortcut_hint);
     widget.set_size_request(270, -1);
 
     Sidebar {
