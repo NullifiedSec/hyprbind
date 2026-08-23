@@ -4,11 +4,10 @@ use gtk4::gdk::Key;
 use gtk4::glib;
 use gtk4::prelude::*;
 use gtk4::{
-    Box as GtkBox, Button, EventControllerKey, Label, Orientation, PolicyType, ScrolledWindow,
-    Separator, Window,
+    Align, Box as GtkBox, Button, EventControllerKey, Label, Orientation, PolicyType,
+    ScrolledWindow, Separator, Window,
 };
 
-/// Close a transient popup when Escape is pressed.
 pub fn close_on_escape(window: &Window) {
     let controller = EventControllerKey::new();
     controller.connect_key_pressed({
@@ -25,23 +24,17 @@ pub fn close_on_escape(window: &Window) {
     window.add_controller(controller);
 }
 
-/// Build a right-aligned Cancel / primary action row.
 pub fn action_buttons(cancel: &Button, primary: &Button) -> GtkBox {
     let row = GtkBox::new(Orientation::Horizontal, 10);
-    row.set_halign(gtk4::Align::End);
+    row.set_halign(Align::End);
     row.set_hexpand(true);
     cancel.set_hexpand(false);
     primary.set_hexpand(false);
-    cancel.set_margin_top(2);
-    cancel.set_margin_bottom(2);
-    primary.set_margin_top(2);
-    primary.set_margin_bottom(2);
     row.append(cancel);
     row.append(primary);
     row
 }
 
-/// Mount `body` in a scroll view with a sticky footer (optional status + actions).
 pub fn mount_sticky_dialog(
     editor: &Window,
     body: &impl IsA<gtk4::Widget>,
@@ -61,12 +54,12 @@ pub fn mount_sticky_dialog(
         .spacing(8)
         .margin_top(10)
         .margin_bottom(14)
-        .margin_start(16)
-        .margin_end(16)
+        .margin_start(18)
+        .margin_end(18)
         .css_classes(["hyprbinds-sticky-footer"])
         .build();
     if let Some(status) = status {
-        status.set_halign(gtk4::Align::Start);
+        status.set_halign(Align::Start);
         status.set_wrap(true);
         footer.append(status);
     }
@@ -83,7 +76,6 @@ pub fn mount_sticky_dialog(
     close_on_escape(editor);
 }
 
-/// Same sticky footer pattern for an in-page tab (e.g. Config settings).
 pub fn mount_sticky_page(body: &impl IsA<gtk4::Widget>, footer_actions: &GtkBox) -> GtkBox {
     let scroll = ScrolledWindow::builder()
         .hscrollbar_policy(PolicyType::Never)
@@ -98,8 +90,6 @@ pub fn mount_sticky_page(body: &impl IsA<gtk4::Widget>, footer_actions: &GtkBox)
         .spacing(8)
         .margin_top(10)
         .margin_bottom(4)
-        .margin_start(0)
-        .margin_end(0)
         .css_classes(["hyprbinds-sticky-footer"])
         .build();
     footer.append(footer_actions);
@@ -114,7 +104,7 @@ pub fn mount_sticky_page(body: &impl IsA<gtk4::Widget>, footer_actions: &GtkBox)
     page
 }
 
-/// Standard content page: title, short hint, toolbar, then scrollable body.
+/// Modern workspace page: compact title rail, command surface, then content canvas.
 pub fn page_shell(
     title: &str,
     hint: &str,
@@ -123,59 +113,81 @@ pub fn page_shell(
 ) -> GtkBox {
     toolbar.add_css_class("hyprbinds-toolbar");
 
-    let header = GtkBox::builder()
+    let eyebrow = Label::builder()
+        .label("HYPRLAND")
+        .halign(Align::Start)
+        .css_classes(["hyprbinds-page-eyebrow"])
+        .build();
+    let title_label = Label::builder()
+        .label(title)
+        .halign(Align::Start)
+        .xalign(0.0)
+        .css_classes(["hyprbinds-page-title"])
+        .build();
+    let hint_label = Label::builder()
+        .label(hint)
+        .halign(Align::Start)
+        .wrap(true)
+        .xalign(0.0)
+        .css_classes(["hyprbinds-page-hint"])
+        .build();
+
+    let header_text = GtkBox::builder()
         .orientation(Orientation::Vertical)
-        .spacing(4)
+        .spacing(3)
+        .hexpand(true)
+        .build();
+    header_text.append(&eyebrow);
+    header_text.append(&title_label);
+    header_text.append(&hint_label);
+
+    let header = GtkBox::builder()
+        .orientation(Orientation::Horizontal)
+        .spacing(18)
         .css_classes(["hyprbinds-page-header"])
         .build();
-    header.append(
-        &Label::builder()
-            .label(title)
-            .halign(gtk4::Align::Start)
-            .css_classes(["hyprbinds-page-title"])
-            .build(),
-    );
-    header.append(
-        &Label::builder()
-            .label(hint)
-            .halign(gtk4::Align::Start)
-            .wrap(true)
-            .xalign(0.0)
-            .css_classes(["hyprbinds-page-hint"])
-            .build(),
-    );
+    header.append(&header_text);
+
+    let canvas = GtkBox::builder()
+        .orientation(Orientation::Vertical)
+        .spacing(0)
+        .hexpand(true)
+        .vexpand(true)
+        .css_classes(["hyprbinds-page-canvas"])
+        .build();
+    canvas.append(content);
 
     let page = GtkBox::builder()
         .orientation(Orientation::Vertical)
-        .spacing(14)
+        .spacing(12)
+        .hexpand(true)
+        .vexpand(true)
         .css_classes(["hyprbinds-page"])
         .build();
     page.append(&header);
     page.append(toolbar);
-    page.append(content);
+    page.append(&canvas);
     page
 }
 
-/// Vertical column used inside every `boxed-list` row.
 pub fn list_row_column() -> GtkBox {
     GtkBox::builder()
         .orientation(Orientation::Vertical)
         .spacing(4)
-        .margin_top(12)
-        .margin_bottom(12)
-        .margin_start(16)
-        .margin_end(16)
+        .margin_top(11)
+        .margin_bottom(11)
+        .margin_start(15)
+        .margin_end(15)
         .css_classes(["hyprbinds-row"])
         .build()
 }
 
-/// Compact-width row column with comfortable vertical padding (binds list).
 pub fn list_row_column_compact() -> GtkBox {
     GtkBox::builder()
         .orientation(Orientation::Vertical)
         .spacing(2)
-        .margin_top(14)
-        .margin_bottom(14)
+        .margin_top(11)
+        .margin_bottom(11)
         .margin_start(14)
         .margin_end(14)
         .css_classes(["hyprbinds-row"])
@@ -185,7 +197,7 @@ pub fn list_row_column_compact() -> GtkBox {
 pub fn row_title(text: &str) -> Label {
     Label::builder()
         .label(text)
-        .halign(gtk4::Align::Start)
+        .halign(Align::Start)
         .hexpand(true)
         .ellipsize(gtk4::pango::EllipsizeMode::End)
         .selectable(true)
@@ -196,7 +208,7 @@ pub fn row_title(text: &str) -> Label {
 pub fn row_sub(text: &str) -> Label {
     Label::builder()
         .label(text)
-        .halign(gtk4::Align::Start)
+        .halign(Align::Start)
         .ellipsize(gtk4::pango::EllipsizeMode::End)
         .selectable(true)
         .css_classes(["hyprbinds-row-sub", "monospace"])
@@ -206,7 +218,7 @@ pub fn row_sub(text: &str) -> Label {
 pub fn row_body(text: &str) -> Label {
     Label::builder()
         .label(text)
-        .halign(gtk4::Align::Start)
+        .halign(Align::Start)
         .hexpand(true)
         .wrap(true)
         .xalign(0.0)
@@ -218,7 +230,7 @@ pub fn row_body(text: &str) -> Label {
 pub fn row_meta(text: &str) -> Label {
     Label::builder()
         .label(text)
-        .halign(gtk4::Align::Start)
+        .halign(Align::Start)
         .wrap(true)
         .xalign(0.0)
         .css_classes(["hyprbinds-row-meta"])
@@ -228,8 +240,8 @@ pub fn row_meta(text: &str) -> Label {
 pub fn row_keys(text: &str) -> Label {
     Label::builder()
         .label(text)
-        .halign(gtk4::Align::End)
-        .valign(gtk4::Align::Center)
+        .halign(Align::End)
+        .valign(Align::Center)
         .selectable(true)
         .css_classes(["hyprbinds-row-keys", "monospace"])
         .build()
@@ -238,7 +250,7 @@ pub fn row_keys(text: &str) -> Label {
 pub fn section_label(text: &str) -> Label {
     Label::builder()
         .label(text)
-        .halign(gtk4::Align::Start)
+        .halign(Align::Start)
         .css_classes(["hyprbinds-section"])
         .build()
 }
