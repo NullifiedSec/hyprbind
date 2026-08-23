@@ -5,17 +5,13 @@ use gtk4::CssProvider;
 
 pub fn apply() {
     let css = r#"
-        @define-color hb_accent #00d4ff;
-        @define-color hb_accent_hover #43e3ff;
-        @define-color hb_accent_soft alpha(#00d4ff, 0.10);
-        @define-color hb_accent_faint alpha(#00d4ff, 0.045);
-        @define-color hb_surface alpha(currentColor, 0.024);
-        @define-color hb_surface_2 alpha(currentColor, 0.040);
+        @define-color hb_surface alpha(currentColor, 0.022);
+        @define-color hb_surface_2 alpha(currentColor, 0.038);
         @define-color hb_surface_3 alpha(currentColor, 0.060);
         @define-color hb_hover alpha(currentColor, 0.050);
-        @define-color hb_border alpha(currentColor, 0.075);
-        @define-color hb_border_soft alpha(currentColor, 0.045);
-        @define-color hb_text_soft alpha(currentColor, 0.58);
+        @define-color hb_selected alpha(currentColor, 0.075);
+        @define-color hb_border alpha(currentColor, 0.080);
+        @define-color hb_border_soft alpha(currentColor, 0.050);
 
         window { font-size: 1em; }
 
@@ -24,18 +20,17 @@ pub fn apply() {
         dropdown > button,
         dropdown button.toggle,
         spinbutton {
-            min-height: 31px;
-            border-radius: 10px;
+            min-height: 30px;
+            border-radius: 8px;
             box-shadow: none;
         }
 
         button {
             min-width: 0;
-            padding: 4px 11px;
+            padding: 3px 10px;
             font-size: 0.88em;
-            font-weight: 570;
+            font-weight: 560;
             border: 1px solid transparent;
-            transition: 120ms ease;
         }
         button:hover {
             background-color: @hb_hover;
@@ -43,14 +38,14 @@ pub fn apply() {
         }
 
         entry {
-            padding: 4px 10px;
+            padding: 3px 9px;
             border: 1px solid @hb_border;
             background-color: @hb_surface_2;
         }
         entry:focus {
-            border-color: alpha(@hb_accent, 0.58);
-            box-shadow: 0 0 0 2px alpha(@hb_accent, 0.07);
+            border-color: alpha(currentColor, 0.22);
             background-color: @hb_surface_3;
+            box-shadow: none;
         }
 
         dropdown > button,
@@ -61,82 +56,79 @@ pub fn apply() {
         }
 
         checkbutton { font-size: 0.88em; }
-        separator { opacity: 0.28; }
+        separator { opacity: 0.26; }
 
-        /* Shell */
-        .hyprbinds-shell { background-color: @window_bg_color; }
-        .hyprbinds-main { background-color: @window_bg_color; }
+        .hyprbinds-shell,
+        .hyprbinds-main {
+            background-color: @window_bg_color;
+        }
 
         .hyprbinds-header {
-            min-height: 40px;
-            padding: 5px 24px;
+            min-height: 39px;
+            padding: 5px 22px;
             border-bottom: 1px solid @hb_border_soft;
-            background-color: alpha(currentColor, 0.008);
+            background-color: transparent;
         }
         .hyprbinds-header-title {
             font-size: 0.80em;
-            font-weight: 680;
-            opacity: 0.38;
-            letter-spacing: 0.02em;
+            font-weight: 650;
+            opacity: 0.36;
         }
         .hyprbinds-path {
             font-size: 0.72em;
-            opacity: 0.28;
+            opacity: 0.27;
             margin-right: 8px;
         }
         .hyprbinds-count {
             font-size: 0.72em;
-            opacity: 0.70;
-            padding: 3px 8px;
-            border-radius: 999px;
+            opacity: 0.58;
+            padding: 2px 7px;
+            border-radius: 6px;
             background-color: @hb_surface_2;
             border: 1px solid @hb_border_soft;
         }
         .hyprbinds-header-toggle {
-            opacity: 0.58;
+            opacity: 0.56;
             font-size: 0.82em;
         }
         .hyprbinds-header button {
-            min-height: 28px;
-            padding: 2px 9px;
-            border-radius: 8px;
+            min-height: 27px;
+            padding: 2px 8px;
+            border-radius: 7px;
         }
         .hyprbinds-content { padding-top: 14px; }
 
-        /* Sidebar */
         .hyprbinds-sidebar {
-            min-width: 276px;
-            max-width: 276px;
-            padding: 17px 12px 14px 12px;
+            min-width: 272px;
+            max-width: 272px;
+            padding: 16px 11px 14px 11px;
             border-right: 1px solid @hb_border_soft;
-            background-color: alpha(currentColor, 0.014);
+            background-color: alpha(currentColor, 0.012);
         }
-        .hyprbinds-brand {
-            padding: 1px 8px 13px 8px;
-        }
+        .hyprbinds-brand { padding: 1px 8px 12px 8px; }
         .hyprbinds-brand-mark {
-            min-width: 36px;
-            min-height: 36px;
-            border-radius: 11px;
-            background-color: @hb_accent_soft;
-            color: @hb_accent;
-            font-size: 1.08em;
-            font-weight: 820;
-            border: 1px solid alpha(@hb_accent, 0.13);
+            min-width: 34px;
+            min-height: 34px;
+            border-radius: 9px;
+            background-color: @hb_surface_3;
+            color: inherit;
+            font-size: 1.02em;
+            font-weight: 760;
+            border: 1px solid @hb_border;
         }
         .hyprbinds-brand-title {
-            font-size: 1.04em;
-            font-weight: 740;
-            letter-spacing: -0.025em;
+            font-size: 1.02em;
+            font-weight: 700;
+            letter-spacing: -0.02em;
         }
         .hyprbinds-brand-sub {
             font-size: 0.70em;
-            opacity: 0.35;
+            opacity: 0.33;
         }
         .hyprbinds-sidebar-filter {
-            min-height: 34px;
+            min-height: 33px;
             margin: 0 4px 9px 4px;
-            border-radius: 11px;
+            border-radius: 8px;
             background-color: @hb_surface_2;
             border: 1px solid @hb_border_soft;
         }
@@ -146,36 +138,36 @@ pub fn apply() {
             border: none;
         }
         list.hyprbinds-sidebar-list > row {
-            border-radius: 11px;
-            margin: 2px 0;
+            border-radius: 8px;
+            margin: 1px 0;
             border: 1px solid transparent;
         }
         list.hyprbinds-sidebar-list > row.hyprbinds-sidebar-header-row {
-            margin-top: 13px;
-            margin-bottom: 3px;
+            margin-top: 12px;
+            margin-bottom: 2px;
             background: transparent;
             border: none;
         }
         .hyprbinds-sidebar-section {
-            padding: 3px 10px;
+            padding: 3px 9px;
             font-size: 0.62em;
-            font-weight: 780;
-            letter-spacing: 0.115em;
-            opacity: 0.29;
+            font-weight: 740;
+            letter-spacing: 0.10em;
+            opacity: 0.28;
         }
-        .hyprbinds-sidebar-row-inner { padding: 8px 10px; }
+        .hyprbinds-sidebar-row-inner { padding: 8px 9px; }
         .hyprbinds-sidebar-icon {
-            min-width: 1.7em;
-            font-size: 1.00em;
-            opacity: 0.54;
+            min-width: 1.65em;
+            font-size: 0.98em;
+            opacity: 0.50;
         }
         .hyprbinds-sidebar-label {
             font-size: 0.91em;
-            font-weight: 630;
+            font-weight: 610;
         }
         .hyprbinds-sidebar-subtitle {
             font-size: 0.69em;
-            opacity: 0.34;
+            opacity: 0.33;
         }
         list.hyprbinds-sidebar-list > row.hyprbinds-sidebar-row:hover {
             background-color: @hb_hover;
@@ -183,37 +175,37 @@ pub fn apply() {
         }
         list.hyprbinds-sidebar-list > row.hyprbinds-sidebar-row:selected,
         list.hyprbinds-sidebar-list > row.hyprbinds-sidebar-row.nav-active {
-            background-color: @hb_accent_soft;
-            border-color: alpha(@hb_accent, 0.12);
+            background-color: @hb_selected;
+            border-color: @hb_border;
             box-shadow: none;
         }
         list.hyprbinds-sidebar-list > row.nav-active .hyprbinds-sidebar-label {
-            color: @hb_accent;
+            color: inherit;
+            font-weight: 660;
         }
         list.hyprbinds-sidebar-list > row.nav-active .hyprbinds-sidebar-subtitle,
         list.hyprbinds-sidebar-list > row.nav-active .hyprbinds-sidebar-icon {
-            opacity: 0.82;
+            opacity: 0.70;
         }
 
-        /* Page composition */
-        .hyprbinds-page { padding: 5px 2px 2px 2px; }
+        .hyprbinds-page { padding: 4px 2px 2px 2px; }
         .hyprbinds-page-header { padding: 2px 2px 10px 2px; }
         .hyprbinds-page-eyebrow,
         .hyprbinds-hero-kicker {
             font-size: 0.61em;
-            font-weight: 820;
-            letter-spacing: 0.15em;
-            color: @hb_accent;
-            opacity: 0.72;
+            font-weight: 760;
+            letter-spacing: 0.12em;
+            color: inherit;
+            opacity: 0.32;
         }
         .hyprbinds-page-title {
-            font-size: 1.94em;
-            font-weight: 780;
-            letter-spacing: -0.050em;
+            font-size: 1.90em;
+            font-weight: 740;
+            letter-spacing: -0.045em;
         }
         .hyprbinds-page-hint {
             font-size: 0.89em;
-            opacity: 0.44;
+            opacity: 0.43;
             line-height: 1.45;
             max-width: 60em;
         }
@@ -222,23 +214,22 @@ pub fn apply() {
             padding: 7px;
             margin: 0 0 3px 0;
             border: 1px solid @hb_border_soft;
-            border-radius: 13px;
+            border-radius: 10px;
             background-color: @hb_surface;
         }
         .hyprbinds-toolbar entry {
-            min-height: 33px;
+            min-height: 32px;
             background-color: @hb_surface_2;
         }
         .hyprbinds-toolbar button,
         .hyprbinds-toolbar dropdown > button {
-            min-height: 33px;
+            min-height: 32px;
         }
         .hyprbinds-page-canvas {
             padding-top: 12px;
             background: transparent;
         }
 
-        /* Tabs */
         notebook.hyprbinds-hub,
         notebook.hyprbinds-bind-tabs,
         notebook.hyprbinds-hub > header,
@@ -249,15 +240,15 @@ pub fn apply() {
             border: none;
         }
         notebook.hyprbinds-bind-tabs > header {
-            margin-bottom: 9px;
+            margin-bottom: 8px;
             border-bottom: 1px solid @hb_border_soft;
         }
         notebook.hyprbinds-hub > header tab,
         notebook.hyprbinds-bind-tabs > header tab {
-            min-height: 29px;
-            padding: 4px 11px 6px 11px;
+            min-height: 28px;
+            padding: 4px 10px 5px 10px;
             border: none;
-            border-radius: 8px 8px 0 0;
+            border-radius: 0;
             opacity: 0.42;
         }
         notebook.hyprbinds-hub > header tab:hover,
@@ -268,15 +259,14 @@ pub fn apply() {
         notebook.hyprbinds-hub > header tab:checked,
         notebook.hyprbinds-bind-tabs > header tab:checked {
             opacity: 1;
-            color: @hb_accent;
-            box-shadow: inset 0 -2px 0 @hb_accent;
-            background-color: @hb_accent_faint;
+            color: inherit;
+            box-shadow: inset 0 -1px 0 alpha(currentColor, 0.52);
+            background: transparent;
         }
 
-        /* Lists */
         list.boxed-list {
             margin-top: 3px;
-            border-radius: 13px;
+            border-radius: 10px;
             background-color: @hb_surface;
             border: 1px solid @hb_border_soft;
             box-shadow: none;
@@ -286,173 +276,158 @@ pub fn apply() {
         }
         list.boxed-list > row:hover { background-color: @hb_hover; }
         list.boxed-list > row:selected {
-            background-color: @hb_accent_soft;
+            background-color: @hb_selected;
             box-shadow: none;
         }
         .hyprbinds-row-title {
             font-size: 0.96em;
-            font-weight: 650;
-            letter-spacing: -0.008em;
+            font-weight: 630;
         }
-        .hyprbinds-row-sub { font-size: 0.81em; opacity: 0.55; }
-        .hyprbinds-row-body { font-size: 0.81em; opacity: 0.48; }
-        .hyprbinds-row-meta { font-size: 0.71em; opacity: 0.31; }
+        .hyprbinds-row-sub { font-size: 0.81em; opacity: 0.54; }
+        .hyprbinds-row-body { font-size: 0.81em; opacity: 0.47; }
+        .hyprbinds-row-meta { font-size: 0.71em; opacity: 0.30; }
         .hyprbinds-row-keys {
-            padding: 3px 9px;
-            border-radius: 8px;
+            padding: 3px 8px;
+            border-radius: 6px;
             background-color: @hb_surface_3;
             border: 1px solid @hb_border;
             font-size: 0.78em;
-            font-weight: 680;
+            font-weight: 650;
         }
         list.boxed-list > row:selected .hyprbinds-row-keys {
-            background-color: alpha(@hb_accent, 0.12);
-            border-color: alpha(@hb_accent, 0.18);
+            background-color: alpha(currentColor, 0.09);
+            border-color: alpha(currentColor, 0.15);
         }
         .hyprbinds-section {
             margin-top: 15px;
             margin-bottom: 6px;
             font-size: 0.66em;
-            font-weight: 780;
-            letter-spacing: 0.11em;
-            opacity: 0.34;
+            font-weight: 740;
+            letter-spacing: 0.10em;
+            opacity: 0.33;
         }
 
-        /* Dashboard */
         .hyprbinds-dashboard { padding: 4px 2px; }
         .hyprbinds-hero {
-            padding: 22px 24px;
-            border-radius: 16px;
-            background-image: linear-gradient(
-                115deg,
-                alpha(@hb_accent, 0.085),
-                alpha(@hb_accent, 0.028) 48%,
-                alpha(currentColor, 0.012)
-            );
-            border: 1px solid alpha(@hb_accent, 0.12);
+            padding: 20px 22px;
+            border-radius: 12px;
+            background-color: @hb_surface;
+            background-image: none;
+            border: 1px solid @hb_border;
         }
         .hyprbinds-hero-title {
-            font-size: 2.08em;
-            font-weight: 800;
-            letter-spacing: -0.055em;
+            font-size: 2.02em;
+            font-weight: 760;
+            letter-spacing: -0.05em;
         }
         .hyprbinds-hero-sub {
             max-width: 52em;
             font-size: 0.90em;
-            opacity: 0.46;
+            opacity: 0.45;
         }
         .hyprbinds-metrics { margin-top: 3px; }
         .hyprbinds-metric {
-            padding: 15px 16px;
-            border-radius: 13px;
+            padding: 14px 15px;
+            border-radius: 10px;
             border: 1px solid @hb_border_soft;
             background-color: @hb_surface;
         }
         .hyprbinds-metric-value {
-            font-size: 1.48em;
-            font-weight: 790;
-            letter-spacing: -0.040em;
+            font-size: 1.44em;
+            font-weight: 750;
+            letter-spacing: -0.035em;
         }
         .hyprbinds-metric-label {
             font-size: 0.70em;
-            opacity: 0.34;
-            letter-spacing: 0.02em;
+            opacity: 0.33;
         }
         .hyprbinds-dashboard-panel {
-            padding: 16px 17px;
-            border-radius: 14px;
+            padding: 15px 16px;
+            border-radius: 10px;
             border: 1px solid @hb_border_soft;
             background-color: @hb_surface;
         }
         .hyprbinds-dashboard-note {
-            padding-top: 11px;
+            padding-top: 10px;
             font-size: 0.74em;
-            opacity: 0.36;
+            opacity: 0.35;
         }
         .hyprbinds-speed-value {
-            font-size: 1.08em;
-            font-weight: 750;
-            color: @hb_accent;
+            font-size: 1.06em;
+            font-weight: 700;
+            color: inherit;
         }
 
-        /* Settings surfaces */
         .hyprbinds-settings-card,
         .hyprbinds-dialog-section {
             background-color: @hb_surface;
             border: 1px solid @hb_border_soft;
-            border-radius: 13px;
+            border-radius: 10px;
             box-shadow: none;
         }
         .hyprbinds-settings-card { padding: 6px 4px 7px 4px; }
         .hyprbinds-settings-card-title,
         .hyprbinds-dialog-section-title {
             font-size: 0.66em;
-            font-weight: 780;
-            letter-spacing: 0.10em;
-            opacity: 0.34;
+            font-weight: 740;
+            letter-spacing: 0.09em;
+            opacity: 0.33;
         }
         .hyprbinds-settings-row {
-            min-height: 41px;
+            min-height: 40px;
             padding: 10px 13px;
-            border-radius: 9px;
+            border-radius: 7px;
         }
         .hyprbinds-settings-row:hover { background-color: @hb_hover; }
-        .hyprbinds-settings-title { font-size: 0.94em; font-weight: 640; }
-        .hyprbinds-settings-sub { font-size: 0.78em; opacity: 0.40; }
+        .hyprbinds-settings-title { font-size: 0.94em; font-weight: 620; }
+        .hyprbinds-settings-sub { font-size: 0.78em; opacity: 0.39; }
 
-        /* Actions */
         button.suggested-action {
-            min-height: 31px;
-            padding: 4px 13px;
-            border-radius: 10px;
+            min-height: 30px;
+            padding: 3px 12px;
+            border-radius: 8px;
             background-image: none;
-            background-color: @hb_accent;
-            color: #031218;
-            font-weight: 690;
-            border: 1px solid transparent;
+            background-color: alpha(currentColor, 0.13);
+            color: inherit;
+            font-weight: 650;
+            border: 1px solid alpha(currentColor, 0.14);
             box-shadow: none;
         }
         button.suggested-action:hover {
-            background-color: @hb_accent_hover;
-            border-color: transparent;
+            background-color: alpha(currentColor, 0.17);
+            border-color: alpha(currentColor, 0.20);
         }
         button.destructive-action {
-            min-height: 31px;
-            border-radius: 10px;
+            min-height: 30px;
+            border-radius: 8px;
             background-color: transparent;
             color: @error_color;
             border: 1px solid alpha(@error_color, 0.10);
         }
         button.destructive-action:hover {
             background-color: alpha(@error_color, 0.08);
-            border-color: alpha(@error_color, 0.15);
         }
 
-        /* Footer / palette / diagnostics */
-        .hyprbinds-status-sep { margin-top: 5px; opacity: 0.20; }
+        .hyprbinds-status-sep { margin-top: 4px; opacity: 0.22; }
         .hyprbinds-status {
             min-height: 18px;
             padding-top: 5px;
-            font-size: 0.76em;
-            opacity: 0.36;
+            font-size: 0.77em;
+            opacity: 0.40;
         }
         .hyprbinds-sticky-footer {
             background-color: @window_bg_color;
             border-top: 1px solid @hb_border_soft;
         }
         .hyprbinds-palette-search {
-            min-height: 38px;
-            padding: 6px 12px;
-            border-radius: 12px;
-            font-size: 1em;
+            min-height: 35px;
+            padding: 5px 10px;
+            font-size: 0.98em;
         }
         .hyprbinds-health-badge,
-        .hyprbinds-conflict-badge {
-            border-radius: 999px;
-            padding: 3px 8px;
-        }
+        .hyprbinds-conflict-badge { border-radius: 5px; }
         .curve-graph {
-            border-radius: 12px;
+            border-radius: 9px;
             border-color: @hb_border;
             background-color: @hb_surface;
         }
