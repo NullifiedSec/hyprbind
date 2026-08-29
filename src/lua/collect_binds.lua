@@ -194,7 +194,8 @@ end
 
 local function collect_spec(list, spec, level)
   spec = type(spec) == "table" and spec or {}
-  local file, line = source_info(level or 3)
+  -- `collect_spec` adds one stack frame between the hl.* stub and user config.
+  local file, line = source_info((level or 3) + 1)
   local fields = {}
   for k, v in pairs(spec) do
     fields[tostring(k)] = v
