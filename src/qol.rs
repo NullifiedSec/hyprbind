@@ -6,11 +6,12 @@
 //! being silently clamped or rewritten.
 
 use gtk4::prelude::*;
-use gtk4::{Adjustment, Box as GtkBox, DropDown, Entry, Label, Orientation, Scale, Widget, Window};
+use gtk4::{Adjustment, Box as GtkBox, Button, DropDown, Entry, GestureClick, Label, Orientation, Scale, Widget, Window};
 use std::cell::Cell;
 use std::rc::Rc;
 
 const CONTROL_NAME: &str = "hyprbinds-qol-control";
+const RAW_SCALE_EDITOR_NAME: &str = "hyprbinds-qol-raw-scale-editor";
 
 #[derive(Clone, Copy)]
 enum SliderDisplay {
@@ -40,6 +41,9 @@ fn enhance_all() {
 fn enhance_tree(widget: &Widget) {
     if let Ok(block) = widget.clone().downcast::<GtkBox>() {
         enhance_field_block(&block);
+    }
+    if let Ok(scale) = widget.clone().downcast::<Scale>() {
+        enhance_existing_scale(&scale);
     }
 
     let mut child = widget.first_child();
@@ -158,18 +162,27 @@ fn install_slider(
     scale.set_digits(digits);
     scale.set_hexpand(true);
     scale.set_tooltip_text(Some(
-        "Sane range. Existing values outside it remain available as raw text.",
+        "Sane range. Click the value to enter a raw number.",
     ));
 
-    let value = Label::builder()
+    let value = Button::builder()
         .halign(gtk4::Align::End)
-        .css_classes(["dim-label", "caption"])
+        .css_classes(["flat", "caption"])
+        .tooltip_text("Click to enter a raw number")
         .build();
+
+    let raw = Entry::builder()
+        .width_chars(8)
+        .halign(gtk4::Align::End)
+        .visible(false)
+        .build();
+    raw.set_widget_name(RAW_SCALE_EDITOR_NAME);
 
     let row = GtkBox::new(Orientation::Horizontal, 8);
     row.set_widget_name(CONTROL_NAME);
     row.append(&scale);
     row.append(&value);
+    row.append(&raw);
     block.append(&row);
 
     let syncing = Rc::new(Cell::new(false));
@@ -196,7 +209,7 @@ fn install_slider(
 
             syncing.set(true);
             scale.set_value(parsed);
-            value.set_text(&display_value(parsed, display));
+            value.set_label(&display_value(parsed, display));
             entry.set_visible(false);
             row.set_visible(true);
             syncing.set(false);
@@ -218,12 +231,106 @@ fn install_slider(
             let current = scale.value();
             syncing.set(true);
             entry.set_text(&storage_value(current, digits));
-            value.set_text(&display_value(current, display));
+            value.set_label(&display_value(current, display));
             syncing.set(false);
+        }
+    });
+    value.connect_clicked({
+        let entry = entry.clone();
+        let raw = raw.clone();
+        let value = value.clone();
+        move |_| {
+            raw.set_text(&entry.text());
+            value.set_visible(false);
+            raw.set_visible(true);
+            raw.grab_focus();
+            raw.select_region(0, -1);
+        }
+    });
+    raw.connect_activate({
+        let entry = entry.clone();
+        let raw = raw.clone();
+        let value = value.clone();
+        move |_| {
+            let text = raw.text();
+            if text.trim().parse::<f64>().is_ok() {
+                entry.set_text(text.trim());
+                raw.set_visible(false);
+                value.set_visible(true);
+            }
         }
     });
 
     sync_from_entry();
+}
+
+fn enhance_existing_scale(scale: &Scale) {
+    if has_ancestor_named(scale, CONTROL_NAME) {
+        return;
+    }
+    let Some(parent) = scale.parent().and_then(|w| w.downcast::<GtkBox>().ok()) else {
+        return;
+    };
+    if direct_children(&parent)
+        .iter()
+        .any(|w| w.widget_name().as_str() == RAW_SCALE_EDITOR_NAME)
+    {
+        return;
+    }
+
+    scale.set_draw_value(false);
+    let value = Button::builder()
+        .label(&scale_numeric_value(scale))
+        .css_classes(["flat", "caption"])
+        .tooltip_text("Click to enter a raw number")
+        .build();
+    let raw = Entry::builder()
+        .width_chars(8)
+        .visible(false)
+        .build();
+    raw.set_widget_name(RAW_SCALE_EDITOR_NAME);
+    parent.append(&value);
+    parent.append(&raw);
+
+    scale.connect_value_changed({
+        let value = value.clone();
+        move |scale| value.set_label(&scale_numeric_value(scale))
+    });
+    value.connect_clicked({
+        let scale = scale.clone();
+        let value = value.clone();
+        let raw = raw.clone();
+        move |_| {
+            raw.set_text(&scale_numeric_value(&scale));
+            value.set_visible(false);
+            raw.set_visible(true);
+            raw.grab_focus();
+            raw.select_region(0, -1);
+        }
+    });
+    raw.connect_activate({
+        let scale = scale.clone();
+        let value = value.clone();
+        let raw = raw.clone();
+        move |_| {
+            let Ok(number) = raw.text().trim().parse::<f64>() else {
+                return;
+            };
+            if !number.is_finite() {
+                return;
+            }
+            let adjustment = scale.adjustment();
+            if number < adjustment.lower() {
+                adjustment.set_lower(number);
+            }
+            if number > adjustment.upper() {
+                adjustment.set_upper(number);
+            }
+            scale.set_value(number);
+            raw.set_visible(false);
+            value.set_visible(true);
+        }
+    });
 }
 
 fn install_choice(block: &GtkBox, entry: &Entry, choices: &[(&str, &str)]) {
@@ -298,6 +405,14 @@ fn install_choice(block: &GtkBox, entry: &Entry, choices: &[(&str, &str)]) {
     sync_from_entry();
 }
 
+fn scale_numeric_value(scale: &Scale) -> String {
+    match scale.digits() {
+        0 => format!("{}", scale.value().round() as i64),
+        1 => format!("{:.1}", scale.value()),
+        digits => format!("{:.*}", digits.max(0) as usize, scale.value()),
+    }
+}
+
 fn display_value(value: f64, display: SliderDisplay) -> String {
     match display {
         SliderDisplay::Pixels => format!("{} px", value.round() as i64),
@@ -313,6 +428,17 @@ fn storage_value(value: f64, digits: i32) -> String {
         1 => format!("{value:.1}"),
         _ => format!("{value:.2}"),
     }
+}
+
+fn has_ancestor_named(widget: &impl IsA<Widget>, name: &str) -> bool {
+    let mut parent = widget.as_ref().parent();
+    while let Some(current) = parent {
+        if current.widget_name().as_str() == name {
+            return true;
+        }
+        parent = current.parent();
+    }
+    false
 }
 
 fn direct_children(block: &GtkBox) -> Vec<Widget> {
