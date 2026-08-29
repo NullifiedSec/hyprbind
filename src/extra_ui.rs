@@ -14,8 +14,8 @@ use crate::window_rules::WindowRule;
 use crate::writer;
 use gtk4::prelude::*;
 use gtk4::{
-    Box as GtkBox, Button, CheckButton, DropDown, Entry, Label, ListBox, ListBoxRow, Orientation,
-    PolicyType, ScrolledWindow, StringList, Window,
+    Adjustment, Box as GtkBox, Button, CheckButton, DropDown, Entry, Label, ListBox, ListBoxRow,
+    Orientation, PolicyType, Scale, ScrolledWindow, StringList, Window,
 };
 use serde_json::{json, Value};
 use std::cell::{Cell, RefCell};
@@ -1628,6 +1628,10 @@ fn show_animation_dialog<F>(
 ) where
     F: Fn(String) + 'static,
 {
+    const MIN_SPEED_DS: f64 = 0.5;
+    const MAX_SPEED_DS: f64 = 20.0;
+    const SPEED_STEP_DS: f64 = 0.5;
+
     let is_new = existing.is_none();
     let editor = Window::builder()
         .title(if is_new {
@@ -1670,15 +1674,80 @@ fn show_animation_dialog<F>(
         }
     });
 
-    let speed = Entry::builder()
-        .text(
-            existing
-                .as_ref()
-                .and_then(|i| i.get_string("speed"))
-                .unwrap_or_else(|| "5".into()),
-        )
-        .placeholder_text("5")
+    let initial_speed = existing
+        .as_ref()
+        .and_then(|i| i.get_f64("speed"))
+        .unwrap_or(5.0)
+        .clamp(MIN_SPEED_DS, MAX_SPEED_DS);
+    let speed_adjustment = Adjustment::new(
+        initial_speed,
+        MIN_SPEED_DS,
+        MAX_SPEED_DS,
+        SPEED_STEP_DS,
+        1.0,
+        0.0,
+    );
+    let speed = Scale::new(Orientation::Horizontal, Some(&speed_adjustment));
+    speed.set_draw_value(false);
+    speed.set_hexpand(true);
+    speed.set_digits(1);
+    let speed_value = Label::builder()
+        .halign(gtk4::Align::End)
+        .css_classes(["dim-label", "caption"])
         .build();
+    let update_speed_label: Rc<dyn Fn()> = {
+        let speed = speed.clone();
+        let speed_value = speed_value.clone();
+        Rc::new(move || {
+            let ds = speed.value();
+            speed_value.set_text(&format!("{ds:.1} ds · {:.0} ms", ds * 100.0));
+        })
+    };
+    update_speed_label();
+    speed.connect_value_changed({
+        let update_speed_label = Rc::clone(&update_speed_label);
+        move |_| update_speed_label()
+    });
+
+    let speed_block = GtkBox::builder()
+        .orientation(Orientation::Vertical)
+        .spacing(4)
+        .build();
+    let speed_header = GtkBox::builder()
+        .orientation(Orientation::Horizontal)
+        .spacing(8)
+        .build();
+    speed_header.append(
+        &Label::builder()
+            .label("Duration")
+            .halign(gtk4::Align::Start)
+            .hexpand(true)
+            .build(),
+    );
+    speed_header.append(&speed_value);
+    speed_block.append(&speed_header);
+    speed_block.append(&speed);
+    let speed_ends = GtkBox::builder()
+        .orientation(Orientation::Horizontal)
+        .spacing(8)
+        .build();
+    speed_ends.append(
+        &Label::builder()
+            .label("Faster · 50 ms")
+            .halign(gtk4::Align::Start)
+            .hexpand(true)
+            .css_classes(["dim-label", "caption"])
+            .build(),
+    );
+    speed_ends.append(
+        &Label::builder()
+            .label("2 s · Slower")
+            .halign(gtk4::Align::End)
+            .css_classes(["dim-label", "caption"])
+            .build(),
+    );
+    speed_block.append(&speed_ends);
+
     let enabled = CheckButton::builder()
         .label("Enabled")
         .active(existing.as_ref().and_then(|i| i.get_bool("enabled")).unwrap_or(true))
@@ -1749,7 +1818,7 @@ fn show_animation_dialog<F>(
     });
 
     let status = Label::builder()
-        .label("Curve names come from the Curves tab. Styles depend on the leaf.")
+        .label("Duration applies to both Bézier and spring animations. 1 ds = 100 ms.")
         .wrap(true)
         .css_classes(["dim-label"])
         .build();
@@ -1771,7 +1840,7 @@ fn show_animation_dialog<F>(
     form.append(&field_block("Leaf", &leaf_entry));
     form.append(&leaf_dd);
     form.append(&enabled);
-    form.append(&field_block("Speed (bezier only; springs ignore speed)", &speed));
+    form.append(&speed_block);
     {
         let row = GtkBox::builder()
             .orientation(Orientation::Vertical)
@@ -1846,7 +1915,8 @@ fn show_animation_dialog<F>(
             let mut fields = BTreeMap::new();
             fields.insert("leaf".into(), json!(leaf));
             fields.insert("enabled".into(), json!(enabled.is_active()));
-            push_opt_number_or_string(&mut fields, "speed", &speed.text());
+            let duration_ds = (speed.value() * 2.0).round() / 2.0;
+            fields.insert("speed".into(), json!(duration_ds));
             let idx = curve_dd.selected() as usize;
             if idx > 0 {
                 if let Some(name) = curve_options.get(idx) {
@@ -1889,9 +1959,26 @@ fn show_animation_dialog<F>(
         wire_dialog_autosave(
             &realtime,
             &try_save,
-            &[&leaf_entry, &speed, &style_entry],
+            &[&leaf_entry, &style_entry],
             &[&enabled],
         );
+        let speed_debouncer = Debouncer::new();
+        speed.connect_value_changed({
+            let realtime = Rc::clone(&realtime);
+            let try_save = Rc::clone(&try_save);
+            move |_| {
+                if !realtime.get() {
+                    return;
+                }
+                let realtime = Rc::clone(&realtime);
+                let try_save = Rc::clone(&try_save);
+                speed_debouncer.schedule(move || {
+                    if realtime.get() {
+                        try_save(false);
+                    }
+                });
+            }
+        });
     }
 
     editor.present();
