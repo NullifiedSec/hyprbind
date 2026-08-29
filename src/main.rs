@@ -25,6 +25,7 @@ mod lookfeel_ui;
 mod nav;
 mod overview_ui;
 mod palette;
+mod qol;
 mod settings_config;
 mod spec;
 mod startup;
@@ -229,6 +230,7 @@ fn main() {
     let app = Application::builder().application_id(APP_ID).build();
     app.connect_activate(|app| {
         ui::build_ui(app);
+        qol::install();
         design::apply();
         intent_design::apply();
 
