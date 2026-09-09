@@ -1,21 +1,56 @@
-MIT License
+Hyprbind Source License
+Version 1.0, September 2026
 
-Copyright (c) 2026 hyprbinds contributors
+Copyright (c) 2026 Mashrur Rahman Rawnok (NullifiedSec)
+All rights reserved except as expressly granted by this license.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+1. Permission
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+Permission is granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software") to:
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+- use the Software for personal, educational, research, and commercial purposes;
+- inspect and study the source code;
+- modify the Software; and
+- create and submit contributions, patches, and derivative modifications to the Hyprbind project.
+
+2. Attribution
+
+Any copy, modification, derivative work, or distribution permitted by this license must retain:
+
+- this license;
+- the above copyright notice; and
+- clear and reasonably prominent attribution to Mashrur Rahman Rawnok (NullifiedSec) as the original author of Hyprbind.
+
+You may not remove, conceal, misrepresent, or replace the original authorship or attribution of the Software.
+
+3. Redistribution and Project Identity
+
+You may redistribute the Software, including modified versions, only when it continues to be identified as Hyprbind and the redistribution complies with this license.
+
+You may not redistribute, publish, sublicense, offer, or otherwise make the Software or a derivative work available as a differently named, rebranded, or independently branded software project without prior written permission from the copyright holder.
+
+Forks and modified versions used for development, contribution, testing, or collaboration are permitted, provided that they remain clearly identified as forks or modified versions of Hyprbind and preserve the attribution required by Section 2.
+
+This restriction does not prevent you from describing your own modifications, maintaining a fork under an account or organization name, or using a repository name necessary to distinguish a fork, provided that the software itself is represented as a fork or modified version of Hyprbind and not as an independently originated project.
+
+4. Contributions
+
+By intentionally submitting a contribution to Hyprbind, you grant the copyright holder and recipients of Hyprbind a perpetual, worldwide, non-exclusive, royalty-free license to use, reproduce, modify, and distribute that contribution as part of Hyprbind under this license or a later version of this license.
+
+You retain copyright in your own contributions unless separately agreed otherwise.
+
+5. No Trademark Grant
+
+This license does not grant permission to use the names "Hyprbind", "NullifiedSec", or the name of the original author to imply endorsement of a modified version, product, or service.
+
+6. Termination
+
+Your rights under this license terminate automatically if you materially violate its terms. Rights may be restored if the violation is cured and the copyright holder provides written permission for restoration.
+
+7. Disclaimer of Warranty
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+8. Entire License
+
+No rights are granted except those expressly stated in this license. Any use, redistribution, or relicensing outside these terms requires prior written permission from the copyright holder.
