@@ -77,32 +77,32 @@ Rectangle {
             Repeater {
                 model: [
                     { title: "START HERE", items: [
-                        { name: "Overview", iconName: "home" }
+                        { name: "Overview" }
                     ]},
                     { title: "KEYBOARD & CONFIG", items: [
-                        { name: "Binds", iconName: "keyboard" },
-                        { name: "Variables", iconName: "braces" },
-                        { name: "Environment", iconName: "document" },
-                        { name: "Submaps", iconName: "grid" },
-                        { name: "Startup", iconName: "power" }
+                        { name: "Binds" },
+                        { name: "Variables" },
+                        { name: "Environment" },
+                        { name: "Submaps" },
+                        { name: "Startup" }
                     ]},
                     { title: "RULES", items: [
-                        { name: "Window rules", iconName: "window" },
-                        { name: "Workspace rules", iconName: "grid" },
-                        { name: "Layer rules", iconName: "layers" }
+                        { name: "Window rules" },
+                        { name: "Workspace rules" },
+                        { name: "Layer rules" }
                     ]},
                     { title: "APPEARANCE & INPUT", items: [
-                        { name: "Look & Feel", iconName: "diamond" },
-                        { name: "Config", iconName: "settings" },
-                        { name: "Monitors", iconName: "monitor" },
-                        { name: "Devices", iconName: "device" },
-                        { name: "Animations", iconName: "sparkle" },
-                        { name: "Curves", iconName: "curve" },
-                        { name: "Gestures", iconName: "gesture" }
+                        { name: "Look & Feel" },
+                        { name: "Config" },
+                        { name: "Monitors" },
+                        { name: "Devices" },
+                        { name: "Animations" },
+                        { name: "Curves" },
+                        { name: "Gestures" }
                     ]},
                     { title: "SYSTEM", items: [
-                        { name: "Health", iconName: "heart" },
-                        { name: "Logs", iconName: "logs" }
+                        { name: "Health" },
+                        { name: "Logs" }
                     ]}
                 ]
 
@@ -142,7 +142,7 @@ Rectangle {
                             width: root.compact ? 48 : groupColumn.width - 24
                             anchors.horizontalCenter: parent.horizontalCenter
                             text: itemData.name
-                            iconName: itemData.iconName
+                            iconName: theme.pageIcon(itemData.name)
                             darkMode: root.darkMode
                             compact: root.compact
                             selected: root.currentPage === itemData.name
