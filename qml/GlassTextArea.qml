@@ -16,7 +16,7 @@ ScrollView {
 
     background: Rectangle {
         radius: 11
-        color: editor.activeFocus ? theme.searchFocusedFill : theme.searchFill
+        color: theme.searchFill
         border.width: 1
         border.color: editor.activeFocus ? theme.searchFocusRim : theme.searchRim
 
@@ -27,15 +27,17 @@ ScrollView {
             anchors.rightMargin: 12
             anchors.top: parent.top
             height: 1
-            color: editor.activeFocus ? theme.searchSpecularFocus : theme.searchSpecular
+            color: theme.searchSpecular
         }
+
+        Behavior on border.color { ColorAnimation { duration: 135; easing.type: Easing.OutCubic } }
     }
 
     TextArea {
         id: editor
         color: theme.textPrimary
         placeholderTextColor: theme.alpha(theme.textSecondary, 0.58)
-        selectionColor: theme.alpha(theme.accent, 0.28)
+        selectionColor: theme.alpha(theme.foreground, control.darkMode ? 0.14 : 0.16)
         selectedTextColor: theme.textPrimary
         font.family: "monospace"
         font.pixelSize: 11
