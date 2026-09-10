@@ -36,6 +36,8 @@ Canvas {
             c.moveTo(7.7, 4.2); c.lineTo(12.3, 4.2); c.moveTo(9, 4.2); c.lineTo(9.3, 3); c.lineTo(10.7, 3); c.lineTo(11, 4.2)
         } else if (name === "copy") {
             c.rect(6.5, 6.5, 9, 9); c.moveTo(5, 13); c.lineTo(4, 13); c.lineTo(4, 4); c.lineTo(13, 4); c.lineTo(13, 5)
+        } else if (name === "check") {
+            c.moveTo(4.2, 10.4); c.lineTo(8.3, 14.1); c.lineTo(15.9, 5.9)
         } else if (name === "search") {
             c.arc(8.6, 8.6, 4.7, 0, Math.PI * 2); c.moveTo(12.1, 12.1); c.lineTo(16.3, 16.3)
         } else if (name === "reload") {
