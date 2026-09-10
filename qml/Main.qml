@@ -196,15 +196,28 @@ ApplicationWindow {
                     id: pageLoader
                     anchors.fill: parent
                     anchors.margins: appWindow.currentPage === "Look & Feel" ? 0 : 14
-                    sourceComponent: appWindow.currentPage === "Environment"
-                        ? environmentComponent
-                        : appWindow.currentPage === "Variables"
-                            ? variablesComponent
-                            : appWindow.currentPage === "Look & Feel"
-                                ? lookFeelComponent
-                                : placeholderComponent
+                    sourceComponent: appWindow.currentPage === "Overview"
+                        ? overviewComponent
+                        : appWindow.currentPage === "Environment"
+                            ? environmentComponent
+                            : appWindow.currentPage === "Variables"
+                                ? variablesComponent
+                                : appWindow.currentPage === "Look & Feel"
+                                    ? lookFeelComponent
+                                    : placeholderComponent
                 }
             }
+        }
+    }
+
+    Component {
+        id: overviewComponent
+        OverviewPage {
+            bridge: backend
+            darkMode: appWindow.darkMode
+            onStatus: message => appWindow.statusMessage = message
+            onConfigResolved: path => appWindow.configPath = path
+            onHealthChanged: healthy => appWindow.backendHealthy = healthy
         }
     }
 
