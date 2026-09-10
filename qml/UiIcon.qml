@@ -40,6 +40,9 @@ Canvas {
             c.arc(8.6, 8.6, 4.7, 0, Math.PI * 2); c.moveTo(12.1, 12.1); c.lineTo(16.3, 16.3)
         } else if (name === "reload") {
             c.arc(10, 10, 6, -0.55, Math.PI * 1.42); c.moveTo(14.6, 3.8); c.lineTo(15.6, 7.1); c.lineTo(12.3, 6.4)
+        } else if (name === "save") {
+            c.moveTo(4, 3.5); c.lineTo(13.2, 3.5); c.lineTo(16, 6.3); c.lineTo(16, 16.5); c.lineTo(4, 16.5); c.closePath();
+            c.rect(6.2, 4.8, 5.8, 4.1); c.roundedRect(6.5, 11.2, 7, 4.2, 1)
         } else if (name === "history") {
             c.arc(10.2, 10, 6, -2.45, Math.PI * 0.9); c.moveTo(5.6, 4.8); c.lineTo(4.2, 8); c.lineTo(7.6, 7.3); c.moveTo(10.2, 6.5); c.lineTo(10.2, 10.2); c.lineTo(12.8, 11.8)
         } else if (name === "terminal") {
