@@ -47,6 +47,8 @@ Item {
             return "A quick view of your configuration and Hyprbind state."
         if (currentPage === "Variables")
             return "Reusable values referenced across binds, rules, and commands."
+        if (currentPage === "Startup")
+            return "Choose which commands run when Hyprland starts, reloads, or shuts down."
         return "This page is being migrated to the new interface."
     }
 
@@ -93,15 +95,13 @@ Item {
 
         TextInput {
             id: pathText
-            visible: root.fullPath
-            anchors.left: parent.left
-            anchors.leftMargin: 14
-            anchors.right: copyPath.left
-            anchors.rightMargin: 8
+            x: root.fullPath ? 14 : 1
+            width: root.fullPath ? Math.max(1, copyPath.x - 22) : 1
             anchors.verticalCenter: parent.verticalCenter
             text: root.configPath
             readOnly: true
-            selectByMouse: true
+            selectByMouse: root.fullPath
+            opacity: root.fullPath ? 1 : 0
             color: theme.alpha(theme.textPrimary, 0.80)
             font.family: "Inter"
             font.pixelSize: 11
