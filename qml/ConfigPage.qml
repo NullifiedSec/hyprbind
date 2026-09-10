@@ -9,6 +9,7 @@ Item {
     property string configPath: ""
     property string originalText: "{}"
     property bool dirty: configEditor.text !== originalText
+    readonly property bool compactToolbar: width < 620
 
     signal status(string message)
     signal configResolved(string path)
@@ -64,31 +65,48 @@ Item {
         spacing: 10
 
         Item {
+            id: toolbar
             width: parent.width
-            height: root.width < 620 ? 82 : 46
+            height: root.compactToolbar ? 82 : 46
+
+            Row {
+                id: actions
+                spacing: 7
+                x: Math.max(0, toolbar.width - width)
+                y: root.compactToolbar
+                    ? Math.max(0, toolbar.height - height)
+                    : Math.round((toolbar.height - height) / 2)
+
+                IconButton {
+                    iconName: "reload"
+                    tooltip: "Discard edits and reload"
+                    darkMode: root.darkMode
+                    onClicked: root.load()
+                }
+                IconButton {
+                    iconName: "save"
+                    tooltip: root.dirty ? "Save config override" : "No unsaved changes"
+                    darkMode: root.darkMode
+                    accent: root.dirty
+                    enabled: root.dirty
+                    onClicked: root.save()
+                }
+            }
 
             Text {
                 id: hint
-                anchors.left: parent.left
-                anchors.right: root.width < 620 ? parent.right : actions.left
-                anchors.rightMargin: root.width < 620 ? 0 : 14
-                anchors.top: parent.top
-                anchors.verticalCenter: root.width < 620 ? undefined : parent.verticalCenter
+                x: 0
+                y: root.compactToolbar
+                    ? 0
+                    : Math.round((toolbar.height - height) / 2)
+                width: root.compactToolbar
+                    ? toolbar.width
+                    : Math.max(0, actions.x - 14)
                 text: "Advanced merged-config editor · typed JSON is preserved by the existing managed writer."
                 color: theme.textSecondary
                 font.family: "Inter"
                 font.pixelSize: 10
                 elide: Text.ElideRight
-            }
-
-            Row {
-                id: actions
-                anchors.right: parent.right
-                anchors.top: root.width < 620 ? hint.bottom : parent.top
-                anchors.topMargin: root.width < 620 ? 7 : 3
-                spacing: 7
-                IconButton { iconName: "reload"; tooltip: "Discard edits and reload"; darkMode: root.darkMode; onClicked: root.load() }
-                IconButton { iconName: "save"; tooltip: root.dirty ? "Save config override" : "No unsaved changes"; darkMode: root.darkMode; accent: root.dirty; enabled: root.dirty; onClicked: root.save() }
             }
         }
 
