@@ -48,6 +48,9 @@ Canvas {
             c.rect(6.2, 4.8, 5.8, 4.1); c.rect(6.5, 11.2, 7, 4.2)
         } else if (name === "history") {
             c.arc(10.2, 10, 6, -2.45, Math.PI * 0.9); c.moveTo(5.6, 4.8); c.lineTo(4.2, 8); c.lineTo(7.6, 7.3); c.moveTo(10.2, 6.5); c.lineTo(10.2, 10.2); c.lineTo(12.8, 11.8)
+        } else if (name === "transfer") {
+            c.moveTo(3.5, 7); c.lineTo(15.5, 7); c.moveTo(12.5, 4); c.lineTo(15.5, 7); c.lineTo(12.5, 10);
+            c.moveTo(16.5, 13); c.lineTo(4.5, 13); c.moveTo(7.5, 10); c.lineTo(4.5, 13); c.lineTo(7.5, 16)
         } else if (name === "terminal") {
             c.moveTo(4, 5); c.lineTo(8, 9); c.lineTo(4, 13); c.moveTo(10, 14); c.lineTo(16, 14)
         } else if (name === "monitor") {

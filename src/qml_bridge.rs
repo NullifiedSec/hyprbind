@@ -78,6 +78,30 @@ mod qobject {
         #[qinvokable]
         #[rust_name = "delete_variable"]
         fn deleteVariable(self: &HyprbindBridge, name: &QString) -> QString;
+
+        #[qinvokable]
+        #[rust_name = "set_developer_mode"]
+        fn setDeveloperMode(self: &HyprbindBridge, enabled: bool) -> QString;
+
+        #[qinvokable]
+        #[rust_name = "export_bundle"]
+        fn exportBundle(self: &HyprbindBridge, path: &QString) -> QString;
+
+        #[qinvokable]
+        #[rust_name = "import_bundle"]
+        fn importBundle(
+            self: &HyprbindBridge,
+            path: &QString,
+            hyprland: bool,
+            waybar: bool,
+            app: bool,
+            via: bool,
+            system: bool,
+        ) -> QString;
+
+        #[qinvokable]
+        #[rust_name = "launch_gtk_ui"]
+        fn launchGtkUi(self: &HyprbindBridge) -> QString;
     }
 }
 
@@ -98,6 +122,7 @@ impl qobject::HyprbindBridge {
         to_qstring(json!({
             "ok": true,
             "darkMode": prefs.dark_mode,
+            "developerMode": prefs.developer_mode,
             "hasBackup": has_backup,
             "backupAge": backup_age,
         }))
@@ -110,6 +135,74 @@ impl qobject::HyprbindBridge {
         } else {
             "Light glass theme enabled.".into()
         })
+    }
+
+    fn set_developer_mode(&self, enabled: bool) -> QString {
+        crate::ui_prefs::update(|prefs| prefs.developer_mode = enabled);
+        action_ok(if enabled {
+            "Developer mode enabled.".into()
+        } else {
+            "Developer mode disabled.".into()
+        })
+    }
+
+    fn export_bundle(&self, path: &QString) -> QString {
+        let path = match resolve_user_path(&String::from(path)) {
+            Ok(path) => path,
+            Err(error) => return action_error(error),
+        };
+        let mut collection = match crate::config::load_binds(None) {
+            Ok(collection) => collection,
+            Err(error) => return action_error(error.to_string()),
+        };
+        collection.finalize();
+        match crate::bundle::export_to_path(&collection, &path) {
+            Ok(()) => action_ok(format!("Exported settings to {}", path.display())),
+            Err(error) => action_error(error.to_string()),
+        }
+    }
+
+    fn import_bundle(
+        &self,
+        path: &QString,
+        hyprland: bool,
+        waybar: bool,
+        app: bool,
+        via: bool,
+        system: bool,
+    ) -> QString {
+        let path = match resolve_user_path(&String::from(path)) {
+            Ok(path) => path,
+            Err(error) => return action_error(error),
+        };
+        let options = crate::bundle::ImportOptions {
+            hyprland,
+            waybar,
+            app,
+            via,
+            system,
+        };
+        match crate::bundle::import_from_path(&path, options) {
+            Ok(report) if report.ok() => action_ok(format!("Import: {}", report.summary())),
+            Ok(report) if !report.messages.is_empty() => to_qstring(json!({
+                "ok": true,
+                "warning": true,
+                "message": format!("Import: {}", report.summary())
+            })),
+            Ok(report) => action_error(format!("Import: {}", report.summary())),
+            Err(error) => action_error(error.to_string()),
+        }
+    }
+
+    fn launch_gtk_ui(&self) -> QString {
+        let executable = match std::env::current_exe() {
+            Ok(path) => path,
+            Err(error) => return action_error(error.to_string()),
+        };
+        match std::process::Command::new(executable).arg("--gtk").spawn() {
+            Ok(_) => action_ok("Opened the GTK compatibility UI.".into()),
+            Err(error) => action_error(error.to_string()),
+        }
     }
 
     fn restore_config(&self) -> QString {
@@ -526,6 +619,21 @@ fn action_ok(message: String) -> QString {
 
 fn action_error(message: impl Into<String>) -> QString {
     to_qstring(json!({ "ok": false, "error": message.into() }))
+}
+
+fn resolve_user_path(raw: &str) -> Result<std::path::PathBuf, String> {
+    let value = raw.trim();
+    if value.is_empty() {
+        return Err("Choose a JSON file path first.".into());
+    }
+    if value == "~" {
+        return dirs::home_dir().ok_or_else(|| "Could not determine the home directory.".into());
+    }
+    if let Some(rest) = value.strip_prefix("~/") {
+        let home = dirs::home_dir().ok_or_else(|| "Could not determine the home directory.".to_string())?;
+        return Ok(home.join(rest));
+    }
+    Ok(std::path::PathBuf::from(value))
 }
 
 pub fn run() {

@@ -15,12 +15,13 @@ ApplicationWindow {
     color: "transparent"
     flags: Qt.Window | Qt.FramelessWindowHint
 
-    property string currentPage: "Environment"
+    property string currentPage: "Overview"
     property string configPath: ""
     property string statusMessage: "Ready."
     property bool backendHealthy: true
     property bool darkMode: true
-    property bool realtimeEnabled: false
+    property bool livePreviewEnabled: false
+    property bool developerMode: false
     property bool backupAvailable: false
     property string backupAge: ""
 
@@ -39,6 +40,7 @@ ApplicationWindow {
         const payload = parsePayload(backend.uiSnapshot())
         if (!payload.ok) return
         darkMode = payload.darkMode !== false
+        developerMode = payload.developerMode === true
         backupAvailable = payload.hasBackup === true
         backupAge = payload.backupAge || ""
     }
@@ -54,9 +56,9 @@ ApplicationWindow {
         statusMessage = payload.message || (next ? "Dark theme enabled." : "Light theme enabled.")
     }
 
-    function toggleRealtime() {
-        realtimeEnabled = !realtimeEnabled
-        statusMessage = realtimeEnabled ? "Live preview enabled on supported pages." : "Live preview disabled."
+    function toggleLivePreview() {
+        livePreviewEnabled = !livePreviewEnabled
+        statusMessage = livePreviewEnabled ? "Look & Feel live preview enabled." : "Look & Feel live preview disabled."
     }
 
     function reloadCurrentPage() {
@@ -128,11 +130,11 @@ ApplicationWindow {
             anchors.top: parent.top
             appWindow: appWindow
             darkMode: appWindow.darkMode
-            realtimeEnabled: appWindow.realtimeEnabled
+            livePreviewEnabled: appWindow.livePreviewEnabled
             backupAvailable: appWindow.backupAvailable
             backupAge: appWindow.backupAge
             onToggleThemeRequested: appWindow.toggleDarkMode()
-            onToggleRealtimeRequested: appWindow.toggleRealtime()
+            onToggleLivePreviewRequested: appWindow.toggleLivePreview()
             onRestoreRequested: appWindow.restoreLastBackup()
             onReloadRequested: appWindow.reloadCurrentPage()
         }
@@ -213,7 +215,9 @@ ApplicationWindow {
                         : appWindow.currentPage === "Curves" ? curvesComponent
                         : appWindow.currentPage === "Gestures" ? gesturesComponent
                         : appWindow.currentPage === "Health" ? healthComponent
-                        : logsComponent
+                        : appWindow.currentPage === "Logs" ? logsComponent
+                        : appWindow.currentPage === "Import / Export" ? importExportComponent
+                        : developerToolsComponent
                 }
             }
         }
@@ -235,7 +239,7 @@ ApplicationWindow {
         LookFeelPage {
             bridge: backend
             darkMode: appWindow.darkMode
-            realtimeEnabled: appWindow.realtimeEnabled
+            livePreviewEnabled: appWindow.livePreviewEnabled
             onStatus: message => appWindow.statusMessage = message
             onSaved: { appWindow.loadUiState(); appWindow.statusMessage = "Look & Feel saved." }
         }
@@ -250,4 +254,23 @@ ApplicationWindow {
 
     Component { id: healthComponent; HealthPage { darkMode: appWindow.darkMode; onStatus: message => appWindow.statusMessage = message; onHealthChanged: healthy => appWindow.backendHealthy = healthy } }
     Component { id: logsComponent; LogsPage { darkMode: appWindow.darkMode; onStatus: message => appWindow.statusMessage = message; onHealthChanged: healthy => appWindow.backendHealthy = healthy } }
+    Component {
+        id: importExportComponent
+        ImportExportPage {
+            bridge: backend
+            darkMode: appWindow.darkMode
+            onStatus: message => appWindow.statusMessage = message
+            onImported: appWindow.loadUiState()
+        }
+    }
+    Component {
+        id: developerToolsComponent
+        DeveloperToolsPage {
+            bridge: backend
+            darkMode: appWindow.darkMode
+            developerMode: appWindow.developerMode
+            onStatus: message => appWindow.statusMessage = message
+            onDeveloperModeChanged: enabled => appWindow.developerMode = enabled
+        }
+    }
 }

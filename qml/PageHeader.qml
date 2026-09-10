@@ -13,7 +13,7 @@ Item {
 
     readonly property bool fullPath: width >= 920
     readonly property bool showSubtitle: width >= 560
-    readonly property bool configContext: currentPage !== "Overview" && currentPage !== "Health" && currentPage !== "Logs"
+    readonly property bool configContext: currentPage !== "Overview" && currentPage !== "Health" && currentPage !== "Logs" && currentPage !== "Import / Export" && currentPage !== "Developer tools"
     readonly property int edgeMargin: width < 700 ? 16 : 24
     property bool copied: false
 
@@ -38,6 +38,8 @@ Item {
         if (currentPage === "Gestures") return "Manage gesture calls, actions, fingers, direction, and related fields."
         if (currentPage === "Health") return "Inspect session, Hyprland, portals, audio, and desktop integration."
         if (currentPage === "Logs") return "Search the recent user-session journal without leaving Hyprbind."
+        if (currentPage === "Import / Export") return "Back up and restore Hyprbind settings through the existing Rust bundle pipeline."
+        if (currentPage === "Developer tools") return "Access the existing developer-only companion studios during the QML migration."
         return "Hyprland configuration."
     }
 

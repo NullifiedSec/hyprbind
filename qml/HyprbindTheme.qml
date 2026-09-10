@@ -34,6 +34,8 @@ QtObject {
         if (page === "Gestures") return "gesture"
         if (page === "Health") return "heart"
         if (page === "Logs") return "logs"
+        if (page === "Import / Export") return "transfer"
+        if (page === "Developer tools") return "terminal"
         return "document"
     }
 

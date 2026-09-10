@@ -21,6 +21,8 @@ fn main() {
                 "qml/ConfigPage.qml",
                 "qml/HealthPage.qml",
                 "qml/LogsPage.qml",
+                "qml/ImportExportPage.qml",
+                "qml/DeveloperToolsPage.qml",
                 "qml/GlassPanel.qml",
                 "qml/GlassField.qml",
                 "qml/GlassTextArea.qml",

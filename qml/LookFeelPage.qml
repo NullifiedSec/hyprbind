@@ -7,7 +7,7 @@ Item {
 
     required property var bridge
     property bool darkMode: true
-    property bool realtimeEnabled: false
+    property bool livePreviewEnabled: false
     readonly property bool compactToolbar: width < 760
     readonly property bool singleColumnCards: width < 860
 
@@ -75,7 +75,7 @@ Item {
     }
 
     function preview() {
-        if (!loaded || !realtimeEnabled)
+        if (!loaded || !livePreviewEnabled)
             return
         previewTimer.restart()
     }
@@ -212,8 +212,8 @@ Item {
 
                 Text {
                     anchors.verticalCenter: parent.verticalCenter
-                    text: root.realtimeEnabled ? "Live preview on" : "Live preview off"
-                    color: root.realtimeEnabled ? theme.alpha(theme.accent, 0.90) : theme.alpha(theme.textSecondary, 0.60)
+                    text: root.livePreviewEnabled ? "Live preview on" : "Live preview off"
+                    color: root.livePreviewEnabled ? theme.alpha(theme.accent, 0.90) : theme.alpha(theme.textSecondary, 0.60)
                     font.family: "Inter"
                     font.pixelSize: 11
                 }

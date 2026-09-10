@@ -5,7 +5,7 @@ Rectangle {
     id: root
 
     property bool darkMode: true
-    property string currentPage: "Environment"
+    property string currentPage: "Overview"
     readonly property bool compact: width < 110
     signal pageSelected(string page)
 
@@ -102,7 +102,9 @@ Rectangle {
                     ]},
                     { title: "SYSTEM", items: [
                         { name: "Health" },
-                        { name: "Logs" }
+                        { name: "Logs" },
+                        { name: "Import / Export" },
+                        { name: "Developer tools" }
                     ]}
                 ]
 

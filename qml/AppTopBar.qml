@@ -8,13 +8,13 @@ Rectangle {
 
     required property var appWindow
     property bool darkMode: true
-    property bool realtimeEnabled: false
+    property bool livePreviewEnabled: false
     property bool backupAvailable: false
     property string backupAge: ""
     property bool compositorMaximized: false
 
     signal toggleThemeRequested()
-    signal toggleRealtimeRequested()
+    signal toggleLivePreviewRequested()
     signal restoreRequested()
     signal reloadRequested()
 
@@ -171,8 +171,8 @@ Rectangle {
         }
 
         Button {
-            id: realtimeButton
-            implicitWidth: root.showActionLabels ? 122 : 42
+            id: livePreviewButton
+            implicitWidth: root.showActionLabels ? 136 : 42
             implicitHeight: 38
             padding: 0
             flat: true
@@ -189,9 +189,9 @@ Rectangle {
                         width: 17
                         height: 17
                         name: "realtime"
-                        iconColor: root.realtimeEnabled
+                        iconColor: root.livePreviewEnabled
                             ? theme.accent
-                            : realtimeButton.hovered
+                            : livePreviewButton.hovered
                                 ? theme.alpha(theme.textPrimary, 0.90)
                                 : theme.alpha(theme.textSecondary, 0.82)
                         anchors.verticalCenter: parent.verticalCenter
@@ -200,13 +200,13 @@ Rectangle {
 
                     Text {
                         visible: root.showActionLabels
-                        text: "Realtime"
-                        color: root.realtimeEnabled || realtimeButton.hovered
+                        text: "Live preview"
+                        color: root.livePreviewEnabled || livePreviewButton.hovered
                             ? theme.textPrimary
                             : theme.alpha(theme.textSecondary, 0.84)
                         font.family: "Inter"
                         font.pixelSize: 12
-                        font.weight: root.realtimeEnabled ? Font.Medium : Font.Normal
+                        font.weight: root.livePreviewEnabled ? Font.Medium : Font.Normal
                         anchors.verticalCenter: parent.verticalCenter
                         Behavior on color { ColorAnimation { duration: 115 } }
                     }
@@ -216,9 +216,9 @@ Rectangle {
                         width: 5
                         height: 5
                         radius: 2.5
-                        color: root.realtimeEnabled
+                        color: root.livePreviewEnabled
                             ? theme.accent
-                            : theme.alpha(theme.textSecondary, realtimeButton.hovered ? 0.42 : 0.24)
+                            : theme.alpha(theme.textSecondary, livePreviewButton.hovered ? 0.42 : 0.24)
                         anchors.verticalCenter: parent.verticalCenter
                         Behavior on color { ColorAnimation { duration: 115 } }
                     }
@@ -229,19 +229,19 @@ Rectangle {
                 anchors.fill: parent
                 anchors.margins: 2
                 radius: 10
-                color: realtimeButton.pressed
+                color: livePreviewButton.pressed
                     ? theme.alpha(theme.controlPressed, 0.82)
-                    : realtimeButton.hovered
+                    : livePreviewButton.hovered
                         ? theme.alpha(theme.controlHover, 0.82)
                         : "transparent"
                 border.width: 0
                 Behavior on color { ColorAnimation { duration: 115; easing.type: Easing.OutCubic } }
             }
 
-            onClicked: root.toggleRealtimeRequested()
+            onClicked: root.toggleLivePreviewRequested()
             ToolTip.visible: hovered && !root.showActionLabels
             ToolTip.delay: 450
-            ToolTip.text: root.realtimeEnabled ? "Disable live preview" : "Enable live preview on supported pages"
+            ToolTip.text: root.livePreviewEnabled ? "Disable Look & Feel live preview" : "Enable Look & Feel live preview"
         }
 
         Rectangle { width: 1; height: 23; color: theme.divider; anchors.verticalCenter: parent.verticalCenter }
