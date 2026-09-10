@@ -207,7 +207,7 @@ Rectangle {
         anchors.right: parent.right
         anchors.rightMargin: 8
         anchors.verticalCenter: parent.verticalCenter
-        spacing: 1
+        spacing: 2
 
         Repeater {
             model: [
@@ -215,34 +215,63 @@ Rectangle {
                 { icon: "maximize", tip: "Maximize" },
                 { icon: "close", tip: "Close" }
             ]
+
             delegate: Button {
+                id: windowButton
                 required property var modelData
-                implicitWidth: root.compact ? 36 : 40
+                readonly property bool isClose: modelData.icon === "close"
+                readonly property bool isMaximize: modelData.icon === "maximize"
+                readonly property bool isRestoring: isMaximize && root.appWindow.visibility === Window.Maximized
+                readonly property string effectiveIcon: isRestoring ? "restore-window" : modelData.icon
+                readonly property string effectiveTip: isRestoring ? "Restore" : modelData.tip
+
+                implicitWidth: root.compact ? 36 : 39
                 implicitHeight: 36
                 padding: 0
                 flat: true
                 hoverEnabled: true
+                scale: pressed ? 0.94 : 1.0
 
-                contentItem: UiIcon {
-                    width: 15
-                    height: 15
-                    anchors.centerIn: parent
-                    name: modelData.icon
-                    iconColor: modelData.icon === "close" && parent.hovered
-                        ? "#ffd9d6" : theme.textSecondary
+                Behavior on scale {
+                    NumberAnimation { duration: 90; easing.type: Easing.OutCubic }
+                }
+
+                contentItem: Item {
+                    UiIcon {
+                        anchors.centerIn: parent
+                        width: 15
+                        height: 15
+                        name: windowButton.effectiveIcon
+                        strokeWidth: 1.35
+                        iconColor: windowButton.isClose && windowButton.hovered
+                            ? "#ffe4e1"
+                            : windowButton.hovered
+                                ? theme.alpha(theme.textPrimary, 0.96)
+                                : theme.alpha(theme.textSecondary, 0.82)
+                    }
                 }
 
                 background: Rectangle {
-                    radius: 8
-                    color: modelData.icon === "close" && parent.hovered
-                        ? Qt.rgba(0.73, 0.20, 0.22, 0.44)
-                        : parent.hovered ? theme.hoverFill : "transparent"
+                    radius: 9
+                    color: windowButton.isClose && windowButton.hovered
+                        ? Qt.rgba(0.72, 0.18, 0.20, windowButton.pressed ? 0.58 : 0.44)
+                        : windowButton.pressed
+                            ? theme.pressedFill
+                            : windowButton.hovered
+                                ? theme.hoverFill
+                                : "transparent"
+                    border.width: windowButton.hovered && !windowButton.isClose ? 1 : 0
+                    border.color: theme.controlRim
+
+                    Behavior on color {
+                        ColorAnimation { duration: 100 }
+                    }
                 }
 
                 onClicked: {
-                    if (modelData.icon === "minimize")
+                    if (modelData.icon === "minimize") {
                         root.appWindow.showMinimized()
-                    else if (modelData.icon === "maximize") {
+                    } else if (modelData.icon === "maximize") {
                         if (root.appWindow.visibility === Window.Maximized)
                             root.appWindow.showNormal()
                         else
@@ -251,8 +280,10 @@ Rectangle {
                         root.appWindow.close()
                     }
                 }
+
                 ToolTip.visible: hovered
-                ToolTip.text: modelData.tip
+                ToolTip.delay: 450
+                ToolTip.text: effectiveTip
             }
         }
     }
