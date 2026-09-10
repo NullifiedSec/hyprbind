@@ -12,6 +12,7 @@ Canvas {
 
     onNameChanged: requestPaint()
     onIconColorChanged: requestPaint()
+    onStrokeWidthChanged: requestPaint()
     onWidthChanged: requestPaint()
     onHeightChanged: requestPaint()
 
@@ -54,11 +55,14 @@ Canvas {
         } else if (name === "info") {
             c.arc(10, 10, 7, 0, Math.PI * 2); c.moveTo(10, 9); c.lineTo(10, 13.5); c.stroke(); c.beginPath(); c.arc(10, 6.4, 0.7, 0, Math.PI * 2); c.fill(); return
         } else if (name === "close") {
-            c.moveTo(5, 5); c.lineTo(15, 15); c.moveTo(15, 5); c.lineTo(5, 15)
+            c.moveTo(6.1, 6.1); c.lineTo(13.9, 13.9); c.moveTo(13.9, 6.1); c.lineTo(6.1, 13.9)
         } else if (name === "minimize") {
-            c.moveTo(5, 11); c.lineTo(15, 11)
+            c.moveTo(6, 12.3); c.lineTo(14, 12.3)
         } else if (name === "maximize") {
-            c.rect(5, 5, 10, 10)
+            c.roundedRect(6, 6, 8, 8, 1)
+        } else if (name === "restore-window") {
+            c.roundedRect(5.5, 7, 7.6, 7.5, 0.9)
+            c.moveTo(8, 7); c.lineTo(8, 5.5); c.lineTo(14.5, 5.5); c.lineTo(14.5, 12)
         } else if (name === "moon") {
             c.arc(10.5, 9.5, 6, 0.35, Math.PI * 1.78); c.quadraticCurveTo(8.5, 14.4, 7.2, 11.4); c.quadraticCurveTo(5.8, 7.8, 9.5, 3.8)
         } else if (name === "sun") {
