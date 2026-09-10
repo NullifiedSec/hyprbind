@@ -72,145 +72,152 @@ Item {
             spacing: 14
 
             GlassPanel {
+                id: hero
                 Layout.fillWidth: true
-                Layout.preferredHeight: root.compactHero ? 224 : 156
+                Layout.preferredHeight: root.compactHero ? 238 : 156
                 darkMode: root.darkMode
                 cornerRadius: 17
                 elevated: false
                 tint: root.healthy ? theme.accent : theme.danger
 
-                GridLayout {
-                    anchors.fill: parent
-                    anchors.margins: 18
-                    columns: root.compactHero ? 1 : 2
-                    columnSpacing: 28
-                    rowSpacing: 14
+                Item {
+                    id: statusBlock
+                    x: 18
+                    y: 18
+                    width: root.compactHero
+                        ? hero.width - 36
+                        : Math.floor((hero.width - 58) * 0.54)
+                    height: root.compactHero ? 82 : hero.height - 36
 
-                    RowLayout {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        spacing: 15
+                    Rectangle {
+                        id: statusIcon
+                        width: 48
+                        height: 48
+                        radius: 14
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                        color: root.healthy ? theme.alpha(theme.accent, 0.075) : theme.dangerFill
+                        border.width: 1
+                        border.color: root.healthy ? theme.alpha(theme.accent, 0.16) : theme.dangerRim
 
-                        Rectangle {
-                            Layout.preferredWidth: 48
-                            Layout.preferredHeight: 48
-                            radius: 14
-                            color: root.healthy ? theme.alpha(theme.accent, 0.075) : theme.dangerFill
-                            border.width: 1
-                            border.color: root.healthy ? theme.alpha(theme.accent, 0.16) : theme.dangerRim
-
-                            UiIcon {
-                                anchors.centerIn: parent
-                                width: 22
-                                height: 22
-                                name: root.healthy ? "check" : "info"
-                                iconColor: root.healthy ? theme.accent : theme.danger
-                                strokeWidth: 1.75
-                            }
-                        }
-
-                        ColumnLayout {
-                            Layout.fillWidth: true
-                            spacing: 4
-
-                            Text {
-                                Layout.fillWidth: true
-                                text: root.healthy ? "Configuration ready" : "Configuration needs attention"
-                                color: theme.textPrimary
-                                font.family: "Inter"
-                                font.pixelSize: root.compactHero ? 19 : 21
-                                font.weight: Font.DemiBold
-                                elide: Text.ElideRight
-                            }
-
-                            Text {
-                                Layout.fillWidth: true
-                                text: root.healthy
-                                    ? "Hyprbind is reading the managed configuration cleanly."
-                                    : "One or more configuration sources could not be read."
-                                color: theme.alpha(theme.textSecondary, 0.82)
-                                font.family: "Inter"
-                                font.pixelSize: 11
-                                wrapMode: Text.WordWrap
-                            }
+                        UiIcon {
+                            anchors.centerIn: parent
+                            width: 22
+                            height: 22
+                            name: root.healthy ? "check" : "info"
+                            iconColor: root.healthy ? theme.accent : theme.danger
+                            strokeWidth: 1.75
                         }
                     }
 
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        Layout.alignment: Qt.AlignVCenter
-                        spacing: 9
+                    Column {
+                        anchors.left: statusIcon.right
+                        anchors.leftMargin: 15
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 5
 
-                        Rectangle {
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: 47
-                            radius: 12
-                            color: theme.alpha(theme.controlFill, 0.72)
-                            border.width: 1
-                            border.color: theme.controlRim
-
-                            Column {
-                                anchors.left: parent.left
-                                anchors.right: parent.right
-                                anchors.verticalCenter: parent.verticalCenter
-                                anchors.leftMargin: 13
-                                anchors.rightMargin: 13
-                                spacing: 2
-
-                                Text {
-                                    width: parent.width
-                                    text: "CONFIG SOURCE"
-                                    color: theme.alpha(theme.textSecondary, 0.64)
-                                    font.family: "Inter"
-                                    font.pixelSize: 9
-                                    font.weight: Font.DemiBold
-                                    font.letterSpacing: 0.8
-                                }
-                                Text {
-                                    width: parent.width
-                                    text: root.configPath.length ? root.configPath : "Config path unresolved"
-                                    color: theme.alpha(theme.textPrimary, 0.88)
-                                    font.family: "monospace"
-                                    font.pixelSize: 10
-                                    elide: Text.ElideMiddle
-                                }
-                            }
+                        Text {
+                            width: parent.width
+                            text: root.healthy ? "Configuration ready" : "Configuration needs attention"
+                            color: theme.textPrimary
+                            font.family: "Inter"
+                            font.pixelSize: root.compactHero ? 19 : 21
+                            font.weight: Font.DemiBold
+                            elide: Text.ElideRight
                         }
 
-                        Rectangle {
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: 47
-                            radius: 12
-                            color: theme.alpha(theme.controlFill, 0.72)
-                            border.width: 1
-                            border.color: root.backupAvailable ? theme.alpha(theme.accent, 0.12) : theme.controlRim
+                        Text {
+                            width: parent.width
+                            text: root.healthy
+                                ? "Hyprbind is reading the managed configuration cleanly."
+                                : "One or more configuration sources could not be read."
+                            color: theme.alpha(theme.textSecondary, 0.82)
+                            font.family: "Inter"
+                            font.pixelSize: 11
+                            wrapMode: Text.WordWrap
+                        }
+                    }
+                }
 
-                            RowLayout {
-                                anchors.fill: parent
-                                anchors.leftMargin: 13
-                                anchors.rightMargin: 13
-                                spacing: 10
+                Rectangle {
+                    id: heroDivider
+                    x: root.compactHero ? 18 : statusBlock.x + statusBlock.width + 20
+                    y: root.compactHero ? 108 : 22
+                    width: root.compactHero ? hero.width - 36 : 1
+                    height: root.compactHero ? 1 : hero.height - 44
+                    color: theme.divider
+                }
 
-                                Text {
-                                    text: "RECOVERY"
-                                    color: theme.alpha(theme.textSecondary, 0.64)
-                                    font.family: "Inter"
-                                    font.pixelSize: 9
-                                    font.weight: Font.DemiBold
-                                    font.letterSpacing: 0.8
-                                }
-                                Item { Layout.fillWidth: true }
-                                Text {
-                                    text: root.backupAvailable
-                                        ? (root.backupAge.length ? root.backupAge : "Snapshot available")
-                                        : "No snapshot yet"
-                                    color: root.backupAvailable ? theme.alpha(theme.accent, 0.90) : theme.textSecondary
-                                    font.family: "Inter"
-                                    font.pixelSize: 10
-                                    font.weight: Font.Medium
-                                    elide: Text.ElideRight
-                                }
-                            }
+                Column {
+                    id: metaColumn
+                    x: root.compactHero ? 18 : heroDivider.x + 19
+                    y: root.compactHero ? 121 : 24
+                    width: root.compactHero
+                        ? hero.width - 36
+                        : hero.width - x - 18
+                    spacing: 11
+
+                    Item {
+                        width: parent.width
+                        height: 43
+
+                        Text {
+                            anchors.left: parent.left
+                            anchors.top: parent.top
+                            text: "CONFIG SOURCE"
+                            color: theme.alpha(theme.textSecondary, 0.66)
+                            font.family: "Inter"
+                            font.pixelSize: 9
+                            font.weight: Font.DemiBold
+                            font.letterSpacing: 0.8
+                        }
+
+                        Text {
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.bottom: parent.bottom
+                            text: root.configPath.length ? root.configPath : "Config path unresolved"
+                            color: theme.alpha(theme.textPrimary, 0.90)
+                            font.family: "monospace"
+                            font.pixelSize: 10
+                            elide: Text.ElideMiddle
+                        }
+                    }
+
+                    Rectangle {
+                        width: parent.width
+                        height: 1
+                        color: theme.divider
+                    }
+
+                    Item {
+                        width: parent.width
+                        height: 43
+
+                        Text {
+                            anchors.left: parent.left
+                            anchors.top: parent.top
+                            text: "RECOVERY"
+                            color: theme.alpha(theme.textSecondary, 0.66)
+                            font.family: "Inter"
+                            font.pixelSize: 9
+                            font.weight: Font.DemiBold
+                            font.letterSpacing: 0.8
+                        }
+
+                        Text {
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.bottom: parent.bottom
+                            text: root.backupAvailable
+                                ? (root.backupAge.length ? root.backupAge : "Snapshot available")
+                                : "No snapshot yet"
+                            color: root.backupAvailable ? theme.accent : theme.textSecondary
+                            font.family: "Inter"
+                            font.pixelSize: 10
+                            font.weight: Font.Medium
+                            elide: Text.ElideRight
                         }
                     }
                 }
