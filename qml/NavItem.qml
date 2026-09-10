@@ -67,7 +67,7 @@ Button {
         color: control.down
             ? (control.selected
                 ? theme.alpha(theme.mix(theme.surfaceHigh, theme.accent, 0.12), 0.58)
-                : theme.alpha(theme.foreground, root.darkMode ? 0.040 : 0.070))
+                : theme.alpha(theme.foreground, control.darkMode ? 0.040 : 0.070))
             : control.selected
                 ? theme.selectedFill
                 : control.hovered ? theme.hoverFill : "transparent"
