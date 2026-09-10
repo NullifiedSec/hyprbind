@@ -13,6 +13,7 @@ Item {
 
     readonly property bool fullPath: width >= 880
     readonly property bool showSubtitle: width >= 560
+    readonly property bool configContext: currentPage !== "Overview" && currentPage !== "Health" && currentPage !== "Logs"
     readonly property int edgeMargin: width < 700 ? 16 : 24
     property bool copied: false
 
@@ -51,6 +52,10 @@ Item {
             return "Organize keybinds into named modes and see which binds each mode owns."
         if (currentPage === "Startup")
             return "Choose which commands run when Hyprland starts, reloads, or shuts down."
+        if (currentPage === "Health")
+            return "Inspect session, Hyprland, portals, audio, and desktop integration."
+        if (currentPage === "Logs")
+            return "Search the recent user-session journal without leaving Hyprbind."
         return "This page is being migrated to the new interface."
     }
 
@@ -93,7 +98,7 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         darkMode: root.darkMode
         elevated: false
-        visible: root.configPath.length > 0
+        visible: root.configContext && root.configPath.length > 0
 
         TextInput {
             id: pathText
