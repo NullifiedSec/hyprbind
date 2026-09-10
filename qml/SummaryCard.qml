@@ -3,7 +3,6 @@ import QtQuick
 GlassPanel {
     id: root
 
-    property bool darkMode: true
     property string iconName: "info"
     property string title: "Summary"
     property string value: "—"
@@ -14,7 +13,6 @@ GlassPanel {
 
     implicitHeight: 126
     cornerRadius: 15
-    darkMode: root.darkMode
     elevated: false
 
     Rectangle {
