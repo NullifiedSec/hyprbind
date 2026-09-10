@@ -37,48 +37,81 @@ QtObject {
         return "document"
     }
 
-    readonly property color background: darkMode ? "#101416" : "#e9eef0"
-    readonly property color surface: darkMode ? "#1a2023" : "#f4f7f8"
+    readonly property color background: darkMode ? "#101416" : "#edf2f4"
+    readonly property color surface: darkMode ? "#1a2023" : "#f7fafb"
     readonly property color surfaceHigh: darkMode ? "#252d31" : "#ffffff"
-    readonly property color foreground: darkMode ? "#eef2f3" : "#172126"
-    readonly property color muted: darkMode ? "#bec6ca" : "#526068"
-    readonly property color accent: "#37d5e9"
+    readonly property color foreground: darkMode ? "#eef2f3" : "#182328"
+    readonly property color muted: darkMode ? "#bec6ca" : "#5b6a72"
+    readonly property color accent: darkMode ? "#37d5e9" : "#168fa3"
 
     readonly property color textPrimary: foreground
-    readonly property color textSecondary: alpha(muted, 0.78)
-    readonly property color familyShell: mix(surfaceHigh, background, darkMode ? 0.54 : 0.30)
-    readonly property color shellFill: alpha(familyShell, darkMode ? 0.62 : 0.74)
-    readonly property color shellRim: alpha(foreground, darkMode ? 0.095 : 0.13)
-    readonly property color shellTopSpecular: alpha(foreground, darkMode ? 0.034 : 0.11)
-    readonly property color shellAccentWash: alpha(accent, 0.018)
-    readonly property color shellBottomShade: alpha(accent, darkMode ? 0.028 : 0.018)
-    readonly property color shellInnerLine: alpha(foreground, darkMode ? 0.052 : 0.09)
-    readonly property color toolbarFill: alpha(mix(surfaceHigh, background, 0.44), darkMode ? 0.30 : 0.40)
-    readonly property color sidebarFill: alpha(mix(surfaceHigh, background, 0.55), darkMode ? 0.42 : 0.50)
-    readonly property color contentFill: alpha(mix(surface, background, 0.62), darkMode ? 0.18 : 0.28)
-    readonly property color raisedFill: alpha(mix(surfaceHigh, background, 0.58), darkMode ? 0.40 : 0.52)
-    readonly property color quietRim: alpha(foreground, darkMode ? 0.065 : 0.11)
-    readonly property color divider: alpha(foreground, darkMode ? 0.036 : 0.075)
+    readonly property color textSecondary: alpha(muted, darkMode ? 0.78 : 0.88)
 
-    readonly property color controlFill: alpha(mix(surfaceHigh, background, 0.60), darkMode ? 0.42 : 0.50)
-    readonly property color controlHover: alpha(mix(surfaceHigh, accent, 0.08), darkMode ? 0.50 : 0.56)
-    readonly property color controlPressed: alpha(mix(surfaceHigh, accent, 0.12), darkMode ? 0.56 : 0.62)
-    readonly property color controlRim: alpha(foreground, darkMode ? 0.055 : 0.10)
-    readonly property color controlRimActive: alpha(accent, darkMode ? 0.14 : 0.22)
-    readonly property color controlInnerRim: alpha(foreground, darkMode ? 0.025 : 0.055)
+    readonly property color familyShell: darkMode
+        ? mix(surfaceHigh, background, 0.54)
+        : mix(surfaceHigh, background, 0.20)
+    readonly property color shellFill: alpha(familyShell, darkMode ? 0.62 : 0.96)
+    readonly property color shellRim: alpha(foreground, darkMode ? 0.095 : 0.14)
+    readonly property color shellTopSpecular: darkMode
+        ? alpha(foreground, 0.034)
+        : alpha(surfaceHigh, 0.52)
+    readonly property color shellAccentWash: alpha(accent, darkMode ? 0.018 : 0.010)
+    readonly property color shellBottomShade: alpha(accent, darkMode ? 0.028 : 0.010)
+    readonly property color shellInnerLine: darkMode
+        ? alpha(foreground, 0.052)
+        : alpha(surfaceHigh, 0.62)
 
-    readonly property color searchFill: alpha(mix(surfaceHigh, background, 0.62), darkMode ? 0.42 : 0.52)
-    readonly property color searchFocusedFill: alpha(mix(surfaceHigh, accent, 0.055), darkMode ? 0.50 : 0.58)
+    readonly property color toolbarFill: darkMode
+        ? alpha(mix(surfaceHigh, background, 0.44), 0.30)
+        : alpha(mix(surfaceHigh, background, 0.16), 0.91)
+    readonly property color sidebarFill: darkMode
+        ? alpha(mix(surfaceHigh, background, 0.55), 0.42)
+        : alpha(mix(surfaceHigh, background, 0.24), 0.94)
+    readonly property color contentFill: darkMode
+        ? alpha(mix(surface, background, 0.62), 0.18)
+        : alpha(mix(surface, background, 0.18), 0.91)
+    readonly property color raisedFill: darkMode
+        ? alpha(mix(surfaceHigh, background, 0.58), 0.40)
+        : alpha(mix(surfaceHigh, background, 0.10), 0.96)
+    readonly property color quietRim: alpha(foreground, darkMode ? 0.065 : 0.105)
+    readonly property color divider: alpha(foreground, darkMode ? 0.036 : 0.070)
+
+    readonly property color controlFill: darkMode
+        ? alpha(mix(surfaceHigh, background, 0.60), 0.42)
+        : alpha(mix(surfaceHigh, background, 0.10), 0.88)
+    readonly property color controlHover: darkMode
+        ? alpha(mix(surfaceHigh, accent, 0.08), 0.50)
+        : alpha(mix(surfaceHigh, accent, 0.055), 0.94)
+    readonly property color controlPressed: darkMode
+        ? alpha(mix(surfaceHigh, accent, 0.12), 0.56)
+        : alpha(mix(surfaceHigh, accent, 0.075), 0.97)
+    readonly property color controlRim: alpha(foreground, darkMode ? 0.055 : 0.095)
+    readonly property color controlRimActive: alpha(accent, darkMode ? 0.14 : 0.26)
+    readonly property color controlInnerRim: alpha(foreground, darkMode ? 0.025 : 0.045)
+
+    readonly property color searchFill: darkMode
+        ? alpha(mix(surfaceHigh, background, 0.62), 0.42)
+        : alpha(mix(surfaceHigh, background, 0.08), 0.91)
+    readonly property color searchFocusedFill: searchFill
     readonly property color searchRim: alpha(foreground, darkMode ? 0.055 : 0.10)
-    readonly property color searchFocusRim: alpha(accent, darkMode ? 0.14 : 0.24)
-    readonly property color searchSpecular: alpha(foreground, darkMode ? 0.026 : 0.075)
-    readonly property color searchSpecularFocus: alpha(mix(foreground, accent, 0.10), darkMode ? 0.040 : 0.10)
+    readonly property color searchFocusRim: alpha(foreground, darkMode ? 0.12 : 0.16)
+    readonly property color searchSpecular: darkMode
+        ? alpha(foreground, 0.026)
+        : alpha(surfaceHigh, 0.54)
+    readonly property color searchSpecularFocus: searchSpecular
 
-    readonly property color hoverFill: alpha(foreground, darkMode ? 0.028 : 0.060)
-    readonly property color selectedFill: alpha(mix(surfaceHigh, accent, 0.10), darkMode ? 0.54 : 0.60)
+    readonly property color hoverFill: darkMode
+        ? alpha(foreground, 0.028)
+        : alpha(foreground, 0.052)
+    readonly property color selectedFill: darkMode
+        ? alpha(mix(surfaceHigh, accent, 0.10), 0.54)
+        : alpha(mix(surfaceHigh, accent, 0.075), 0.92)
     readonly property color selectedRim: alpha(accent, darkMode ? 0.10 : 0.18)
-    readonly property color selectedSpecular: alpha(foreground, darkMode ? 0.028 : 0.070)
+    readonly property color selectedSpecular: darkMode
+        ? alpha(foreground, 0.028)
+        : alpha(surfaceHigh, 0.48)
+
     readonly property color danger: darkMode ? "#dca3a0" : "#9c3f3b"
-    readonly property color dangerFill: alpha(danger, darkMode ? 0.055 : 0.075)
+    readonly property color dangerFill: alpha(danger, darkMode ? 0.055 : 0.070)
     readonly property color dangerRim: alpha(danger, darkMode ? 0.14 : 0.20)
 }
