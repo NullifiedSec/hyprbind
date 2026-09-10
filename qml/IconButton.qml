@@ -5,6 +5,7 @@ Button {
     id: control
     property string glyph: ""
     property string iconName: ""
+    property string tooltip: ""
     property bool accent: false
     property bool danger: false
     property bool darkMode: true
@@ -54,4 +55,8 @@ Button {
         Behavior on color { ColorAnimation { duration: 145; easing.type: Easing.OutCubic } }
         Behavior on border.color { ColorAnimation { duration: 145 } }
     }
+
+    ToolTip.visible: control.hovered && control.tooltip.length > 0
+    ToolTip.text: control.tooltip
+    ToolTip.delay: 450
 }
