@@ -4,9 +4,13 @@ import QtQuick.Layouts
 
 Item {
     id: root
+
     required property var bridge
     property bool darkMode: true
     property bool realtimeEnabled: false
+    readonly property bool compactToolbar: width < 760
+    readonly property bool singleColumnCards: width < 860
+
     signal status(string message)
     signal saved()
 
@@ -116,46 +120,114 @@ Item {
         }
     }
 
+    Component {
+        id: spacingCardComponent
+        SettingsCard {
+            title: "SPACING & WINDOWS"
+            darkMode: root.darkMode
+            SettingSlider { width: parent.width; darkMode: root.darkMode; title: "Inner gaps"; subtitle: "Space between tiled windows"; from: 0; to: 40; value: root.gapsIn; onEdited: value => { root.gapsIn = value; root.preview() } }
+            Rectangle { width: parent.width; height: 1; color: theme.divider }
+            SettingSlider { width: parent.width; darkMode: root.darkMode; title: "Outer gaps"; subtitle: "Space between windows and screen edges"; from: 0; to: 60; value: root.gapsOut; onEdited: value => { root.gapsOut = value; root.preview() } }
+            Rectangle { width: parent.width; height: 1; color: theme.divider }
+            SettingSlider { width: parent.width; darkMode: root.darkMode; title: "Border size"; subtitle: "Thickness of window borders"; from: 0; to: 10; value: root.borderSize; onEdited: value => { root.borderSize = value; root.preview() } }
+            Rectangle { width: parent.width; height: 1; color: theme.divider }
+            SettingSlider { width: parent.width; darkMode: root.darkMode; title: "Corner rounding"; subtitle: "How round window corners appear"; from: 0; to: 40; value: root.rounding; onEdited: value => { root.rounding = value; root.preview() } }
+        }
+    }
+
+    Component {
+        id: transparencyCardComponent
+        SettingsCard {
+            title: "TRANSPARENCY"
+            darkMode: root.darkMode
+            SettingSlider { width: parent.width; darkMode: root.darkMode; title: "Active opacity"; subtitle: "Opacity of the focused window"; from: 0.3; to: 1; stepSize: 0.05; decimals: 2; value: root.activeOpacity; onEdited: value => { root.activeOpacity = value; root.preview() } }
+            Rectangle { width: parent.width; height: 1; color: theme.divider }
+            SettingSlider { width: parent.width; darkMode: root.darkMode; title: "Inactive opacity"; subtitle: "Opacity of unfocused windows"; from: 0.3; to: 1; stepSize: 0.05; decimals: 2; value: root.inactiveOpacity; onEdited: value => { root.inactiveOpacity = value; root.preview() } }
+        }
+    }
+
+    Component {
+        id: effectsCardComponent
+        SettingsCard {
+            title: "EFFECTS"
+            darkMode: root.darkMode
+            SettingToggle { width: parent.width; darkMode: root.darkMode; title: "Blur"; subtitle: "Blur behind translucent windows"; checked: root.blurEnabled; onToggled: checked => { root.blurEnabled = checked; root.preview() } }
+            Rectangle { width: parent.width; height: 1; color: theme.divider }
+            SettingSlider { width: parent.width; darkMode: root.darkMode; title: "Blur strength"; subtitle: "Blur kernel size"; from: 0; to: 20; value: root.blurSize; onEdited: value => { root.blurSize = value; root.preview() } }
+            Rectangle { width: parent.width; height: 1; color: theme.divider }
+            SettingToggle { width: parent.width; darkMode: root.darkMode; title: "Shadows"; subtitle: "Drop shadows under windows"; checked: root.shadowEnabled; onToggled: checked => { root.shadowEnabled = checked; root.preview() } }
+            Rectangle { width: parent.width; height: 1; color: theme.divider }
+            SettingToggle { width: parent.width; darkMode: root.darkMode; title: "Animations"; subtitle: "Window and workspace motion"; checked: root.animationsEnabled; onToggled: checked => { root.animationsEnabled = checked; root.preview() } }
+        }
+    }
+
+    Component {
+        id: borderCardComponent
+        SettingsCard {
+            title: "BORDER COLORS"
+            darkMode: root.darkMode
+            SettingField { width: parent.width; darkMode: root.darkMode; title: "Active border"; subtitle: "Focused window border color"; text: root.activeBorder; placeholderText: "rgba(37d5e9ee)"; onCommitted: text => { root.activeBorder = text; root.preview() } }
+            Rectangle { width: parent.width; height: 1; color: theme.divider }
+            SettingField { width: parent.width; darkMode: root.darkMode; title: "Inactive border"; subtitle: "Unfocused window border color"; text: root.inactiveBorder; placeholderText: "rgba(6b747baa)"; onCommitted: text => { root.inactiveBorder = text; root.preview() } }
+        }
+    }
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 16
         spacing: 14
 
-        RowLayout {
+        Item {
             Layout.fillWidth: true
-            Layout.preferredHeight: 40
-            spacing: 8
+            Layout.preferredHeight: root.compactToolbar ? 78 : 40
 
-            Text {
-                text: "PRESETS"
-                color: theme.alpha(theme.textSecondary, 0.68)
-                font.family: "Inter"
-                font.pixelSize: 10
-                font.weight: Font.DemiBold
-                font.letterSpacing: 0.9
+            Row {
+                id: presetsRow
+                anchors.left: parent.left
+                anchors.top: parent.top
+                anchors.verticalCenter: root.compactToolbar ? undefined : parent.verticalCenter
+                spacing: 8
+
+                Text {
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: "PRESETS"
+                    color: theme.alpha(theme.textSecondary, 0.68)
+                    font.family: "Inter"
+                    font.pixelSize: 10
+                    font.weight: Font.DemiBold
+                    font.letterSpacing: 0.9
+                }
+                GlassButton { text: "Compact"; darkMode: root.darkMode; onClicked: root.applyPreset("compact") }
+                GlassButton { text: "Comfortable"; darkMode: root.darkMode; onClicked: root.applyPreset("comfortable") }
+                GlassButton { text: "Spacious"; darkMode: root.darkMode; onClicked: root.applyPreset("spacious") }
             }
-            GlassButton { text: "Compact"; darkMode: root.darkMode; onClicked: root.applyPreset("compact") }
-            GlassButton { text: "Comfortable"; darkMode: root.darkMode; onClicked: root.applyPreset("comfortable") }
-            GlassButton { text: "Spacious"; darkMode: root.darkMode; onClicked: root.applyPreset("spacious") }
-            Item { Layout.fillWidth: true }
-            Text {
-                text: root.realtimeEnabled ? "Live preview on" : "Live preview off"
-                color: root.realtimeEnabled ? theme.alpha(theme.accent, 0.90) : theme.alpha(theme.textSecondary, 0.60)
-                font.family: "Inter"
-                font.pixelSize: 11
-            }
-            IconButton {
-                iconName: "reload"
-                tooltip: "Reload values"
-                darkMode: root.darkMode
-                onClicked: root.load()
-            }
-            IconButton {
-                iconName: "save"
-                tooltip: "Save changes"
-                accent: true
-                darkMode: root.darkMode
-                onClicked: root.save()
+
+            Row {
+                anchors.right: parent.right
+                anchors.bottom: root.compactToolbar ? parent.bottom : undefined
+                anchors.verticalCenter: root.compactToolbar ? undefined : parent.verticalCenter
+                spacing: 8
+
+                Text {
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: root.realtimeEnabled ? "Live preview on" : "Live preview off"
+                    color: root.realtimeEnabled ? theme.alpha(theme.accent, 0.90) : theme.alpha(theme.textSecondary, 0.60)
+                    font.family: "Inter"
+                    font.pixelSize: 11
+                }
+                IconButton {
+                    iconName: "reload"
+                    tooltip: "Reload values"
+                    darkMode: root.darkMode
+                    onClicked: root.load()
+                }
+                IconButton {
+                    iconName: "save"
+                    tooltip: "Save changes"
+                    accent: true
+                    darkMode: root.darkMode
+                    onClicked: root.save()
+                }
             }
         }
 
@@ -165,59 +237,109 @@ Item {
             Layout.fillHeight: true
             clip: true
             contentWidth: width
-            contentHeight: cardGrid.implicitHeight + 4
+            contentHeight: cardStage.height + 4
             boundsBehavior: Flickable.StopAtBounds
             ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded }
 
-            GridLayout {
-                id: cardGrid
+            Item {
+                id: cardStage
                 width: scroller.width
-                columns: width >= 850 ? 2 : 1
-                columnSpacing: 14
-                rowSpacing: 14
+                readonly property bool twoColumns: !root.singleColumnCards
+                height: twoColumns ? wideColumns.implicitHeight : narrowColumn.implicitHeight
 
-                SettingsCard {
-                    title: "SPACING & WINDOWS"
-                    darkMode: root.darkMode
-                    Layout.fillWidth: true
-                    SettingSlider { width: parent.width; darkMode: root.darkMode; title: "Inner gaps"; subtitle: "Space between tiled windows"; from: 0; to: 40; value: root.gapsIn; onEdited: value => { root.gapsIn = value; root.preview() } }
-                    Rectangle { width: parent.width; height: 1; color: theme.divider }
-                    SettingSlider { width: parent.width; darkMode: root.darkMode; title: "Outer gaps"; subtitle: "Space between windows and screen edges"; from: 0; to: 60; value: root.gapsOut; onEdited: value => { root.gapsOut = value; root.preview() } }
-                    Rectangle { width: parent.width; height: 1; color: theme.divider }
-                    SettingSlider { width: parent.width; darkMode: root.darkMode; title: "Border size"; subtitle: "Thickness of window borders"; from: 0; to: 10; value: root.borderSize; onEdited: value => { root.borderSize = value; root.preview() } }
-                    Rectangle { width: parent.width; height: 1; color: theme.divider }
-                    SettingSlider { width: parent.width; darkMode: root.darkMode; title: "Corner rounding"; subtitle: "How round window corners appear"; from: 0; to: 40; value: root.rounding; onEdited: value => { root.rounding = value; root.preview() } }
+                RowLayout {
+                    id: wideColumns
+                    width: parent.width
+                    visible: cardStage.twoColumns
+                    spacing: 14
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        Layout.preferredWidth: cardStage.width / 2
+                        Layout.alignment: Qt.AlignTop
+                        spacing: 14
+
+                        Loader {
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: item ? item.implicitHeight : 0
+                            active: cardStage.twoColumns
+                            sourceComponent: spacingCardComponent
+                            onLoaded: item.width = width
+                            onWidthChanged: if (item) item.width = width
+                        }
+                        Loader {
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: item ? item.implicitHeight : 0
+                            active: cardStage.twoColumns
+                            sourceComponent: effectsCardComponent
+                            onLoaded: item.width = width
+                            onWidthChanged: if (item) item.width = width
+                        }
+                    }
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        Layout.preferredWidth: cardStage.width / 2
+                        Layout.alignment: Qt.AlignTop
+                        spacing: 14
+
+                        Loader {
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: item ? item.implicitHeight : 0
+                            active: cardStage.twoColumns
+                            sourceComponent: transparencyCardComponent
+                            onLoaded: item.width = width
+                            onWidthChanged: if (item) item.width = width
+                        }
+                        Loader {
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: item ? item.implicitHeight : 0
+                            active: cardStage.twoColumns
+                            sourceComponent: borderCardComponent
+                            onLoaded: item.width = width
+                            onWidthChanged: if (item) item.width = width
+                        }
+                    }
                 }
 
-                SettingsCard {
-                    title: "TRANSPARENCY"
-                    darkMode: root.darkMode
-                    Layout.fillWidth: true
-                    SettingSlider { width: parent.width; darkMode: root.darkMode; title: "Active opacity"; subtitle: "Opacity of the focused window"; from: 0.3; to: 1; stepSize: 0.05; decimals: 2; value: root.activeOpacity; onEdited: value => { root.activeOpacity = value; root.preview() } }
-                    Rectangle { width: parent.width; height: 1; color: theme.divider }
-                    SettingSlider { width: parent.width; darkMode: root.darkMode; title: "Inactive opacity"; subtitle: "Opacity of unfocused windows"; from: 0.3; to: 1; stepSize: 0.05; decimals: 2; value: root.inactiveOpacity; onEdited: value => { root.inactiveOpacity = value; root.preview() } }
-                }
+                ColumnLayout {
+                    id: narrowColumn
+                    width: parent.width
+                    visible: !cardStage.twoColumns
+                    spacing: 14
 
-                SettingsCard {
-                    title: "EFFECTS"
-                    darkMode: root.darkMode
-                    Layout.fillWidth: true
-                    SettingToggle { width: parent.width; darkMode: root.darkMode; title: "Blur"; subtitle: "Blur behind translucent windows"; checked: root.blurEnabled; onToggled: checked => { root.blurEnabled = checked; root.preview() } }
-                    Rectangle { width: parent.width; height: 1; color: theme.divider }
-                    SettingSlider { width: parent.width; darkMode: root.darkMode; title: "Blur strength"; subtitle: "Blur kernel size"; from: 0; to: 20; value: root.blurSize; onEdited: value => { root.blurSize = value; root.preview() } }
-                    Rectangle { width: parent.width; height: 1; color: theme.divider }
-                    SettingToggle { width: parent.width; darkMode: root.darkMode; title: "Shadows"; subtitle: "Drop shadows under windows"; checked: root.shadowEnabled; onToggled: checked => { root.shadowEnabled = checked; root.preview() } }
-                    Rectangle { width: parent.width; height: 1; color: theme.divider }
-                    SettingToggle { width: parent.width; darkMode: root.darkMode; title: "Animations"; subtitle: "Window and workspace motion"; checked: root.animationsEnabled; onToggled: checked => { root.animationsEnabled = checked; root.preview() } }
-                }
-
-                SettingsCard {
-                    title: "BORDER COLORS"
-                    darkMode: root.darkMode
-                    Layout.fillWidth: true
-                    SettingField { width: parent.width; darkMode: root.darkMode; title: "Active border"; subtitle: "Focused window border color"; text: root.activeBorder; placeholderText: "rgba(37d5e9ee)"; onCommitted: text => { root.activeBorder = text; root.preview() } }
-                    Rectangle { width: parent.width; height: 1; color: theme.divider }
-                    SettingField { width: parent.width; darkMode: root.darkMode; title: "Inactive border"; subtitle: "Unfocused window border color"; text: root.inactiveBorder; placeholderText: "rgba(6b747baa)"; onCommitted: text => { root.inactiveBorder = text; root.preview() } }
+                    Loader {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: item ? item.implicitHeight : 0
+                        active: !cardStage.twoColumns
+                        sourceComponent: spacingCardComponent
+                        onLoaded: item.width = width
+                        onWidthChanged: if (item) item.width = width
+                    }
+                    Loader {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: item ? item.implicitHeight : 0
+                        active: !cardStage.twoColumns
+                        sourceComponent: transparencyCardComponent
+                        onLoaded: item.width = width
+                        onWidthChanged: if (item) item.width = width
+                    }
+                    Loader {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: item ? item.implicitHeight : 0
+                        active: !cardStage.twoColumns
+                        sourceComponent: effectsCardComponent
+                        onLoaded: item.width = width
+                        onWidthChanged: if (item) item.width = width
+                    }
+                    Loader {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: item ? item.implicitHeight : 0
+                        active: !cardStage.twoColumns
+                        sourceComponent: borderCardComponent
+                        onLoaded: item.width = width
+                        onWidthChanged: if (item) item.width = width
+                    }
                 }
             }
         }
