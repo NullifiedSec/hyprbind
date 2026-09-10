@@ -148,7 +148,10 @@ Rectangle {
                             selected: root.currentPage === itemData.name
                             visible: root.compact || !navSearch.text || itemData.name.toLowerCase().indexOf(navSearch.text.toLowerCase()) >= 0
                             height: visible ? implicitHeight : 0
-                            onClicked: root.pageSelected(itemData.name)
+                            onClicked: {
+                                if (root.currentPage !== itemData.name)
+                                    root.pageSelected(itemData.name)
+                            }
                         }
                     }
                 }
