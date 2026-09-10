@@ -262,7 +262,7 @@ Item {
                         color: theme.alpha(theme.textSecondary, 0.88)
                         font.family: "Inter"
                         font.pixelSize: 11
-                        wrapMode: Text.Wrap
+                        wrapMode: Text.WordWrap
                     }
 
                     Text {
@@ -272,7 +272,7 @@ Item {
                         color: theme.alpha(theme.textSecondary, 0.68)
                         font.family: "Inter"
                         font.pixelSize: 10
-                        wrapMode: Text.Wrap
+                        wrapMode: Text.WordWrap
                     }
 
                     GlassPanel {
