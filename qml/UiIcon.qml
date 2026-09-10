@@ -45,7 +45,7 @@ Canvas {
             c.arc(10, 10, 6, -0.55, Math.PI * 1.42); c.moveTo(14.6, 3.8); c.lineTo(15.6, 7.1); c.lineTo(12.3, 6.4)
         } else if (name === "save") {
             c.moveTo(4, 3.5); c.lineTo(13.2, 3.5); c.lineTo(16, 6.3); c.lineTo(16, 16.5); c.lineTo(4, 16.5); c.closePath();
-            c.rect(6.2, 4.8, 5.8, 4.1); c.roundedRect(6.5, 11.2, 7, 4.2, 1)
+            c.rect(6.2, 4.8, 5.8, 4.1); c.rect(6.5, 11.2, 7, 4.2)
         } else if (name === "history") {
             c.arc(10.2, 10, 6, -2.45, Math.PI * 0.9); c.moveTo(5.6, 4.8); c.lineTo(4.2, 8); c.lineTo(7.6, 7.3); c.moveTo(10.2, 6.5); c.lineTo(10.2, 10.2); c.lineTo(12.8, 11.8)
         } else if (name === "terminal") {
@@ -55,14 +55,14 @@ Canvas {
         } else if (name === "info") {
             c.arc(10, 10, 7, 0, Math.PI * 2); c.moveTo(10, 9); c.lineTo(10, 13.5); c.stroke(); c.beginPath(); c.arc(10, 6.4, 0.7, 0, Math.PI * 2); c.fill(); return
         } else if (name === "close") {
-            c.moveTo(6.1, 6.1); c.lineTo(13.9, 13.9); c.moveTo(13.9, 6.1); c.lineTo(6.1, 13.9)
+            c.moveTo(6.2, 6.2); c.lineTo(13.8, 13.8); c.moveTo(13.8, 6.2); c.lineTo(6.2, 13.8)
         } else if (name === "minimize") {
-            c.moveTo(6, 12.3); c.lineTo(14, 12.3)
+            c.moveTo(5.6, 12.5); c.lineTo(14.4, 12.5)
         } else if (name === "maximize") {
-            c.roundedRect(6, 6, 8, 8, 1)
+            c.rect(5.5, 5.5, 9, 9)
         } else if (name === "restore-window") {
-            c.roundedRect(5.5, 7, 7.6, 7.5, 0.9)
-            c.moveTo(8, 7); c.lineTo(8, 5.5); c.lineTo(14.5, 5.5); c.lineTo(14.5, 12)
+            c.moveTo(7.3, 5.3); c.lineTo(14.7, 5.3); c.lineTo(14.7, 12.7)
+            c.rect(5.3, 7.3, 7.4, 7.4)
         } else if (name === "moon") {
             c.arc(10.5, 9.5, 6, 0.35, Math.PI * 1.78); c.quadraticCurveTo(8.5, 14.4, 7.2, 11.4); c.quadraticCurveTo(5.8, 7.8, 9.5, 3.8)
         } else if (name === "sun") {
