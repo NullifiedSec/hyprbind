@@ -88,3 +88,58 @@ pub fn delete_env(var: &EnvVar) -> Result<WriteResult, WriteError> {
     write_config_atomic(path, &updated)?;
     Ok(ok_result(path.display().to_string(), WriteMode::InPlace))
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::time::{SystemTime, UNIX_EPOCH};
+
+    fn test_config() -> std::path::PathBuf {
+        let stamp = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("clock")
+            .as_nanos();
+        let path = std::env::temp_dir().join(format!(
+            "hyprbinds-env-{}-{stamp}.lua",
+            std::process::id()
+        ));
+        std::fs::write(
+            &path,
+            "-- >>> hyprbinds:managed-env\n-- <<< hyprbinds:managed-env\n",
+        )
+        .expect("write fixture");
+        path
+    }
+
+    #[test]
+    fn add_save_delete_round_trip() {
+        let path = test_config();
+        add_env(&path, "TEST_VAR", "one").expect("add env");
+        let added = std::fs::read_to_string(&path).expect("read added");
+        assert!(added.contains("hl.env(\"TEST_VAR\", \"one\")"));
+
+        let var = EnvVar {
+            name: "TEST_VAR".into(),
+            value: "one".into(),
+            source_file: path.display().to_string(),
+            source_line: 2,
+        };
+        save_env(&var, "RENAMED_VAR", "two").expect("save env");
+        let saved = std::fs::read_to_string(&path).expect("read saved");
+        assert!(!saved.contains("TEST_VAR"));
+        assert!(saved.contains("hl.env(\"RENAMED_VAR\", \"two\")"));
+
+        let renamed = EnvVar {
+            name: "RENAMED_VAR".into(),
+            value: "two".into(),
+            source_file: path.display().to_string(),
+            source_line: 2,
+        };
+        delete_env(&renamed).expect("delete env");
+        let deleted = std::fs::read_to_string(&path).expect("read deleted");
+        assert!(!deleted.contains("RENAMED_VAR"));
+
+        let _ = std::fs::remove_file(&path);
+        let _ = std::fs::remove_file(crate::backup::sidecar_backup(&path));
+    }
+}

@@ -23,6 +23,13 @@ mod lookfeel_ui;
 mod nav;
 mod overview_ui;
 mod palette;
+mod qml_bridge;
+mod qml_catalog_bridge;
+mod qml_health_bridge;
+mod qml_logs_bridge;
+mod qml_startup_bridge;
+mod qml_submaps_bridge;
+mod qml_window_bridge;
 mod settings_config;
 mod spec;
 mod startup;
@@ -190,7 +197,14 @@ fn main() {
         return;
     }
 
-    let app = Application::builder().application_id(APP_ID).build();
-    app.connect_activate(ui::build_ui);
-    app.run();
+    if args.iter().any(|a| a == "--gtk") {
+        let app = Application::builder().application_id(APP_ID).build();
+        app.connect_activate(ui::build_ui);
+        app.run_with_args(&["hyprbinds"]);
+        return;
+    }
+
+    // QML is the primary UI. `--qml` remains accepted for compatibility,
+    // while `--gtk` provides the explicit legacy/developer fallback.
+    qml_bridge::run();
 }
