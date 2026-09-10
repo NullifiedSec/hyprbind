@@ -11,7 +11,7 @@ TextField {
     rightPadding: 14
     color: theme.textPrimary
     placeholderTextColor: theme.alpha(theme.textSecondary, 0.72)
-    selectionColor: theme.alpha(theme.accent, 0.26)
+    selectionColor: theme.alpha(theme.foreground, control.darkMode ? 0.14 : 0.16)
     selectedTextColor: theme.textPrimary
     font.family: "Inter"
     font.pixelSize: 13
@@ -20,7 +20,7 @@ TextField {
     background: Rectangle {
         radius: 14
         antialiasing: true
-        color: control.activeFocus ? theme.searchFocusedFill : theme.searchFill
+        color: theme.searchFill
         border.width: 1
         border.color: control.activeFocus ? theme.searchFocusRim : theme.searchRim
 
@@ -32,10 +32,9 @@ TextField {
             anchors.top: parent.top
             height: 1
             radius: 1
-            color: control.activeFocus ? theme.searchSpecularFocus : theme.searchSpecular
+            color: theme.searchSpecular
         }
 
-        Behavior on color { ColorAnimation { duration: 185; easing.type: Easing.OutCubic } }
-        Behavior on border.color { ColorAnimation { duration: 185; easing.type: Easing.OutCubic } }
+        Behavior on border.color { ColorAnimation { duration: 135; easing.type: Easing.OutCubic } }
     }
 }
