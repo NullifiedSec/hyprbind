@@ -3,7 +3,6 @@ import QtQuick
 GlassPanel {
     id: root
     property string title: "Section"
-    property bool darkMode: true
     default property alias rows: rowColumn.data
 
     HyprbindTheme { id: theme; darkMode: root.darkMode }
