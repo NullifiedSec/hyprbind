@@ -19,27 +19,6 @@ Item {
 
     height: width < 700 ? 82 : 94
 
-    function pageIconName() {
-        if (currentPage === "Environment") return "terminal"
-        if (currentPage === "Look & Feel") return "diamond"
-        if (currentPage === "Overview") return "home"
-        if (currentPage === "Variables") return "braces"
-        if (currentPage === "Binds") return "keyboard"
-        if (currentPage === "Submaps") return "grid"
-        if (currentPage === "Startup") return "power"
-        if (currentPage === "Config") return "settings"
-        if (currentPage === "Monitors") return "monitor"
-        if (currentPage === "Devices") return "device"
-        if (currentPage === "Animations") return "sparkle"
-        if (currentPage === "Curves") return "curve"
-        if (currentPage === "Gestures") return "gesture"
-        if (currentPage === "Health") return "heart"
-        if (currentPage === "Logs") return "logs"
-        if (currentPage === "Layer rules") return "layers"
-        if (currentPage.indexOf("rule") >= 0) return "window"
-        return "document"
-    }
-
     function pageSubtitle() {
         if (currentPage === "Environment") return "Manage environment variables for Hyprland and apps launched in your session."
         if (currentPage === "Look & Feel") return "Shape Hyprland’s spacing, transparency, effects, and window borders."
@@ -86,7 +65,7 @@ Item {
             anchors.centerIn: parent
             width: root.width < 700 ? 21 : 24
             height: width
-            name: root.pageIconName()
+            name: theme.pageIcon(root.currentPage)
             iconColor: theme.accent
             strokeWidth: 1.75
         }
