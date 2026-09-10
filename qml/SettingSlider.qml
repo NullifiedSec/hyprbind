@@ -63,6 +63,9 @@ Item {
             Slider {
                 id: slider
 
+                readonly property real handleBoxWidth: 28
+                readonly property real trackInset: handleBoxWidth / 2
+
                 Layout.fillWidth: true
                 Layout.minimumWidth: root.compactLayout ? 130 : 154
                 Layout.preferredWidth: 220
@@ -76,83 +79,86 @@ Item {
                 onMoved: root.edited(value)
 
                 background: Item {
-                    x: slider.leftPadding
+                    x: slider.leftPadding + slider.trackInset
                     y: slider.topPadding + slider.availableHeight / 2 - height / 2
-                    width: slider.availableWidth
-                    height: 12
+                    width: Math.max(0, slider.availableWidth - slider.handleBoxWidth)
+                    height: 10
 
                     Rectangle {
                         anchors.left: parent.left
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
-                        height: 4
-                        radius: 2
-                        color: theme.alpha(theme.textSecondary, slider.hovered ? 0.14 : 0.095)
+                        height: 3
+                        radius: 1.5
+                        color: theme.alpha(theme.textSecondary, slider.hovered ? 0.14 : 0.09)
 
                         Rectangle {
                             anchors.left: parent.left
                             anchors.right: parent.right
                             anchors.top: parent.top
-                            anchors.leftMargin: 2
-                            anchors.rightMargin: 2
+                            anchors.leftMargin: 1
+                            anchors.rightMargin: 1
                             height: 1
                             radius: 1
-                            color: theme.alpha(theme.foreground, slider.hovered ? 0.035 : 0.022)
+                            color: theme.alpha(theme.foreground, slider.hovered ? 0.036 : 0.022)
                         }
-
-                        Behavior on color { ColorAnimation { duration: 140 } }
                     }
 
                     Rectangle {
                         anchors.left: parent.left
                         anchors.verticalCenter: parent.verticalCenter
-                        width: Math.max(3, slider.visualPosition * parent.width)
-                        height: 4
-                        radius: 2
+                        width: slider.visualPosition * parent.width
+                        height: 3
+                        radius: 1.5
                         color: theme.alpha(theme.accent, slider.pressed ? 0.72 : slider.hovered ? 0.62 : 0.54)
 
                         Rectangle {
+                            visible: parent.width > 2
                             anchors.left: parent.left
                             anchors.right: parent.right
                             anchors.top: parent.top
-                            anchors.leftMargin: 2
-                            anchors.rightMargin: 2
+                            anchors.leftMargin: 1
+                            anchors.rightMargin: 1
                             height: 1
                             radius: 1
-                            color: theme.alpha(theme.foreground, slider.pressed ? 0.09 : 0.055)
+                            color: theme.alpha(theme.foreground, slider.pressed ? 0.08 : 0.045)
                         }
 
-                        Behavior on color { ColorAnimation { duration: 130 } }
+                        Behavior on color { ColorAnimation { duration: 120 } }
                     }
                 }
 
                 handle: Item {
-                    x: slider.leftPadding + slider.visualPosition * (slider.availableWidth - width)
-                    y: slider.topPadding + slider.availableHeight / 2 - height / 2
-                    width: 28
+                    id: handleBox
+                    x: Math.round(slider.leftPadding + slider.visualPosition * (slider.availableWidth - width))
+                    y: Math.round(slider.topPadding + slider.availableHeight / 2 - height / 2)
+                    width: slider.handleBoxWidth
                     height: 34
 
                     Rectangle {
                         anchors.centerIn: parent
-                        width: slider.hovered || slider.pressed ? 22 : 18
-                        height: slider.hovered || slider.pressed ? 30 : 26
-                        radius: 11
-                        color: theme.alpha(theme.accent, slider.pressed ? 0.055 : slider.hovered ? 0.032 : 0)
+                        width: 20
+                        height: 28
+                        radius: 10
+                        color: theme.alpha(theme.accent, slider.pressed ? 0.055 : slider.hovered ? 0.028 : 0)
+                        opacity: slider.hovered || slider.pressed ? 1 : 0
+                        scale: slider.pressed ? 1.04 : 1
 
-                        Behavior on width { NumberAnimation { duration: 120; easing.type: Easing.OutCubic } }
-                        Behavior on height { NumberAnimation { duration: 120; easing.type: Easing.OutCubic } }
-                        Behavior on color { ColorAnimation { duration: 120 } }
+                        Behavior on opacity { NumberAnimation { duration: 110 } }
+                        Behavior on scale { NumberAnimation { duration: 90; easing.type: Easing.OutCubic } }
                     }
 
                     Rectangle {
+                        id: visibleHandle
                         anchors.centerIn: parent
-                        width: slider.pressed ? 12 : 11
-                        height: slider.pressed ? 23 : 21
-                        radius: width / 2
+                        width: 10
+                        height: 22
+                        radius: 5
                         antialiasing: true
+                        scale: slider.pressed ? 1.045 : slider.hovered ? 1.02 : 1
                         color: slider.pressed
-                            ? theme.mix(theme.surfaceHigh, theme.foreground, 0.13)
-                            : theme.mix(theme.surfaceHigh, theme.foreground, 0.075)
+                            ? theme.mix(theme.surfaceHigh, theme.foreground, 0.14)
+                            : theme.mix(theme.surfaceHigh, theme.foreground, 0.08)
                         border.width: 1
                         border.color: theme.alpha(
                             slider.hovered || slider.pressed ? theme.accent : theme.foreground,
@@ -160,27 +166,28 @@ Item {
                         )
 
                         Rectangle {
-                            anchors.horizontalCenter: parent.horizontalCenter
+                            anchors.left: parent.left
+                            anchors.right: parent.right
                             anchors.top: parent.top
+                            anchors.leftMargin: 2
+                            anchors.rightMargin: 2
                             anchors.topMargin: 2
-                            width: Math.max(3, parent.width - 5)
                             height: 1
                             radius: 1
-                            color: theme.alpha(theme.foreground, slider.pressed ? 0.18 : 0.11)
+                            color: theme.alpha(theme.foreground, slider.pressed ? 0.19 : 0.11)
                         }
 
                         Rectangle {
                             anchors.centerIn: parent
                             width: 2
-                            height: 9
+                            height: 8
                             radius: 1
-                            color: theme.alpha(theme.accent, slider.pressed ? 0.74 : slider.hovered ? 0.58 : 0.42)
+                            color: theme.alpha(theme.accent, slider.pressed ? 0.76 : slider.hovered ? 0.60 : 0.44)
                         }
 
-                        Behavior on width { NumberAnimation { duration: 100; easing.type: Easing.OutCubic } }
-                        Behavior on height { NumberAnimation { duration: 100; easing.type: Easing.OutCubic } }
-                        Behavior on color { ColorAnimation { duration: 120 } }
-                        Behavior on border.color { ColorAnimation { duration: 120 } }
+                        Behavior on scale { NumberAnimation { duration: 90; easing.type: Easing.OutCubic } }
+                        Behavior on color { ColorAnimation { duration: 110 } }
+                        Behavior on border.color { ColorAnimation { duration: 110 } }
                     }
                 }
             }
