@@ -144,13 +144,15 @@ Item {
                 font.family: "Inter"
                 font.pixelSize: 11
             }
-            GlassButton {
-                text: "Reload"
+            IconButton {
+                iconName: "reload"
+                tooltip: "Reload values"
                 darkMode: root.darkMode
                 onClicked: root.load()
             }
-            GlassButton {
-                text: "Save"
+            IconButton {
+                iconName: "save"
+                tooltip: "Save changes"
                 accent: true
                 darkMode: root.darkMode
                 onClicked: root.save()
