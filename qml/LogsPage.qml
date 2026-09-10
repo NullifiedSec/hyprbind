@@ -51,7 +51,7 @@ Item {
             const haystack = (item.message + " " + item.identifier + " " + item.unit + " " + item.severity).toLowerCase()
             if (severityMatches(item.severity) && (!query || haystack.indexOf(query) >= 0)) {
                 logModel.append({
-                    id: item.id,
+                    entryId: item.id,
                     timestamp: item.timestamp,
                     severity: item.severity,
                     message: item.message,
@@ -149,7 +149,7 @@ Item {
 
         delegate: Rectangle {
             id: row
-            required property int id
+            required property int entryId
             required property string timestamp
             required property string severity
             required property string message
