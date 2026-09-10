@@ -178,14 +178,14 @@ Item {
         spacing: 14
 
         Item {
+            id: toolbar
             Layout.fillWidth: true
             Layout.preferredHeight: root.compactToolbar ? 78 : 40
 
             Row {
                 id: presetsRow
-                anchors.left: parent.left
-                anchors.top: parent.top
-                anchors.verticalCenter: root.compactToolbar ? undefined : parent.verticalCenter
+                x: 0
+                y: root.compactToolbar ? 0 : Math.round((toolbar.height - height) / 2)
                 spacing: 8
 
                 Text {
@@ -203,9 +203,11 @@ Item {
             }
 
             Row {
-                anchors.right: parent.right
-                anchors.bottom: root.compactToolbar ? parent.bottom : undefined
-                anchors.verticalCenter: root.compactToolbar ? undefined : parent.verticalCenter
+                id: actionRow
+                x: Math.max(0, toolbar.width - width)
+                y: root.compactToolbar
+                    ? Math.max(0, toolbar.height - height)
+                    : Math.round((toolbar.height - height) / 2)
                 spacing: 8
 
                 Text {
