@@ -3,7 +3,6 @@ import QtQuick
 GlassPanel {
     id: root
 
-    property bool darkMode: true
     property bool healthy: true
     property string message: "Ready."
 
@@ -11,7 +10,6 @@ GlassPanel {
 
     height: 50
     cornerRadius: 11
-    darkMode: root.darkMode
     elevated: false
 
     UiIcon {
