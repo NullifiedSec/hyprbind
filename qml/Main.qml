@@ -270,7 +270,7 @@ ApplicationWindow {
             darkMode: appWindow.darkMode
             developerMode: appWindow.developerMode
             onStatus: message => appWindow.statusMessage = message
-            onDeveloperModeChanged: enabled => appWindow.developerMode = enabled
+            onDeveloperModeCommitted: enabled => appWindow.developerMode = enabled
         }
     }
 }

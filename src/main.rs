@@ -200,7 +200,7 @@ fn main() {
     if args.iter().any(|a| a == "--gtk") {
         let app = Application::builder().application_id(APP_ID).build();
         app.connect_activate(ui::build_ui);
-        app.run();
+        app.run_with_args(&["hyprbinds"]);
         return;
     }
 

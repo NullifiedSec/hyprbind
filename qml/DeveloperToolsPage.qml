@@ -9,7 +9,7 @@ Item {
     property bool developerMode: false
 
     signal status(string message)
-    signal developerModeChanged(bool enabled)
+    signal developerModeCommitted(bool enabled)
 
     HyprbindTheme { id: theme; darkMode: root.darkMode }
 
@@ -24,7 +24,7 @@ Item {
             status(result.error || "Could not update developer mode.")
             return
         }
-        developerModeChanged(enabled)
+        developerModeCommitted(enabled)
         status(result.message)
     }
 
