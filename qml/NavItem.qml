@@ -1,23 +1,38 @@
 import QtQuick
 import QtQuick.Controls
 
-Button {
+Item {
     id: control
 
+    property string text: ""
     property string iconName: "document"
     property bool selected: false
     property bool darkMode: true
     property bool compact: false
 
-    hoverEnabled: true
-    HyprbindTheme { id: theme; darkMode: control.darkMode }
+    signal clicked()
 
     implicitHeight: 38
-    leftPadding: compact ? 0 : 11
-    rightPadding: compact ? 0 : 11
+    HoverHandler { id: hover }
+    TapHandler { acceptedButtons: Qt.LeftButton; onTapped: control.clicked() }
 
-    contentItem: Item {
+    HyprbindTheme { id: theme; darkMode: control.darkMode }
+
+    Rectangle {
+        anchors.fill: parent
+        radius: 12
+        antialiasing: true
+        color: control.selected
+            ? theme.selectedFill
+            : hover.hovered ? theme.hoverFill : "transparent"
+        Behavior on color { ColorAnimation { duration: 95; easing.type: Easing.OutCubic } }
+    }
+
+    Item {
         id: content
+        anchors.fill: parent
+        anchors.leftMargin: control.compact ? 0 : 11
+        anchors.rightMargin: control.compact ? 0 : 11
         clip: true
 
         Item {
@@ -34,10 +49,10 @@ Button {
                 name: control.iconName
                 iconColor: control.selected
                     ? theme.alpha(theme.accent, 0.92)
-                    : control.hovered
+                    : hover.hovered
                         ? theme.alpha(theme.textPrimary, 0.92)
                         : theme.alpha(theme.textSecondary, 0.86)
-                Behavior on iconColor { ColorAnimation { duration: 110 } }
+                Behavior on iconColor { ColorAnimation { duration: 95 } }
             }
         }
 
@@ -50,32 +65,18 @@ Button {
             text: control.text
             color: control.selected
                 ? theme.textPrimary
-                : control.hovered
+                : hover.hovered
                     ? theme.alpha(theme.textPrimary, 0.94)
                     : theme.alpha(theme.textPrimary, 0.84)
             font.family: "Inter"
             font.pixelSize: 13
             font.weight: control.selected ? Font.Medium : Font.Normal
             elide: Text.ElideRight
-            Behavior on color { ColorAnimation { duration: 110 } }
+            Behavior on color { ColorAnimation { duration: 95 } }
         }
     }
 
-    background: Rectangle {
-        radius: 12
-        antialiasing: true
-        color: control.down
-            ? (control.selected
-                ? theme.alpha(theme.mix(theme.surfaceHigh, theme.accent, 0.12), 0.58)
-                : theme.alpha(theme.foreground, control.darkMode ? 0.040 : 0.070))
-            : control.selected
-                ? theme.selectedFill
-                : control.hovered ? theme.hoverFill : "transparent"
-        border.width: 0
-        Behavior on color { ColorAnimation { duration: 115; easing.type: Easing.OutCubic } }
-    }
-
-    ToolTip.visible: control.compact && control.hovered
+    ToolTip.visible: control.compact && hover.hovered
     ToolTip.delay: 450
     ToolTip.text: control.text
 }
