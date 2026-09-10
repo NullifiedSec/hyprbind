@@ -25,7 +25,10 @@ Item {
         color: control.selected
             ? theme.selectedFill
             : hover.hovered ? theme.hoverFill : "transparent"
-        Behavior on color { ColorAnimation { duration: 95; easing.type: Easing.OutCubic } }
+        Behavior on color {
+            enabled: !control.selected
+            ColorAnimation { duration: 85; easing.type: Easing.OutCubic }
+        }
     }
 
     Item {
@@ -52,7 +55,10 @@ Item {
                     : hover.hovered
                         ? theme.alpha(theme.textPrimary, 0.92)
                         : theme.alpha(theme.textSecondary, 0.86)
-                Behavior on iconColor { ColorAnimation { duration: 95 } }
+                Behavior on iconColor {
+                    enabled: !control.selected
+                    ColorAnimation { duration: 85 }
+                }
             }
         }
 
@@ -72,7 +78,10 @@ Item {
             font.pixelSize: 13
             font.weight: control.selected ? Font.Medium : Font.Normal
             elide: Text.ElideRight
-            Behavior on color { ColorAnimation { duration: 95 } }
+            Behavior on color {
+                enabled: !control.selected
+                ColorAnimation { duration: 85 }
+            }
         }
     }
 
