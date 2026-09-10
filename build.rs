@@ -15,10 +15,15 @@ fn main() {
                 "qml/VariablesPage.qml",
                 "qml/StartupPage.qml",
                 "qml/SubmapsPage.qml",
+                "qml/BindsPage.qml",
+                "qml/RuleCatalogPage.qml",
+                "qml/SpecCatalogPage.qml",
+                "qml/ConfigPage.qml",
                 "qml/HealthPage.qml",
                 "qml/LogsPage.qml",
                 "qml/GlassPanel.qml",
                 "qml/GlassField.qml",
+                "qml/GlassTextArea.qml",
                 "qml/GlassButton.qml",
                 "qml/IconButton.qml",
                 "qml/NavItem.qml",
@@ -40,6 +45,8 @@ fn main() {
         "src/qml_submaps_bridge.rs",
         "src/qml_health_bridge.rs",
         "src/qml_logs_bridge.rs",
+        "src/qml_catalog_bridge.rs",
+        "src/qml_window_bridge.rs",
     ])
     .qt_module("Quick")
     .qt_module("QuickControls2")
