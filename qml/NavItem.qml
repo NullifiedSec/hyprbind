@@ -15,8 +15,6 @@ Button {
     implicitHeight: 38
     leftPadding: compact ? 0 : 11
     rightPadding: compact ? 0 : 11
-    scale: down ? 0.97 : 1
-    Behavior on scale { NumberAnimation { duration: 90; easing.type: Easing.OutCubic } }
 
     contentItem: Item {
         id: content
@@ -35,8 +33,11 @@ Button {
                 height: 18
                 name: control.iconName
                 iconColor: control.selected
-                    ? theme.textPrimary
-                    : theme.alpha(theme.textSecondary, 0.88)
+                    ? theme.alpha(theme.accent, 0.92)
+                    : control.hovered
+                        ? theme.alpha(theme.textPrimary, 0.92)
+                        : theme.alpha(theme.textSecondary, 0.86)
+                Behavior on iconColor { ColorAnimation { duration: 110 } }
             }
         }
 
@@ -47,33 +48,31 @@ Button {
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
             text: control.text
-            color: control.selected ? theme.textPrimary : theme.alpha(theme.textPrimary, 0.86)
+            color: control.selected
+                ? theme.textPrimary
+                : control.hovered
+                    ? theme.alpha(theme.textPrimary, 0.94)
+                    : theme.alpha(theme.textPrimary, 0.84)
             font.family: "Inter"
             font.pixelSize: 13
             font.weight: control.selected ? Font.Medium : Font.Normal
             elide: Text.ElideRight
+            Behavior on color { ColorAnimation { duration: 110 } }
         }
     }
 
     background: Rectangle {
         radius: 12
         antialiasing: true
-        color: control.selected ? theme.selectedFill
-            : control.hovered ? theme.hoverFill : "transparent"
-        border.width: control.selected ? 1 : 0
-        border.color: theme.selectedRim
-        Behavior on color { ColorAnimation { duration: 145; easing.type: Easing.OutCubic } }
-
-        Rectangle {
-            visible: control.selected
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.leftMargin: control.compact ? 10 : 15
-            anchors.rightMargin: control.compact ? 10 : 15
-            anchors.top: parent.top
-            height: 1
-            color: theme.selectedSpecular
-        }
+        color: control.down
+            ? (control.selected
+                ? theme.alpha(theme.mix(theme.surfaceHigh, theme.accent, 0.12), 0.58)
+                : theme.alpha(theme.foreground, root.darkMode ? 0.040 : 0.070))
+            : control.selected
+                ? theme.selectedFill
+                : control.hovered ? theme.hoverFill : "transparent"
+        border.width: 0
+        Behavior on color { ColorAnimation { duration: 115; easing.type: Easing.OutCubic } }
     }
 
     ToolTip.visible: control.compact && control.hovered
