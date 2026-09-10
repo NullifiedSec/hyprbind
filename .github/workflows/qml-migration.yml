@@ -28,6 +28,7 @@ jobs:
             pkg-config \
             libgtk-4-dev \
             libhidapi-dev \
+            libudev-dev \
             qt6-base-dev \
             qt6-declarative-dev \
             qt6-declarative-dev-tools \
