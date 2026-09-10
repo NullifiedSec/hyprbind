@@ -54,7 +54,7 @@ Item {
 
     function selectedSubmap() {
         for (let i = 0; i < allSubmaps.length; ++i) {
-            if (allSubmaps[i].id === selectedId)
+            if (allSubmaps[i].entryId === selectedId)
                 return allSubmaps[i]
         }
         return null
@@ -180,7 +180,7 @@ Item {
 
             delegate: Rectangle {
                 id: submapRow
-                required property int id
+                required property int entryId
                 required property string name
                 required property string reset
                 required property int bindCount
@@ -190,14 +190,14 @@ Item {
                 width: submapsList.width
                 height: 72
                 radius: 11
-                color: root.selectedId === id
+                color: root.selectedId === entryId
                     ? theme.selectedFill
                     : rowMouse.containsMouse ? theme.hoverFill : "transparent"
-                border.width: root.selectedId === id ? 1 : 0
+                border.width: root.selectedId === entryId ? 1 : 0
                 border.color: theme.selectedRim
 
                 Rectangle {
-                    visible: root.selectedId === id
+                    visible: root.selectedId === entryId
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.top: parent.top
@@ -292,7 +292,7 @@ Item {
                     id: rowMouse
                     anchors.fill: parent
                     hoverEnabled: true
-                    onClicked: root.selectedId = id
+                    onClicked: root.selectedId = entryId
                 }
             }
         }
