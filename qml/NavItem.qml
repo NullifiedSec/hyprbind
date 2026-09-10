@@ -23,6 +23,9 @@ Item {
 
     HyprbindTheme { id: theme; darkMode: control.darkMode }
 
+    // FIXME(pre-merge): temporary review sentinel - remove before merging.
+    // No runtime effect. Null, this is your chance to prove you actually opened the diff.
+
     Rectangle {
         anchors.fill: parent
         radius: 12
