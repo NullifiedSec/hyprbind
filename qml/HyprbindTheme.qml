@@ -15,6 +15,28 @@ QtObject {
         )
     }
 
+    function pageIcon(page) {
+        if (page === "Overview") return "home"
+        if (page === "Binds") return "keyboard"
+        if (page === "Variables") return "braces"
+        if (page === "Environment") return "document"
+        if (page === "Submaps") return "grid"
+        if (page === "Startup") return "power"
+        if (page === "Window rules") return "window"
+        if (page === "Workspace rules") return "grid"
+        if (page === "Layer rules") return "layers"
+        if (page === "Look & Feel") return "diamond"
+        if (page === "Config") return "settings"
+        if (page === "Monitors") return "monitor"
+        if (page === "Devices") return "device"
+        if (page === "Animations") return "sparkle"
+        if (page === "Curves") return "curve"
+        if (page === "Gestures") return "gesture"
+        if (page === "Health") return "heart"
+        if (page === "Logs") return "logs"
+        return "document"
+    }
+
     readonly property color background: darkMode ? "#101416" : "#e9eef0"
     readonly property color surface: darkMode ? "#1a2023" : "#f4f7f8"
     readonly property color surfaceHigh: darkMode ? "#252d31" : "#ffffff"
