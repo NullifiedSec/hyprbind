@@ -55,7 +55,7 @@ impl qobject::StartupBridge {
                     .iter()
                     .map(|item| {
                         json!({
-                            "id": item.id,
+                            "entryId": item.id,
                             "command": item.command,
                             "when": item.when,
                             "workspace": item.workspace,
