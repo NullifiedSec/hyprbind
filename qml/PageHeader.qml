@@ -120,7 +120,7 @@ Item {
 
         Button {
             id: copyPath
-            width: root.fullPath ? 40 : parent.width
+            width: root.fullPath ? 42 : parent.width
             height: parent.height
             anchors.right: parent.right
             padding: 0
@@ -128,20 +128,78 @@ Item {
             hoverEnabled: true
             scale: 1
 
-            contentItem: UiIcon {
-                width: 18
-                height: 18
-                anchors.centerIn: parent
-                name: root.copied ? "check" : "copy"
-                iconColor: root.copied ? theme.accent : theme.textSecondary
+            contentItem: Item {
+                Item {
+                    width: 20
+                    height: 20
+                    anchors.centerIn: parent
+                    opacity: root.copied ? 0 : 1
+                    scale: root.copied ? 0.78 : 1
+
+                    Rectangle {
+                        x: 3
+                        y: 4
+                        width: 9
+                        height: 1
+                        radius: 0.5
+                        color: copyPath.hovered ? theme.alpha(theme.textPrimary, 0.94) : theme.alpha(theme.textSecondary, 0.88)
+                    }
+                    Rectangle {
+                        x: 3
+                        y: 4
+                        width: 1
+                        height: 9
+                        radius: 0.5
+                        color: copyPath.hovered ? theme.alpha(theme.textPrimary, 0.94) : theme.alpha(theme.textSecondary, 0.88)
+                    }
+                    Rectangle {
+                        x: 3
+                        y: 12
+                        width: 4
+                        height: 1
+                        radius: 0.5
+                        color: copyPath.hovered ? theme.alpha(theme.textPrimary, 0.94) : theme.alpha(theme.textSecondary, 0.88)
+                    }
+                    Rectangle {
+                        x: 7
+                        y: 7
+                        width: 10
+                        height: 10
+                        radius: 2
+                        color: "transparent"
+                        border.width: 1
+                        border.color: copyPath.hovered ? theme.alpha(theme.textPrimary, 0.94) : theme.alpha(theme.textSecondary, 0.88)
+                        antialiasing: true
+                    }
+
+                    Behavior on opacity { NumberAnimation { duration: 100 } }
+                    Behavior on scale { NumberAnimation { duration: 110; easing.type: Easing.OutCubic } }
+                }
+
+                UiIcon {
+                    anchors.centerIn: parent
+                    width: 18
+                    height: 18
+                    name: "check"
+                    iconColor: theme.accent
+                    opacity: root.copied ? 1 : 0
+                    scale: root.copied ? 1 : 0.72
+                    Behavior on opacity { NumberAnimation { duration: 120 } }
+                    Behavior on scale { NumberAnimation { duration: 140; easing.type: Easing.OutBack } }
+                }
             }
 
             background: Rectangle {
                 radius: 10
-                color: root.copied ? theme.alpha(theme.accent, 0.12) : copyPath.hovered ? theme.hoverFill : "transparent"
-                border.width: root.copied ? 1 : 0
-                border.color: theme.alpha(theme.accent, 0.24)
-                Behavior on color { ColorAnimation { duration: 140 } }
+                color: root.copied
+                    ? theme.alpha(theme.accent, 0.10)
+                    : copyPath.pressed
+                        ? theme.controlPressed
+                        : copyPath.hovered ? theme.controlHover : "transparent"
+                border.width: copyPath.hovered || root.copied ? 1 : 0
+                border.color: root.copied ? theme.alpha(theme.accent, 0.22) : theme.controlRim
+                Behavior on color { ColorAnimation { duration: 120 } }
+                Behavior on border.color { ColorAnimation { duration: 120 } }
             }
 
             onClicked: {
@@ -156,18 +214,19 @@ Item {
             }
 
             ToolTip.visible: hovered
+            ToolTip.delay: 420
             ToolTip.text: root.copied ? "Copied" : "Copy config path"
         }
     }
 
     SequentialAnimation {
         id: copyPulse
-        PropertyAnimation { target: copyPath; property: "scale"; to: 0.88; duration: 70; easing.type: Easing.OutCubic }
-        PropertyAnimation { target: copyPath; property: "scale"; to: 1.08; duration: 110; easing.type: Easing.OutBack }
-        PropertyAnimation { target: copyPath; property: "scale"; to: 1.0; duration: 110; easing.type: Easing.OutCubic }
+        PropertyAnimation { target: copyPath; property: "scale"; to: 0.94; duration: 65; easing.type: Easing.OutCubic }
+        PropertyAnimation { target: copyPath; property: "scale"; to: 1.035; duration: 95; easing.type: Easing.OutBack }
+        PropertyAnimation { target: copyPath; property: "scale"; to: 1.0; duration: 90; easing.type: Easing.OutCubic }
     }
 
-    Timer { id: copiedReset; interval: 1100; repeat: false; onTriggered: root.copied = false }
+    Timer { id: copiedReset; interval: 1050; repeat: false; onTriggered: root.copied = false }
 
     Column {
         id: titleColumn
