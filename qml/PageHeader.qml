@@ -11,7 +11,7 @@ Item {
 
     HyprbindTheme { id: theme; darkMode: root.darkMode }
 
-    readonly property bool fullPath: width >= 880
+    readonly property bool fullPath: width >= 920
     readonly property bool showSubtitle: width >= 560
     readonly property bool configContext: currentPage !== "Overview" && currentPage !== "Health" && currentPage !== "Logs"
     readonly property int edgeMargin: width < 700 ? 16 : 24
@@ -35,28 +35,31 @@ Item {
         if (currentPage === "Gestures") return "gesture"
         if (currentPage === "Health") return "heart"
         if (currentPage === "Logs") return "logs"
+        if (currentPage === "Layer rules") return "layers"
         if (currentPage.indexOf("rule") >= 0) return "window"
         return "document"
     }
 
     function pageSubtitle() {
-        if (currentPage === "Environment")
-            return "Manage environment variables for Hyprland and apps launched in your session."
-        if (currentPage === "Look & Feel")
-            return "Shape Hyprland’s spacing, transparency, effects, and window borders."
-        if (currentPage === "Overview")
-            return "A quick view of your configuration and Hyprbind state."
-        if (currentPage === "Variables")
-            return "Reusable values referenced across binds, rules, and commands."
-        if (currentPage === "Submaps")
-            return "Organize keybinds into named modes and see which binds each mode owns."
-        if (currentPage === "Startup")
-            return "Choose which commands run when Hyprland starts, reloads, or shuts down."
-        if (currentPage === "Health")
-            return "Inspect session, Hyprland, portals, audio, and desktop integration."
-        if (currentPage === "Logs")
-            return "Search the recent user-session journal without leaving Hyprbind."
-        return "This page is being migrated to the new interface."
+        if (currentPage === "Environment") return "Manage environment variables for Hyprland and apps launched in your session."
+        if (currentPage === "Look & Feel") return "Shape Hyprland’s spacing, transparency, effects, and window borders."
+        if (currentPage === "Overview") return "A quick view of your configuration and Hyprbind state."
+        if (currentPage === "Binds") return "Inspect, search, add, and safely edit keybinds across global and submap contexts."
+        if (currentPage === "Variables") return "Reusable values referenced across binds, rules, and commands."
+        if (currentPage === "Submaps") return "Organize keybinds into named modes and see which binds each mode owns."
+        if (currentPage === "Startup") return "Choose which commands run when Hyprland starts, reloads, or shuts down."
+        if (currentPage === "Window rules") return "Match windows and apply behavior without leaving the managed configuration workflow."
+        if (currentPage === "Workspace rules") return "Control per-workspace selectors, gaps, layouts, monitors, and related properties."
+        if (currentPage === "Layer rules") return "Match layer-shell namespaces such as bars and launchers and apply layer effects."
+        if (currentPage === "Config") return "Inspect and edit the merged configuration through Hyprbind’s managed override writer."
+        if (currentPage === "Monitors") return "Manage collected monitor calls and their typed output configuration fields."
+        if (currentPage === "Devices") return "Configure device-specific input behavior using the existing typed call writer."
+        if (currentPage === "Animations") return "Edit animation leaves, speed, curves, and related animation fields."
+        if (currentPage === "Curves") return "Create and edit named animation curves while preserving typed curve data."
+        if (currentPage === "Gestures") return "Manage gesture calls, actions, fingers, direction, and related fields."
+        if (currentPage === "Health") return "Inspect session, Hyprland, portals, audio, and desktop integration."
+        if (currentPage === "Logs") return "Search the recent user-session journal without leaving Hyprbind."
+        return "Hyprland configuration."
     }
 
     GlassPanel {
@@ -135,9 +138,7 @@ Item {
 
             background: Rectangle {
                 radius: 10
-                color: root.copied
-                    ? theme.alpha(theme.accent, 0.12)
-                    : copyPath.hovered ? theme.hoverFill : "transparent"
+                color: root.copied ? theme.alpha(theme.accent, 0.12) : copyPath.hovered ? theme.hoverFill : "transparent"
                 border.width: root.copied ? 1 : 0
                 border.color: theme.alpha(theme.accent, 0.24)
                 Behavior on color { ColorAnimation { duration: 140 } }
@@ -166,12 +167,7 @@ Item {
         PropertyAnimation { target: copyPath; property: "scale"; to: 1.0; duration: 110; easing.type: Easing.OutCubic }
     }
 
-    Timer {
-        id: copiedReset
-        interval: 1100
-        repeat: false
-        onTriggered: root.copied = false
-    }
+    Timer { id: copiedReset; interval: 1100; repeat: false; onTriggered: root.copied = false }
 
     Column {
         id: titleColumn
