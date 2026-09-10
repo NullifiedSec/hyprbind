@@ -40,7 +40,7 @@ impl qobject::SubmapsBridge {
                     .iter()
                     .map(|item| {
                         json!({
-                            "id": item.id,
+                            "entryId": item.id,
                             "name": item.name,
                             "reset": item.reset,
                             "bindCount": item.bind_count,
