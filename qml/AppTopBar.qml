@@ -256,7 +256,7 @@ Rectangle {
                     color: windowButton.isClose && windowButton.hovered
                         ? Qt.rgba(0.72, 0.18, 0.20, windowButton.pressed ? 0.58 : 0.44)
                         : windowButton.pressed
-                            ? theme.pressedFill
+                            ? theme.controlPressed
                             : windowButton.hovered
                                 ? theme.hoverFill
                                 : "transparent"
