@@ -54,7 +54,7 @@ Item {
 
     function selectedEntry() {
         for (let i = 0; i < allEntries.length; ++i) {
-            if (allEntries[i].id === selectedId)
+            if (allEntries[i].entryId === selectedId)
                 return allEntries[i]
         }
         return null
@@ -95,7 +95,7 @@ Item {
         editorWorkspace.text = item.workspace || ""
         editorError.text = ""
         startupEditor.editing = true
-        startupEditor.entryId = item.id
+        startupEditor.entryId = item.entryId
         startupEditor.selectedWhen = item.when || "start"
         startupEditor.open()
         editorCommand.forceActiveFocus()
@@ -195,7 +195,7 @@ Item {
 
             delegate: Rectangle {
                 id: startupRow
-                required property int id
+                required property int entryId
                 required property string command
                 required property string when
                 required property string workspace
@@ -205,14 +205,14 @@ Item {
                 width: startupList.width
                 height: 74
                 radius: 11
-                color: root.selectedId === id
+                color: root.selectedId === entryId
                     ? theme.selectedFill
                     : rowMouse.containsMouse ? theme.hoverFill : "transparent"
-                border.width: root.selectedId === id ? 1 : 0
+                border.width: root.selectedId === entryId ? 1 : 0
                 border.color: theme.selectedRim
 
                 Rectangle {
-                    visible: root.selectedId === id
+                    visible: root.selectedId === entryId
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.top: parent.top
@@ -307,9 +307,9 @@ Item {
                     id: rowMouse
                     anchors.fill: parent
                     hoverEnabled: true
-                    onClicked: root.selectedId = id
+                    onClicked: root.selectedId = entryId
                     onDoubleClicked: {
-                        root.selectedId = id
+                        root.selectedId = entryId
                         root.openEditEditor()
                     }
                 }
