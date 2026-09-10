@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import dev.hyprbinds.ui
 
 Item {
     id: root
