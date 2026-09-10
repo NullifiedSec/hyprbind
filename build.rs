@@ -5,6 +5,11 @@ fn main() {
         QmlModule::new("dev.hyprbinds.ui")
             .qml_files([
                 "qml/Main.qml",
+                "qml/AppTopBar.qml",
+                "qml/AppSidebar.qml",
+                "qml/PageHeader.qml",
+                "qml/StatusBar.qml",
+                "qml/EnvironmentPage.qml",
                 "qml/GlassPanel.qml",
                 "qml/GlassField.qml",
                 "qml/GlassButton.qml",
