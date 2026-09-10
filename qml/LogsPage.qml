@@ -237,7 +237,7 @@ Item {
                 font.pixelSize: 11
                 elide: Text.ElideRight
                 maximumLineCount: root.width < 620 ? 2 : 1
-                wrapMode: root.width < 620 ? Text.Wrap : Text.NoWrap
+                wrapMode: root.width < 620 ? Text.WordWrap : Text.NoWrap
             }
         }
 
