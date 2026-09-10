@@ -197,12 +197,14 @@ fn main() {
         return;
     }
 
-    if args.iter().any(|a| a == "--qml") {
-        qml_bridge::run();
+    if args.iter().any(|a| a == "--gtk") {
+        let app = Application::builder().application_id(APP_ID).build();
+        app.connect_activate(ui::build_ui);
+        app.run();
         return;
     }
 
-    let app = Application::builder().application_id(APP_ID).build();
-    app.connect_activate(ui::build_ui);
-    app.run();
+    // QML is the primary UI. `--qml` remains accepted for compatibility,
+    // while `--gtk` provides the explicit legacy/developer fallback.
+    qml_bridge::run();
 }

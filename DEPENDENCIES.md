@@ -2,21 +2,27 @@
 
 Runtime and build dependencies for **hyprbinds**. Distro package names below are Arch/CachyOS-oriented; equivalents exist on other distros.
 
-## Build (Rust / GTK)
+## Build (Rust / GTK + Qt/QML)
 
 | Package | Why |
 |---|---|
 | `rust` / `cargo` | Compile the app |
-| `gtk4` | UI toolkit |
-| `pkgconf` | Find GTK via pkg-config |
-| `gcc` / `base-devel` | Link C dependencies |
+| `gtk4` | Legacy/developer GTK compatibility UI (`--gtk`) |
+| `qt6-base` | Qt runtime/base libraries for the primary QML UI |
+| `qt6-declarative` | Qt Quick / QML runtime and development files |
+| `qt6-tools` | Qt build tooling used by the QML bridge |
+| `cmake` / `ninja` | Native build tooling used by CXX-Qt |
+| `pkgconf` | Find GTK/Qt native dependencies |
+| `gcc` / `base-devel` | Compile/link native dependencies |
 
-Cargo crates (see `Cargo.toml`): `gtk4`, `serde`, `serde_json`, `dirs`, `thiserror`, `hidapi`, `via-protocol`.
+Cargo crates (see `Cargo.toml`): `gtk4`, `cxx`, `cxx-qt`, `cxx-qt-lib`, `serde`, `serde_json`, `dirs`, `thiserror`, `hidapi`, `via-protocol`.
 
 ```bash
-sudo pacman -S rust gtk4 pkgconf base-devel
+sudo pacman -S rust gtk4 qt6-base qt6-declarative qt6-tools cmake ninja pkgconf base-devel
 cargo build --release
 ```
+
+The primary desktop launch path is the QML UI. The GTK UI remains available with `hyprbinds --gtk` as a compatibility path and for the experimental companion studios while those surfaces are migrated.
 
 ## VIA hardware keymap (experimental)
 
