@@ -108,68 +108,60 @@ Rectangle {
         anchors.right: windowControls.left
         anchors.rightMargin: root.compact ? 8 : 14
         anchors.verticalCenter: parent.verticalCenter
-        spacing: root.compact ? 5 : 7
+        spacing: root.compact ? 4 : 6
 
         Button {
             id: themeButton
-            implicitWidth: root.showActionLabels ? 108 : 36
-            implicitHeight: 36
+            implicitWidth: root.showActionLabels ? 122 : 42
+            implicitHeight: 38
             padding: 0
             flat: true
             hoverEnabled: true
-            scale: pressed ? 0.965 : 1
-            Behavior on scale { NumberAnimation { duration: 85; easing.type: Easing.OutCubic } }
+            scale: pressed ? 0.975 : 1
+            Behavior on scale { NumberAnimation { duration: 80; easing.type: Easing.OutCubic } }
 
-            contentItem: Row {
-                anchors.centerIn: parent
-                spacing: 7
+            contentItem: Item {
+                Row {
+                    anchors.centerIn: parent
+                    spacing: 8
 
-                UiIcon {
-                    width: 17
-                    height: 17
-                    name: root.darkMode ? "moon" : "sun"
-                    iconColor: themeButton.hovered ? theme.alpha(theme.accent, 0.90) : theme.alpha(theme.textPrimary, 0.88)
-                    anchors.verticalCenter: parent.verticalCenter
-                    Behavior on iconColor { ColorAnimation { duration: 120 } }
-                }
+                    UiIcon {
+                        width: 17
+                        height: 17
+                        name: root.darkMode ? "moon" : "sun"
+                        iconColor: themeButton.hovered
+                            ? theme.alpha(theme.accent, 0.88)
+                            : theme.alpha(theme.textPrimary, 0.86)
+                        anchors.verticalCenter: parent.verticalCenter
+                        Behavior on iconColor { ColorAnimation { duration: 115 } }
+                    }
 
-                Text {
-                    visible: root.showActionLabels
-                    text: root.darkMode ? "Dark mode" : "Light mode"
-                    color: themeButton.hovered ? theme.textPrimary : theme.alpha(theme.textPrimary, 0.88)
-                    font.family: "Inter"
-                    font.pixelSize: 12
-                    font.weight: Font.Medium
-                    anchors.verticalCenter: parent.verticalCenter
-                    Behavior on color { ColorAnimation { duration: 120 } }
+                    Text {
+                        visible: root.showActionLabels
+                        text: root.darkMode ? "Dark mode" : "Light mode"
+                        color: themeButton.hovered
+                            ? theme.textPrimary
+                            : theme.alpha(theme.textPrimary, 0.86)
+                        font.family: "Inter"
+                        font.pixelSize: 12
+                        font.weight: Font.Medium
+                        anchors.verticalCenter: parent.verticalCenter
+                        Behavior on color { ColorAnimation { duration: 115 } }
+                    }
                 }
             }
 
             background: Rectangle {
+                anchors.fill: parent
+                anchors.margins: 2
                 radius: 10
                 color: themeButton.pressed
-                    ? theme.controlPressed
+                    ? theme.alpha(theme.controlPressed, 0.82)
                     : themeButton.hovered
-                        ? theme.controlHover
-                        : theme.alpha(theme.controlFill, 0.17)
-                border.width: 1
-                border.color: themeButton.hovered
-                    ? theme.alpha(theme.foreground, root.darkMode ? 0.085 : 0.12)
-                    : theme.alpha(theme.foreground, root.darkMode ? 0.022 : 0.05)
-                Behavior on color { ColorAnimation { duration: 120; easing.type: Easing.OutCubic } }
-                Behavior on border.color { ColorAnimation { duration: 120 } }
-
-                Rectangle {
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.leftMargin: 9
-                    anchors.rightMargin: 9
-                    height: 1
-                    radius: 1
-                    color: theme.alpha(theme.foreground, themeButton.hovered ? 0.045 : 0.018)
-                    Behavior on color { ColorAnimation { duration: 120 } }
-                }
+                        ? theme.alpha(theme.controlHover, 0.86)
+                        : "transparent"
+                border.width: 0
+                Behavior on color { ColorAnimation { duration: 115; easing.type: Easing.OutCubic } }
             }
 
             onClicked: root.toggleThemeRequested()
@@ -180,80 +172,70 @@ Rectangle {
 
         Button {
             id: realtimeButton
-            implicitWidth: root.showActionLabels ? 108 : 36
-            implicitHeight: 36
+            implicitWidth: root.showActionLabels ? 122 : 42
+            implicitHeight: 38
             padding: 0
             flat: true
             hoverEnabled: true
-            scale: pressed ? 0.965 : 1
-            Behavior on scale { NumberAnimation { duration: 85; easing.type: Easing.OutCubic } }
+            scale: pressed ? 0.975 : 1
+            Behavior on scale { NumberAnimation { duration: 80; easing.type: Easing.OutCubic } }
 
-            contentItem: Row {
-                anchors.centerIn: parent
-                spacing: 7
+            contentItem: Item {
+                Row {
+                    anchors.centerIn: parent
+                    spacing: 8
 
-                UiIcon {
-                    width: 17
-                    height: 17
-                    name: "realtime"
-                    iconColor: root.realtimeEnabled
-                        ? theme.accent
-                        : realtimeButton.hovered ? theme.alpha(theme.textPrimary, 0.88) : theme.alpha(theme.textSecondary, 0.82)
-                    anchors.verticalCenter: parent.verticalCenter
-                    Behavior on iconColor { ColorAnimation { duration: 120 } }
-                }
+                    UiIcon {
+                        width: 17
+                        height: 17
+                        name: "realtime"
+                        iconColor: root.realtimeEnabled
+                            ? theme.accent
+                            : realtimeButton.hovered
+                                ? theme.alpha(theme.textPrimary, 0.90)
+                                : theme.alpha(theme.textSecondary, 0.82)
+                        anchors.verticalCenter: parent.verticalCenter
+                        Behavior on iconColor { ColorAnimation { duration: 115 } }
+                    }
 
-                Text {
-                    visible: root.showActionLabels
-                    text: "Realtime"
-                    color: root.realtimeEnabled || realtimeButton.hovered ? theme.textPrimary : theme.alpha(theme.textSecondary, 0.86)
-                    font.family: "Inter"
-                    font.pixelSize: 12
-                    font.weight: root.realtimeEnabled ? Font.Medium : Font.Normal
-                    anchors.verticalCenter: parent.verticalCenter
-                    Behavior on color { ColorAnimation { duration: 120 } }
-                }
+                    Text {
+                        visible: root.showActionLabels
+                        text: "Realtime"
+                        color: root.realtimeEnabled || realtimeButton.hovered
+                            ? theme.textPrimary
+                            : theme.alpha(theme.textSecondary, 0.84)
+                        font.family: "Inter"
+                        font.pixelSize: 12
+                        font.weight: root.realtimeEnabled ? Font.Medium : Font.Normal
+                        anchors.verticalCenter: parent.verticalCenter
+                        Behavior on color { ColorAnimation { duration: 115 } }
+                    }
 
-                Rectangle {
-                    visible: root.showActionLabels
-                    width: 5
-                    height: 5
-                    radius: 2.5
-                    color: root.realtimeEnabled ? theme.accent : theme.alpha(theme.textSecondary, realtimeButton.hovered ? 0.42 : 0.25)
-                    anchors.verticalCenter: parent.verticalCenter
-                    Behavior on color { ColorAnimation { duration: 120 } }
+                    Rectangle {
+                        visible: root.showActionLabels
+                        width: 5
+                        height: 5
+                        radius: 2.5
+                        color: root.realtimeEnabled
+                            ? theme.accent
+                            : theme.alpha(theme.textSecondary, realtimeButton.hovered ? 0.42 : 0.24)
+                        anchors.verticalCenter: parent.verticalCenter
+                        Behavior on color { ColorAnimation { duration: 115 } }
+                    }
                 }
             }
 
             background: Rectangle {
+                anchors.fill: parent
+                anchors.margins: 2
                 radius: 10
                 color: realtimeButton.pressed
-                    ? theme.controlPressed
-                    : root.realtimeEnabled
-                        ? theme.alpha(theme.mix(theme.surfaceHigh, theme.accent, 0.12), realtimeButton.hovered ? 0.34 : 0.24)
-                        : realtimeButton.hovered ? theme.controlHover : theme.alpha(theme.controlFill, 0.13)
-                border.width: 1
-                border.color: root.realtimeEnabled
-                    ? theme.alpha(theme.accent, realtimeButton.hovered ? 0.22 : 0.14)
+                    ? theme.alpha(theme.controlPressed, 0.82)
                     : realtimeButton.hovered
-                        ? theme.alpha(theme.foreground, root.darkMode ? 0.075 : 0.11)
-                        : theme.alpha(theme.foreground, root.darkMode ? 0.018 : 0.045)
-                Behavior on color { ColorAnimation { duration: 120; easing.type: Easing.OutCubic } }
-                Behavior on border.color { ColorAnimation { duration: 120 } }
-
-                Rectangle {
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.leftMargin: 9
-                    anchors.rightMargin: 9
-                    height: 1
-                    radius: 1
-                    color: root.realtimeEnabled
-                        ? theme.alpha(theme.mix(theme.foreground, theme.accent, 0.18), realtimeButton.hovered ? 0.060 : 0.035)
-                        : theme.alpha(theme.foreground, realtimeButton.hovered ? 0.040 : 0.014)
-                    Behavior on color { ColorAnimation { duration: 120 } }
-                }
+                        ? theme.alpha(theme.controlHover, 0.82)
+                        : "transparent"
+                border.width: 0
+                Behavior on color { ColorAnimation { duration: 115; easing.type: Easing.OutCubic } }
             }
 
             onClicked: root.toggleRealtimeRequested()
