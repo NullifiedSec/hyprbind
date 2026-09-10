@@ -9,7 +9,7 @@ Item {
     property var allEntries: []
     property string severityFilter: "ALL"
     property string loadError: ""
-    readonly property bool compactToolbar: width < 820
+    readonly property bool compactToolbar: width < 900
 
     signal status(string message)
     signal healthChanged(bool healthy)
@@ -82,36 +82,11 @@ Item {
         anchors.top: parent.top
         height: root.compactToolbar ? 92 : 44
 
-        GlassField {
-            id: searchField
-            anchors.left: parent.left
-            anchors.right: root.compactToolbar ? parent.right : filterFlow.left
-            anchors.rightMargin: root.compactToolbar ? 0 : 10
-            anchors.top: parent.top
-            implicitHeight: 42
-            darkMode: root.darkMode
-            placeholderText: "Search recent logs..."
-            leftPadding: 40
-            onTextChanged: root.rebuildModel()
-
-            UiIcon {
-                width: 16
-                height: 16
-                name: "search"
-                anchors.left: parent.left
-                anchors.leftMargin: 13
-                anchors.verticalCenter: parent.verticalCenter
-                iconColor: theme.textSecondary
-            }
-        }
-
-        Flow {
-            id: filterFlow
-            width: root.compactToolbar ? parent.width : implicitWidth
-            anchors.right: parent.right
-            anchors.top: root.compactToolbar ? searchField.bottom : parent.top
-            anchors.topMargin: root.compactToolbar ? 6 : 0
+        Row {
+            id: filterRow
             spacing: 6
+            y: root.compactToolbar ? 49 : 0
+            x: root.compactToolbar ? 0 : Math.max(0, toolbar.width - width)
 
             Repeater {
                 model: [
@@ -131,6 +106,30 @@ Item {
                         root.rebuildModel()
                     }
                 }
+            }
+        }
+
+        GlassField {
+            id: searchField
+            x: 0
+            y: 0
+            width: root.compactToolbar
+                ? toolbar.width
+                : Math.max(220, filterRow.x - 10)
+            implicitHeight: 42
+            darkMode: root.darkMode
+            placeholderText: "Search recent logs..."
+            leftPadding: 40
+            onTextChanged: root.rebuildModel()
+
+            UiIcon {
+                width: 16
+                height: 16
+                name: "search"
+                anchors.left: parent.left
+                anchors.leftMargin: 13
+                anchors.verticalCenter: parent.verticalCenter
+                iconColor: theme.textSecondary
             }
         }
     }
