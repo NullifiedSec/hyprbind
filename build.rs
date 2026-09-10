@@ -10,6 +10,7 @@ fn main() {
                 "qml/PageHeader.qml",
                 "qml/StatusBar.qml",
                 "qml/EnvironmentPage.qml",
+                "qml/VariablesPage.qml",
                 "qml/GlassPanel.qml",
                 "qml/GlassField.qml",
                 "qml/GlassButton.qml",
