@@ -198,9 +198,11 @@ ApplicationWindow {
                     anchors.margins: appWindow.currentPage === "Look & Feel" ? 0 : 14
                     sourceComponent: appWindow.currentPage === "Environment"
                         ? environmentComponent
-                        : appWindow.currentPage === "Look & Feel"
-                            ? lookFeelComponent
-                            : placeholderComponent
+                        : appWindow.currentPage === "Variables"
+                            ? variablesComponent
+                            : appWindow.currentPage === "Look & Feel"
+                                ? lookFeelComponent
+                                : placeholderComponent
                 }
             }
         }
@@ -209,6 +211,17 @@ ApplicationWindow {
     Component {
         id: environmentComponent
         EnvironmentPage {
+            bridge: backend
+            darkMode: appWindow.darkMode
+            onStatus: message => appWindow.statusMessage = message
+            onConfigResolved: path => appWindow.configPath = path
+            onHealthChanged: healthy => appWindow.backendHealthy = healthy
+        }
+    }
+
+    Component {
+        id: variablesComponent
+        VariablesPage {
             bridge: backend
             darkMode: appWindow.darkMode
             onStatus: message => appWindow.statusMessage = message
