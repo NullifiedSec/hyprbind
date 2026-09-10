@@ -23,6 +23,7 @@ mod lookfeel_ui;
 mod nav;
 mod overview_ui;
 mod palette;
+mod qml_bridge;
 mod settings_config;
 mod spec;
 mod startup;
@@ -187,6 +188,11 @@ fn main() {
                 std::process::exit(1);
             }
         }
+        return;
+    }
+
+    if args.iter().any(|a| a == "--qml") {
+        qml_bridge::run();
         return;
     }
 
