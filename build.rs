@@ -14,6 +14,7 @@ fn main() {
                 "qml/EnvironmentPage.qml",
                 "qml/VariablesPage.qml",
                 "qml/StartupPage.qml",
+                "qml/SubmapsPage.qml",
                 "qml/GlassPanel.qml",
                 "qml/GlassField.qml",
                 "qml/GlassButton.qml",
@@ -31,7 +32,11 @@ fn main() {
             .depend("QtQuick.Controls")
             .depend("QtQuick.Layouts"),
     )
-    .files(["src/qml_bridge.rs", "src/qml_startup_bridge.rs"])
+    .files([
+        "src/qml_bridge.rs",
+        "src/qml_startup_bridge.rs",
+        "src/qml_submaps_bridge.rs",
+    ])
     .qt_module("Quick")
     .qt_module("QuickControls2")
     .build();
