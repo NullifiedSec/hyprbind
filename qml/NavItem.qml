@@ -13,21 +13,39 @@ Item {
     signal clicked()
 
     implicitHeight: 38
+
     HoverHandler { id: hover }
-    TapHandler { acceptedButtons: Qt.LeftButton; onTapped: control.clicked() }
+    TapHandler {
+        acceptedButtons: Qt.LeftButton
+        onTapped: control.clicked()
+    }
 
     HyprbindTheme { id: theme; darkMode: control.darkMode }
+
+    // Selection and hover are deliberately separate layers.
+    // Selection must switch atomically so the previous and next item
+    // can never both display an active transition at the same time.
+    Rectangle {
+        anchors.fill: parent
+        radius: 12
+        antialiasing: true
+        visible: control.selected
+        color: theme.selectedFill
+    }
 
     Rectangle {
         anchors.fill: parent
         radius: 12
         antialiasing: true
-        color: control.selected
-            ? theme.selectedFill
-            : hover.hovered ? theme.hoverFill : "transparent"
-        Behavior on color {
-            enabled: !control.selected
-            ColorAnimation { duration: 85; easing.type: Easing.OutCubic }
+        visible: !control.selected
+        color: theme.hoverFill
+        opacity: hover.hovered ? 1 : 0
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 85
+                easing.type: Easing.OutCubic
+            }
         }
     }
 
@@ -55,10 +73,6 @@ Item {
                     : hover.hovered
                         ? theme.alpha(theme.textPrimary, 0.92)
                         : theme.alpha(theme.textSecondary, 0.86)
-                Behavior on iconColor {
-                    enabled: !control.selected
-                    ColorAnimation { duration: 85 }
-                }
             }
         }
 
@@ -78,10 +92,6 @@ Item {
             font.pixelSize: 13
             font.weight: control.selected ? Font.Medium : Font.Normal
             elide: Text.ElideRight
-            Behavior on color {
-                enabled: !control.selected
-                ColorAnimation { duration: 85 }
-            }
         }
     }
 
