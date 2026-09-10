@@ -47,6 +47,8 @@ Item {
             return "A quick view of your configuration and Hyprbind state."
         if (currentPage === "Variables")
             return "Reusable values referenced across binds, rules, and commands."
+        if (currentPage === "Submaps")
+            return "Organize keybinds into named modes and see which binds each mode owns."
         if (currentPage === "Startup")
             return "Choose which commands run when Hyprland starts, reloads, or shuts down."
         return "This page is being migrated to the new interface."
