@@ -9,6 +9,8 @@ fn main() {
                 "qml/AppSidebar.qml",
                 "qml/PageHeader.qml",
                 "qml/StatusBar.qml",
+                "qml/OverviewPage.qml",
+                "qml/SummaryCard.qml",
                 "qml/EnvironmentPage.qml",
                 "qml/VariablesPage.qml",
                 "qml/GlassPanel.qml",
