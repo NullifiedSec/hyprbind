@@ -83,6 +83,11 @@ ApplicationWindow {
         statusMessage = payload.message || "Restored the latest config snapshot."
     }
 
+    onCurrentPageChanged: {
+        backendHealthy = true
+        statusMessage = "Ready."
+    }
+
     Component.onCompleted: loadUiState()
 
     Rectangle {
@@ -208,7 +213,11 @@ ApplicationWindow {
                                         ? startupComponent
                                         : appWindow.currentPage === "Look & Feel"
                                             ? lookFeelComponent
-                                            : placeholderComponent
+                                            : appWindow.currentPage === "Health"
+                                                ? healthComponent
+                                                : appWindow.currentPage === "Logs"
+                                                    ? logsComponent
+                                                    : placeholderComponent
                 }
             }
         }
@@ -278,6 +287,24 @@ ApplicationWindow {
                 appWindow.loadUiState()
                 appWindow.statusMessage = "Look & Feel saved."
             }
+        }
+    }
+
+    Component {
+        id: healthComponent
+        HealthPage {
+            darkMode: appWindow.darkMode
+            onStatus: message => appWindow.statusMessage = message
+            onHealthChanged: healthy => appWindow.backendHealthy = healthy
+        }
+    }
+
+    Component {
+        id: logsComponent
+        LogsPage {
+            darkMode: appWindow.darkMode
+            onStatus: message => appWindow.statusMessage = message
+            onHealthChanged: healthy => appWindow.backendHealthy = healthy
         }
     }
 
