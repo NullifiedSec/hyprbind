@@ -15,6 +15,8 @@ fn main() {
                 "qml/VariablesPage.qml",
                 "qml/StartupPage.qml",
                 "qml/SubmapsPage.qml",
+                "qml/HealthPage.qml",
+                "qml/LogsPage.qml",
                 "qml/GlassPanel.qml",
                 "qml/GlassField.qml",
                 "qml/GlassButton.qml",
@@ -36,6 +38,8 @@ fn main() {
         "src/qml_bridge.rs",
         "src/qml_startup_bridge.rs",
         "src/qml_submaps_bridge.rs",
+        "src/qml_health_bridge.rs",
+        "src/qml_logs_bridge.rs",
     ])
     .qt_module("Quick")
     .qt_module("QuickControls2")
