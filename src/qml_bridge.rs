@@ -57,6 +57,27 @@ mod qobject {
         #[qinvokable]
         #[rust_name = "delete_environment"]
         fn deleteEnvironment(self: &HyprbindBridge, name: &QString) -> QString;
+
+        #[qinvokable]
+        #[rust_name = "variables_snapshot"]
+        fn variablesSnapshot(self: &HyprbindBridge) -> QString;
+
+        #[qinvokable]
+        #[rust_name = "add_variable"]
+        fn addVariable(self: &HyprbindBridge, name: &QString, value: &QString) -> QString;
+
+        #[qinvokable]
+        #[rust_name = "edit_variable"]
+        fn editVariable(
+            self: &HyprbindBridge,
+            current_name: &QString,
+            name: &QString,
+            value: &QString,
+        ) -> QString;
+
+        #[qinvokable]
+        #[rust_name = "delete_variable"]
+        fn deleteVariable(self: &HyprbindBridge, name: &QString) -> QString;
     }
 }
 
@@ -266,6 +287,96 @@ impl qobject::HyprbindBridge {
             ));
         };
         match crate::writer::delete_env(var) {
+            Ok(result) => action_ok(format!("Deleted {name} from {}", result.path)),
+            Err(error) => action_error(error.to_string()),
+        }
+    }
+
+    fn variables_snapshot(&self) -> QString {
+        match crate::config::load_binds(None) {
+            Ok(mut collection) => {
+                collection.finalize();
+                let variables = collection
+                    .variables
+                    .iter()
+                    .map(|item| {
+                        json!({
+                            "name": item.name,
+                            "value": item.value,
+                            "sourceFile": item.source_file,
+                            "sourceLine": item.source_line,
+                        })
+                    })
+                    .collect::<Vec<_>>();
+                to_qstring(json!({
+                    "ok": true,
+                    "configPath": collection.config_path.display().to_string(),
+                    "variables": variables,
+                    "warning": collection.error.clone().unwrap_or_default(),
+                }))
+            }
+            Err(error) => to_qstring(json!({
+                "ok": false,
+                "configPath": crate::config::default_config_path()
+                    .map(|path| path.display().to_string())
+                    .unwrap_or_default(),
+                "variables": [],
+                "error": error.to_string(),
+            })),
+        }
+    }
+
+    fn add_variable(&self, name: &QString, value: &QString) -> QString {
+        let name = String::from(name);
+        let value = String::from(value);
+        let Some(path) = crate::config::default_config_path() else {
+            return action_error("Could not determine the Hyprland config path.");
+        };
+        match crate::writer::add_variable(&path, &name, &value) {
+            Ok(result) => action_ok(format!("Added {name} in {}", result.path)),
+            Err(error) => action_error(error.to_string()),
+        }
+    }
+
+    fn edit_variable(&self, current_name: &QString, name: &QString, value: &QString) -> QString {
+        let current_name = String::from(current_name);
+        let name = String::from(name);
+        let value = String::from(value);
+        let mut collection = match crate::config::load_binds(None) {
+            Ok(collection) => collection,
+            Err(error) => return action_error(error.to_string()),
+        };
+        collection.finalize();
+        let related_files = collection.related_files();
+        let existing_names = collection
+            .variables
+            .iter()
+            .map(|item| item.name.clone())
+            .collect::<Vec<_>>();
+        let Some(var) = collection
+            .variables
+            .iter()
+            .find(|item| item.name == current_name)
+        else {
+            return action_error(format!("Variable `{current_name}` is no longer present."));
+        };
+        match crate::writer::save_variable(var, &name, &value, &related_files, &existing_names) {
+            Ok(result) => action_ok(format!("Saved {name} in {}", result.path)),
+            Err(error) => action_error(error.to_string()),
+        }
+    }
+
+    fn delete_variable(&self, name: &QString) -> QString {
+        let name = String::from(name);
+        let mut collection = match crate::config::load_binds(None) {
+            Ok(collection) => collection,
+            Err(error) => return action_error(error.to_string()),
+        };
+        collection.finalize();
+        let Some(var) = collection.variables.iter().find(|item| item.name == name) else {
+            return action_error(format!("Variable `{name}` is no longer present."));
+        };
+        match crate::writer::delete_variable(var) {
             Ok(result) => action_ok(format!("Deleted {name} from {}", result.path)),
             Err(error) => action_error(error.to_string()),
         }
