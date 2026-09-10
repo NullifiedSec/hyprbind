@@ -16,6 +16,10 @@ mod qobject {
         #[qinvokable]
         #[rust_name = "snapshot"]
         fn snapshot(self: &HealthBridge) -> QString;
+
+        #[qinvokable]
+        #[rust_name = "system_info"]
+        fn systemInfo(self: &HealthBridge) -> QString;
     }
 }
 
@@ -23,6 +27,10 @@ mod qobject {
 pub struct HealthBridgeRust;
 
 impl qobject::HealthBridge {
+    fn system_info(&self) -> QString {
+        QString::from(crate::sysinfo::collect_report())
+    }
+
     fn snapshot(&self) -> QString {
         let checks = crate::health::run_all();
         let rows = checks
@@ -38,17 +46,11 @@ impl qobject::HealthBridge {
                 })
             })
             .collect::<Vec<_>>();
-        let failures = checks
-            .iter()
-            .filter(|item| item.severity == crate::health::Severity::Fail)
-            .count();
-        let warnings = checks
-            .iter()
-            .filter(|item| item.severity == crate::health::Severity::Warn)
-            .count();
+        let (ok_count, warnings, failures) = crate::health::summarize(&checks);
         to_qstring(json!({
             "ok": true,
             "checks": rows,
+            "okCount": ok_count,
             "failures": failures,
             "warnings": warnings,
             "total": checks.len(),

@@ -9,6 +9,7 @@ Item {
     property var allChecks: []
     property string severityFilter: "ALL"
     property int total: 0
+    property int okCount: 0
     property int warnings: 0
     property int failures: 0
 
@@ -29,6 +30,14 @@ Item {
     HealthBridge { id: healthBridge }
     ListModel { id: checkModel }
 
+    TextInput {
+        id: clipboardBuffer
+        width: 1
+        height: 1
+        opacity: 0
+        readOnly: true
+    }
+
     function parse(raw) {
         try { return JSON.parse(raw) }
         catch (error) { return { ok: false, error: "Invalid diagnostics response: " + error } }
@@ -39,6 +48,7 @@ Item {
         if (!payload.ok) {
             allChecks = []
             total = 0
+            okCount = 0
             warnings = 0
             failures = 1
             healthChanged(false)
@@ -49,6 +59,7 @@ Item {
 
         allChecks = payload.checks || []
         total = payload.total || allChecks.length
+        okCount = payload.okCount || 0
         warnings = payload.warnings || 0
         failures = payload.failures || 0
         healthChanged(failures === 0)
@@ -84,6 +95,32 @@ Item {
         if (severity === "WARN") return root.darkMode ? "#e6bd79" : "#98651d"
         if (severity === "OK") return root.darkMode ? "#9bd2ad" : "#31744a"
         return theme.textSecondary
+    }
+
+    function formatReport() {
+        let out = "Hyprbinds health report\n" + okCount + " ok · " + warnings + " warnings · " + failures + " failures\n\n"
+        let lastCategory = ""
+        for (let i = 0; i < allChecks.length; ++i) {
+            const item = allChecks[i]
+            if (item.category !== lastCategory) {
+                lastCategory = item.category
+                out += "## " + item.category + "\n"
+            }
+            out += "[" + item.severity + "] " + item.title + "\n  " + item.detail + "\n"
+            if (item.fixHint) out += "  hint: " + item.fixHint + "\n"
+            if (item.fixCommand) out += "  fix: " + item.fixCommand + "\n"
+            out += "\n"
+        }
+        return out
+    }
+
+    function copyText(text, message) {
+        clipboardBuffer.text = text
+        clipboardBuffer.forceActiveFocus()
+        clipboardBuffer.selectAll()
+        clipboardBuffer.copy()
+        clipboardBuffer.deselect()
+        status(message)
     }
 
     Component.onCompleted: load()
@@ -133,6 +170,34 @@ Item {
                 value: root.failures.toString()
                 subtitle: root.failures === 0 ? "No blocking checks" : "Checks that are currently failing"
                 accent: root.failures === 0
+            }
+        }
+
+        Item {
+            id: reportActions
+            width: parent.width
+            height: 38
+
+            Row {
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                spacing: 7
+
+                GlassButton {
+                    text: "Copy report"
+                    darkMode: root.darkMode
+                    enabled: root.allChecks.length > 0
+                    onClicked: root.copyText(root.formatReport(), "Copied full health report to clipboard.")
+                }
+
+                GlassButton {
+                    text: "Copy system info"
+                    darkMode: root.darkMode
+                    onClicked: {
+                        const report = String(healthBridge.systemInfo())
+                        root.copyText(report, "Copied system info to clipboard.")
+                    }
+                }
             }
         }
 
@@ -324,16 +389,27 @@ Item {
                 GlassPanel {
                     visible: fixCommand.length > 0
                     width: parent.width
-                    height: visible ? 38 : 0
+                    height: visible ? 42 : 0
                     cornerRadius: 9
                     darkMode: root.darkMode
                     elevated: false
 
+                    GlassButton {
+                        id: copyFixButton
+                        anchors.right: parent.right
+                        anchors.rightMargin: 5
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "Copy fix"
+                        darkMode: root.darkMode
+                        implicitHeight: 32
+                        onClicked: root.copyText(fixCommand, "Copied fix command to clipboard.")
+                    }
+
                     Text {
                         anchors.left: parent.left
-                        anchors.right: parent.right
+                        anchors.right: copyFixButton.left
                         anchors.leftMargin: 12
-                        anchors.rightMargin: 12
+                        anchors.rightMargin: 8
                         anchors.verticalCenter: parent.verticalCenter
                         text: fixCommand
                         color: theme.alpha(theme.textPrimary, 0.76)

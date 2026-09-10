@@ -57,6 +57,9 @@ impl qobject::CatalogBridge {
                     "name": item.name,
                     "keys": item.keys,
                     "action": item.action,
+                    "category": crate::dispatchers::action_category(&item.action)
+                        .map(|category| category.label())
+                        .unwrap_or("Other"),
                     "flags": item.flags,
                     "flagsLabel": item.flags_label(),
                     "submap": item.submap,

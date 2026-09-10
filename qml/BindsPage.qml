@@ -8,9 +8,13 @@ Item {
     property bool darkMode: true
     property var allItems: []
     property var submaps: []
+    property string submapFilter: ""
+    property bool conflictsOnly: false
+    property string categoryFilter: "All"
+    readonly property var categoryFilters: ["All", "General", "Window", "Workspace", "Group", "Cursor", "Other"]
     property int selectedId: -1
     property string configPath: ""
-    readonly property bool compactToolbar: width < 700
+    readonly property bool compactToolbar: width < 760
 
     signal status(string message)
     signal configResolved(string path)
@@ -48,7 +52,12 @@ Item {
         for (let i = 0; i < allItems.length; ++i) {
             const item = allItems[i]
             const haystack = (item.displayName + " " + item.keys + " " + item.action + " " + item.flagsLabel + " " + item.submap + " " + item.sourceLabel).toLowerCase()
-            if (!query || haystack.indexOf(query) >= 0)
+            const searchMatches = !query || haystack.indexOf(query) >= 0
+            const submapMatches = root.submapFilter === ""
+                || (root.submapFilter === "__global__" ? item.submap.length === 0 : item.submap === root.submapFilter)
+            const conflictMatches = !root.conflictsOnly || item.conflict
+            const categoryMatches = root.categoryFilter === "All" || item.category === root.categoryFilter
+            if (searchMatches && submapMatches && conflictMatches && categoryMatches)
                 bindModel.append(item)
         }
     }
@@ -123,7 +132,7 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
-        height: root.compactToolbar ? 96 : 52
+        height: root.compactToolbar ? 145 : 101
 
         GlassField {
             id: searchField
@@ -160,6 +169,109 @@ Item {
             IconButton { iconName: "edit"; tooltip: "Edit selected bind"; darkMode: root.darkMode; enabled: root.selectedId >= 0; onClicked: root.openEdit() }
             IconButton { iconName: "trash"; tooltip: "Delete selected bind"; darkMode: root.darkMode; danger: true; enabled: root.selectedId >= 0; onClicked: root.deleteSelected() }
         }
+
+        Item {
+            id: filterRow
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: root.compactToolbar ? actions.bottom : searchField.bottom
+            anchors.topMargin: 8
+            height: 39
+
+            ComboBox {
+                id: submapBox
+                anchors.left: parent.left
+                anchors.verticalCenter: parent.verticalCenter
+                width: Math.min(180, Math.max(132, root.width * 0.22))
+                height: 38
+                model: ["All submaps", "Global"].concat(root.submaps)
+                hoverEnabled: true
+                font.family: "Inter"
+                font.pixelSize: 11
+
+                contentItem: Text {
+                    leftPadding: 12
+                    rightPadding: 28
+                    text: submapBox.displayText
+                    color: theme.textPrimary
+                    font: submapBox.font
+                    verticalAlignment: Text.AlignVCenter
+                    elide: Text.ElideRight
+                }
+
+                indicator: Text {
+                    anchors.right: parent.right
+                    anchors.rightMargin: 11
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: "⌄"
+                    color: theme.textSecondary
+                    font.pixelSize: 14
+                }
+
+                background: Rectangle {
+                    radius: 11
+                    color: submapBox.pressed ? theme.controlPressed : submapBox.hovered ? theme.controlHover : theme.controlFill
+                    border.width: 1
+                    border.color: theme.controlRim
+                }
+
+                onActivated: index => {
+                    root.submapFilter = index === 0 ? "" : index === 1 ? "__global__" : submapBox.currentText
+                    root.rebuildModel()
+                }
+            }
+
+            GlassButton {
+                id: conflictsButton
+                anchors.left: submapBox.right
+                anchors.leftMargin: 7
+                anchors.verticalCenter: parent.verticalCenter
+                text: "Conflicts"
+                darkMode: root.darkMode
+                accent: root.conflictsOnly
+                implicitHeight: 38
+                onClicked: {
+                    root.conflictsOnly = !root.conflictsOnly
+                    root.rebuildModel()
+                }
+            }
+
+            Flickable {
+                id: categoryScroll
+                anchors.left: conflictsButton.right
+                anchors.leftMargin: 8
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                clip: true
+                contentWidth: categoryRow.width
+                contentHeight: height
+                interactive: contentWidth > width
+                boundsBehavior: Flickable.StopAtBounds
+
+                Row {
+                    id: categoryRow
+                    height: parent.height
+                    spacing: 6
+
+                    Repeater {
+                        model: root.categoryFilters
+                        delegate: GlassButton {
+                            required property string modelData
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: modelData
+                            darkMode: root.darkMode
+                            accent: root.categoryFilter === modelData
+                            implicitHeight: 36
+                            onClicked: {
+                                root.categoryFilter = modelData
+                                root.rebuildModel()
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     ListView {
@@ -181,6 +293,7 @@ Item {
             required property string displayName
             required property string keys
             required property string action
+            required property string category
             required property string flagsLabel
             required property string submap
             required property string sourceLabel
