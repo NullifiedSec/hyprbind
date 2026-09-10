@@ -16,15 +16,13 @@ Item {
 
     HoverHandler { id: hover }
     TapHandler {
+        enabled: !control.selected
         acceptedButtons: Qt.LeftButton
         onTapped: control.clicked()
     }
 
     HyprbindTheme { id: theme; darkMode: control.darkMode }
 
-    // Selection and hover are deliberately separate layers.
-    // Selection must switch atomically so the previous and next item
-    // can never both display an active transition at the same time.
     Rectangle {
         anchors.fill: parent
         radius: 12
@@ -37,16 +35,8 @@ Item {
         anchors.fill: parent
         radius: 12
         antialiasing: true
-        visible: !control.selected
+        visible: !control.selected && hover.hovered
         color: theme.hoverFill
-        opacity: hover.hovered ? 1 : 0
-
-        Behavior on opacity {
-            NumberAnimation {
-                duration: 85
-                easing.type: Easing.OutCubic
-            }
-        }
     }
 
     Item {
