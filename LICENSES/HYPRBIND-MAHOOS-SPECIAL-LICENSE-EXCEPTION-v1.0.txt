@@ -151,10 +151,10 @@ Date: 02-10-2026
 
 ACKNOWLEDGED FOR MAHOOS
 
-Name: ______________________________
+Name: Magetsu
 
-GitHub username / project role: ______________________________
+GitHub username / project role: magetsu002 / MahoOS maintainer
 
-Signature / electronic signature: ______________________________
+Signature / electronic signature: /s/ magetsu002
 
-Date: __________________
+Date: 02-10-2026
